@@ -1,0 +1,31 @@
+on:
+  push:
+  pull_request:
+    types: [opened, synchronize]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    name: script/cibuild
+    steps:
+      - uses: actions/checkout@v2
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 3.2
+          bundler-cache: true
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+         node-version: '16'
+
+      - name: Make bootstrap script executable
+        run: chmod +x script/*
+      - name: Install Sass
+        run: npm install -g sass
+
+      - name: Compile SCSS to CSS
+        run: sass assets/css/style.scss assets/css/style.css
+
+      - name: build
+        run: script/bootstrap
+      - name: test
+        run: script/cibuild
