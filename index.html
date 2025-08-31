@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="it">
 <head>
@@ -252,6 +251,7 @@
     .tier-esperto { background: #718096; color: white; }
     .tier-custode { background: #d69e2e; color: white; }
     .tier-maestro { background: #4299e1; color: white; }
+    .tier-tutti { background: linear-gradient(135deg, #667eea, #764ba2); color: white; }
 
     .product input, .settings-input, #participants {
       padding: 12px;
@@ -415,8 +415,8 @@
 <body>
   <div class="container">
     <header>
-      <h1>⚒️ Calcolatore Materiali</h1>
-      <p class="subtitle">Divisione intelligente di cristalli e mostri per avventurieri</p>
+      <h1>⚒️ Abaco per Divisione Abisso</h1>
+      <p class="subtitle">Divisione intelligente di cristalli e aberrazioni per avventurieri</p>
     </header>
 
     <nav>
@@ -436,7 +436,7 @@
           <div>
             <div class="card participants-section">
               <h2>Partecipanti</h2>
-              <label class="participants-label">Numero di avventurieri:</label>
+              <label class="participants-label">Numero di partecipanti:</label>
               <input type="number" id="participants" min="1" value="1">
             </div>
 
@@ -460,7 +460,7 @@
   </div>
 
   <script>
-    // Prodotti da cristalli e mostri
+    // Prodotti da cristalli e aberrazioni
     const defaultProducts = [
       // Cristalli - ordinati per tier
       { name: "Carbone", price: 2, category: "Cristalli", tier: "Novizio" },
@@ -474,18 +474,18 @@
       { name: "Oro grezzo", price: 34, category: "Cristalli", tier: "Custode" },
       { name: "Withering Dust", price: 2, category: "Cristalli", tier: "Custode" },
       
-      // Mostri - ordinati per tier
-      { name: "Carne Marcia", price: 1, category: "Mostri", tier: "Novizio" },
-      { name: "Core Fragment", price: 1, category: "Mostri", tier: "Novizio" },
-      { name: "Revival star", price: 2, category: "Mostri", tier: "Novizio" },
-      { name: "Occhio di Ragno", price: 1, category: "Mostri", tier: "Avanzato" },
-      { name: "Quarzo", price: 1, category: "Mostri", tier: "Avanzato" },
-      { name: "Therium", price: 1, category: "Mostri", tier: "Avanzato" },
-      { name: "Blaze Powder", price: 2, category: "Mostri", tier: "Esperto" },
-      { name: "Brim Powder", price: 1, category: "Mostri", tier: "Esperto" },
-      { name: "Membrana", price: 2, category: "Mostri", tier: "Esperto" },
-      { name: "Prismarine Shard", price: 1, category: "Mostri", tier: "Custode" },
-      { name: "Slime Ball", price: 3, category: "Mostri", tier: "Custode" }
+      // Aberrazioni - ordinati per tier (Core Fragment con tier "Tutti")
+      { name: "Core Fragment", price: 1, category: "Aberrazioni", tier: "Tutti" },
+      { name: "Brim Powder", price: 1, category: "Aberrazioni", tier: "Novizio" },
+      { name: "Carne Marcia", price: 1, category: "Aberrazioni", tier: "Novizio" },
+      { name: "Revival star", price: 2, category: "Aberrazioni", tier: "Novizio" },
+      { name: "Occhio di Ragno", price: 1, category: "Aberrazioni", tier: "Avanzato" },
+      { name: "Quarzo", price: 1, category: "Aberrazioni", tier: "Avanzato" },
+      { name: "Therium", price: 1, category: "Aberrazioni", tier: "Avanzato" },
+      { name: "Blaze Powder", price: 2, category: "Aberrazioni", tier: "Esperto" },
+      { name: "Membrana", price: 2, category: "Aberrazioni", tier: "Esperto" },
+      { name: "Prismarine Shard", price: 1, category: "Aberrazioni", tier: "Custode" },
+      { name: "Slime Ball", price: 3, category: "Aberrazioni", tier: "Custode" }
     ];
 
     let products = [...defaultProducts.map(p => ({ ...p, qty: 0 }))];
@@ -528,7 +528,7 @@
         
         const categoryTitle = document.createElement("h3");
         categoryTitle.className = "category-title";
-        categoryTitle.textContent = `Materiali da ${category}`;
+        categoryTitle.textContent = `Materiali dai ${category}`;
         categoryDiv.appendChild(categoryTitle);
 
         const categoryProducts = products.filter(p => p.category === category);
@@ -594,7 +594,7 @@
         
         const title = document.createElement("div");
         title.className = "participant-title";
-        title.textContent = `Avventuriero ${i}`;
+        title.textContent = `Partecipante ${i}`;
         participantDiv.appendChild(title);
 
         let totalCost = 0;
@@ -650,7 +650,7 @@
         
         const categoryTitle = document.createElement("h3");
         categoryTitle.className = "category-title";
-        categoryTitle.textContent = `Materiali da ${category}`;
+        categoryTitle.textContent = `Materiali dai ${category}`;
         categoryDiv.appendChild(categoryTitle);
 
         const categoryProducts = products.filter(p => p.category === category);
@@ -706,10 +706,10 @@
       const name = prompt("Nome del nuovo materiale:");
       if (!name || !name.trim()) return;
       
-      const category = prompt("Categoria (Cristalli/Mostri):", "Cristalli");
+              const category = prompt("Categoria (Cristalli/Aberrazioni):", "Cristalli");
       if (!category || !category.trim()) return;
       
-              const tier = prompt("Tier (Novizio/Avanzato/Esperto/Custode):", "Novizio");
+              const tier = prompt("Tier (Novizio/Avanzato/Esperto/Custode/Tutti):", "Novizio");
       if (!tier || !tier.trim()) return;
       
       products.push({
