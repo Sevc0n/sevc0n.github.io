@@ -32,14 +32,14 @@
     "price": 500,
     "category": "Cristalli",
     "subcategory": "Metalli",
-    "tier": "Custode"
+    "tier": "Maestro"
   },
   {
     "name": "Argento grezzo",
     "price": 500,
     "category": "Cristalli",
     "subcategory": "Metalli",
-    "tier": "Custode"
+    "tier": "Maestro"
   },
   {
     "name": "Carbone",
@@ -59,7 +59,7 @@
     "name": "Fire Stone",
     "price": 9,
     "category": "Cristalli",
-    "subcategory": "Misto",
+    "subcategory": "Carburanti",
     "tier": "Maestro"
   },
   {
