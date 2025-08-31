@@ -76,6 +76,12 @@
     "tier": "Tutti"
   },
   {
+    "name": "Revival star",
+    "price": 2,
+    "category": "Aberrazioni",
+    "tier": "Tutti"
+  },
+  {
     "name": "Brim Powder",
     "price": 1,
     "category": "Aberrazioni",
@@ -84,12 +90,6 @@
   {
     "name": "Carne Marcia",
     "price": 1,
-    "category": "Aberrazioni",
-    "tier": "Novizio"
-  },
-  {
-    "name": "Revival star",
-    "price": 2,
     "category": "Aberrazioni",
     "tier": "Novizio"
   },
