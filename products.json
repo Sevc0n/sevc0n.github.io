@@ -28,6 +28,20 @@
     "tier": "Custode"
   },
   {
+    "name": "Diamante grezzo",
+    "price": 500,
+    "category": "Cristalli",
+    "subcategory": "Metalli",
+    "tier": "Custode"
+  },
+  {
+    "name": "Argento grezzo",
+    "price": 500,
+    "category": "Cristalli",
+    "subcategory": "Metalli",
+    "tier": "Custode"
+  },
+  {
     "name": "Carbone",
     "price": 3,
     "category": "Cristalli",
@@ -40,6 +54,13 @@
     "category": "Cristalli",
     "subcategory": "Carburanti",
     "tier": "Esperto"
+  },
+  {
+    "name": "Fire Stone",
+    "price": 9,
+    "category": "Cristalli",
+    "subcategory": "Misto",
+    "tier": "Maestro"
   },
   {
     "name": "Lapis",
@@ -134,5 +155,17 @@
     "price": 2,
     "category": "Aberrazioni",
     "tier": "Custode"
+  },
+  {
+    "name": "Lost Soul",
+    "price": 5,
+    "category": "Aberrazioni",
+    "tier": "Maestro"
+  },
+  {
+    "name": "Demon Heart",
+    "price": 5,
+    "category": "Aberrazioni",
+    "tier": "Maestro"
   }
 ]
