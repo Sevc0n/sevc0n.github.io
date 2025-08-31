@@ -368,11 +368,11 @@
       { name: "Slime Ball", price: 2, category: "Aberrazioni", tier: "Custode" }
     ];
 
-    function getTierClass(tier) {
-      return `tier-${tier.toLowerCase()}`;
-    }
-
+    // Inizializza i prodotti
     let products = [...defaultProducts.map(p => ({ ...p, qty: 0 }))];
+
+    // Elementi DOM
+    const productList = document.getElementById("product-list");
     const distributionResults = document.getElementById("distribution-results");
     const participantsInput = document.getElementById("participants");
 
@@ -401,6 +401,10 @@
       } else {
         return 'currency-br';
       }
+    }
+
+    function getTierClass(tier) {
+      return `tier-${tier.toLowerCase()}`;
     }
 
     function renderMain() {
@@ -600,8 +604,17 @@
     // Event listeners
     participantsInput.addEventListener("input", updateDistribution);
 
-    // Inizializzazione
-    renderMain();
+    // Inizializzazione - esegui quando il DOM è pronto
+    document.addEventListener('DOMContentLoaded', function() {
+      renderMain();
+    });
+
+    // Fallback per compatibilità
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', renderMain);
+    } else {
+      renderMain();
+    }
   </script>
 </body>
 </html>
