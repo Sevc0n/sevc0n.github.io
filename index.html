@@ -1,51 +1,739 @@
+
 <!DOCTYPE html>
 <html lang="it">
 <head>
   <meta charset="UTF-8">
-  <title>Abaco Tool</title>
-  <link rel="stylesheet" href="style.css">
-  <script defer src="script.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Abaco Tool - Calcolatore di Materiali</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+      min-height: 100vh;
+      padding: 20px;
+      color: #ffffff;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      background: rgba(20, 25, 45, 0.95);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+      overflow: hidden;
+      animation: slideIn 0.6s ease-out;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    header {
+      background: linear-gradient(135deg, #2d3748, #4a5568);
+      color: white;
+      padding: 30px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    header::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, rgba(255, 255, 255, 0.05) 0%, transparent 70%);
+      animation: pulse 4s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 0.3; }
+      50% { transform: scale(1.1); opacity: 0.6; }
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin-bottom: 10px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .subtitle {
+      font-size: 1.1rem;
+      opacity: 0.8;
+      position: relative;
+      z-index: 1;
+    }
+
+    nav {
+      background: rgba(0, 0, 0, 0.3);
+      display: flex;
+      justify-content: center;
+      gap: 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .tab-btn {
+      background: none;
+      border: none;
+      padding: 20px 40px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+      color: #a0aec0;
+    }
+
+    .tab-btn::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      width: 0;
+      height: 3px;
+      background: linear-gradient(135deg, #63b3ed, #4299e1);
+      transition: all 0.3s ease;
+      transform: translateX(-50%);
+    }
+
+    .tab-btn:hover {
+      background: rgba(99, 179, 237, 0.1);
+      color: #63b3ed;
+    }
+
+    .tab-btn.active {
+      color: #ffffff;
+      background: rgba(99, 179, 237, 0.15);
+    }
+
+    .tab-btn.active::after {
+      width: 100%;
+    }
+
+    main {
+      padding: 40px;
+    }
+
+    .tab {
+      display: none;
+      animation: fadeIn 0.4s ease-out;
+    }
+
+    .tab.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 30px;
+      margin-bottom: 30px;
+    }
+
+    @media (max-width: 1024px) {
+      .grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+      }
+    }
+
+    .card {
+      background: rgba(45, 55, 72, 0.6);
+      border-radius: 15px;
+      padding: 30px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      transition: all 0.3s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
+      border-color: rgba(99, 179, 237, 0.3);
+    }
+
+    .card h2 {
+      color: #ffffff;
+      font-size: 1.5rem;
+      margin-bottom: 25px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .card h2::before {
+      content: '';
+      width: 4px;
+      height: 25px;
+      background: linear-gradient(135deg, #63b3ed, #4299e1);
+      border-radius: 2px;
+    }
+
+    .category-section {
+      margin-bottom: 30px;
+    }
+
+    .category-title {
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: #63b3ed;
+      margin-bottom: 15px;
+      padding: 10px 0;
+      border-bottom: 1px solid rgba(99, 179, 237, 0.3);
+    }
+
+    .product {
+      display: grid;
+      grid-template-columns: 2fr 120px 80px;
+      gap: 15px;
+      align-items: center;
+      margin: 12px 0;
+      padding: 15px;
+      background: rgba(99, 179, 237, 0.05);
+      border-radius: 10px;
+      transition: all 0.3s ease;
+      border: 1px solid rgba(99, 179, 237, 0.1);
+    }
+
+    .product:hover {
+      background: rgba(99, 179, 237, 0.1);
+      transform: translateX(5px);
+      border-color: rgba(99, 179, 237, 0.3);
+    }
+
+    .product-name {
+      font-weight: 500;
+      color: #ffffff;
+    }
+
+    .product-price {
+      font-weight: 600;
+      color: #68d391;
+      text-align: right;
+    }
+
+    .tier-badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      margin-left: 8px;
+    }
+
+    .tier-novizio { background: #a0aec0; color: #2d3748; }
+    .tier-avanzato { background: #ed8936; color: white; }
+    .tier-esperto { background: #718096; color: white; }
+    .tier-custode { background: #d69e2e; color: white; }
+    .tier-maestro { background: #4299e1; color: white; }
+
+    .product input, .settings-input, #participants {
+      padding: 12px;
+      border: 2px solid rgba(99, 179, 237, 0.3);
+      border-radius: 8px;
+      font-size: 1rem;
+      text-align: center;
+      transition: all 0.3s ease;
+      background: rgba(45, 55, 72, 0.8);
+      color: #ffffff;
+    }
+
+    .product input:focus, .settings-input:focus, #participants:focus {
+      outline: none;
+      border-color: #63b3ed;
+      box-shadow: 0 0 0 3px rgba(99, 179, 237, 0.2);
+      transform: scale(1.02);
+    }
+
+    .participants-section {
+      text-align: center;
+    }
+
+    .participants-label {
+      display: block;
+      font-weight: 600;
+      color: #ffffff;
+      margin-bottom: 15px;
+      font-size: 1.1rem;
+    }
+
+    #participants {
+      width: 120px;
+      font-size: 1.2rem;
+      font-weight: 600;
+    }
+
+    .results-card {
+      background: linear-gradient(135deg, rgba(72, 187, 120, 0.2), rgba(56, 178, 172, 0.2));
+      color: white;
+      border: 1px solid rgba(72, 187, 120, 0.3);
+    }
+
+    .results-card h2 {
+      color: white;
+      margin-bottom: 20px;
+    }
+
+    .results-card h2::before {
+      background: rgba(72, 187, 120, 0.6);
+    }
+
+    .participant-result {
+      margin: 20px 0;
+      padding: 20px;
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .participant-title {
+      font-size: 1.2rem;
+      font-weight: 600;
+      margin-bottom: 15px;
+      color: #63b3ed;
+      text-align: center;
+    }
+
+    .item-distribution {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 10px;
+      margin: 8px 0;
+      padding: 8px 12px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 6px;
+    }
+
+    .total-cost {
+      text-align: center;
+      margin-top: 15px;
+      padding: 12px;
+      background: rgba(72, 187, 120, 0.2);
+      border-radius: 8px;
+      font-weight: 600;
+      border: 1px solid rgba(72, 187, 120, 0.3);
+    }
+
+    .settings-item {
+      display: grid;
+      grid-template-columns: 2fr 120px auto;
+      gap: 15px;
+      align-items: center;
+      margin: 20px 0;
+      padding: 20px;
+      background: rgba(99, 179, 237, 0.05);
+      border-radius: 12px;
+      transition: all 0.3s ease;
+      border: 1px solid rgba(99, 179, 237, 0.1);
+    }
+
+    .settings-item:hover {
+      background: rgba(99, 179, 237, 0.1);
+      border-color: rgba(99, 179, 237, 0.3);
+    }
+
+    .settings-name {
+      font-weight: 500;
+      color: #ffffff;
+    }
+
+    .add-product-btn {
+      background: linear-gradient(135deg, #63b3ed, #4299e1);
+      color: white;
+      border: none;
+      padding: 15px 30px;
+      border-radius: 10px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin-top: 20px;
+      width: 100%;
+    }
+
+    .add-product-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 25px rgba(99, 179, 237, 0.4);
+    }
+
+    .remove-btn {
+      background: #f56565;
+      color: white;
+      border: none;
+      padding: 8px 15px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 0.9rem;
+    }
+
+    .remove-btn:hover {
+      background: #e53e3e;
+      transform: scale(1.05);
+    }
+
+    .empty-state {
+      text-align: center;
+      color: #a0aec0;
+      font-style: italic;
+      padding: 40px;
+    }
+
+    .currency::after {
+      content: ' br';
+      color: #68d391;
+      font-weight: 600;
+    }
+  </style>
 </head>
 <body>
-  <div class="overlay">
+  <div class="container">
     <header>
-      <img src="logo personale.png" alt="Logo" class="logo">
-      <h1>Abaco Tool</h1>
+      <h1>⚒️ Calcolatore Materiali</h1>
+      <p class="subtitle">Divisione intelligente di cristalli e mostri per avventurieri</p>
     </header>
 
     <nav>
-      <button class="tab-btn active" data-tab="main">Calcolatore</button>
-      <button class="tab-btn" data-tab="settings">Impostazioni</button>
+      <button class="tab-btn active" data-tab="main">📊 Calcolatore</button>
+      <button class="tab-btn" data-tab="settings">⚙️ Impostazioni</button>
     </nav>
 
     <main>
       <!-- Scheda principale -->
       <div class="tab active" id="main">
-        <div class="card">
-          <h2>Lista Prodotti</h2>
-          <div id="product-list"></div>
-        </div>
+        <div class="grid">
+          <div class="card">
+            <h2>Lista Materiali</h2>
+            <div id="product-list"></div>
+          </div>
 
-        <div class="card">
-          <h2>Partecipanti</h2>
-          <input type="number" id="participants" min="1" value="1">
-        </div>
+          <div>
+            <div class="card participants-section">
+              <h2>Partecipanti</h2>
+              <label class="participants-label">Numero di avventurieri:</label>
+              <input type="number" id="participants" min="1" value="1">
+            </div>
 
-        <div class="card total">
-          <h2>Totali</h2>
-          <p><strong>Totale:</strong> <span id="total">0</span></p>
-          <p><strong>Per partecipante:</strong> <span id="per-person">0</span></p>
+            <div class="card results-card">
+              <h2>Distribuzione</h2>
+              <div id="distribution-results"></div>
+            </div>
+          </div>
         </div>
       </div>
 
       <!-- Scheda impostazioni -->
       <div class="tab" id="settings">
         <div class="card">
-          <h2>Modifica Prezzi</h2>
+          <h2>Gestione Materiali</h2>
           <div id="settings-list"></div>
+          <button class="add-product-btn" onclick="addNewProduct()">+ Aggiungi Nuovo Materiale</button>
         </div>
       </div>
     </main>
   </div>
+
+  <script>
+    // Prodotti da cristalli e mostri
+    const defaultProducts = [
+      // Cristalli - ordinati per tier
+      { name: "Carbone", price: 2, category: "Cristalli", tier: "Novizio" },
+      { name: "Lapis", price: 1, category: "Cristalli", tier: "Novizio" },
+      { name: "Redstone", price: 1, category: "Cristalli", tier: "Novizio" },
+      { name: "Stagno grezzo", price: 15, category: "Cristalli", tier: "Novizio" },
+      { name: "Ametista", price: 1, category: "Cristalli", tier: "Avanzato" },
+      { name: "Rame grezzo", price: 18, category: "Cristalli", tier: "Avanzato" },
+      { name: "Antracite", price: 4, category: "Cristalli", tier: "Esperto" },
+      { name: "Ferro grezzo", price: 25, category: "Cristalli", tier: "Esperto" },
+      { name: "Oro grezzo", price: 34, category: "Cristalli", tier: "Custode" },
+      { name: "Withering Dust", price: 2, category: "Cristalli", tier: "Custode" },
+      
+      // Mostri - ordinati per tier
+      { name: "Carne Marcia", price: 1, category: "Mostri", tier: "Novizio" },
+      { name: "Core Fragment", price: 1, category: "Mostri", tier: "Novizio" },
+      { name: "Revival star", price: 2, category: "Mostri", tier: "Novizio" },
+      { name: "Occhio di Ragno", price: 1, category: "Mostri", tier: "Avanzato" },
+      { name: "Quarzo", price: 1, category: "Mostri", tier: "Avanzato" },
+      { name: "Therium", price: 1, category: "Mostri", tier: "Avanzato" },
+      { name: "Blaze Powder", price: 2, category: "Mostri", tier: "Esperto" },
+      { name: "Brim Powder", price: 1, category: "Mostri", tier: "Esperto" },
+      { name: "Membrana", price: 2, category: "Mostri", tier: "Esperto" },
+      { name: "Prismarine Shard", price: 1, category: "Mostri", tier: "Custode" },
+      { name: "Slime Ball", price: 3, category: "Mostri", tier: "Custode" }
+    ];
+
+    let products = [...defaultProducts.map(p => ({ ...p, qty: 0 }))];
+
+    const productList = document.getElementById("product-list");
+    const settingsList = document.getElementById("settings-list");
+    const distributionResults = document.getElementById("distribution-results");
+    const participantsInput = document.getElementById("participants");
+
+    // Gestione tab
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const tabId = btn.dataset.tab;
+        
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        
+        btn.classList.add('active');
+        document.getElementById(tabId).classList.add('active');
+        
+        if (tabId === 'settings') {
+          renderSettings();
+        }
+      });
+    });
+
+    function getTierClass(tier) {
+      return `tier-${tier.toLowerCase()}`;
+    }
+
+    // Rendering Calcolatore
+    function renderMain() {
+      productList.innerHTML = "";
+
+      const categories = [...new Set(products.map(p => p.category))];
+      
+      categories.forEach(category => {
+        const categoryDiv = document.createElement("div");
+        categoryDiv.className = "category-section";
+        
+        const categoryTitle = document.createElement("h3");
+        categoryTitle.className = "category-title";
+        categoryTitle.textContent = `Materiali da ${category}`;
+        categoryDiv.appendChild(categoryTitle);
+
+        const categoryProducts = products.filter(p => p.category === category);
+        
+        categoryProducts.forEach((p, i) => {
+          const globalIndex = products.indexOf(p);
+          const div = document.createElement("div");
+          div.className = "product";
+
+          const nameContainer = document.createElement("div");
+          const name = document.createElement("span");
+          name.className = "product-name";
+          name.textContent = p.name;
+          
+          const tierBadge = document.createElement("span");
+          tierBadge.className = `tier-badge ${getTierClass(p.tier)}`;
+          tierBadge.textContent = p.tier;
+          
+          nameContainer.appendChild(name);
+          nameContainer.appendChild(tierBadge);
+
+          const price = document.createElement("span");
+          price.className = "product-price currency";
+          price.textContent = p.price.toString();
+
+          const qty = document.createElement("input");
+          qty.type = "number";
+          qty.min = "0";
+          qty.value = p.qty;
+          qty.placeholder = "Qtà";
+
+          qty.addEventListener("input", () => {
+            products[globalIndex].qty = parseInt(qty.value) || 0;
+            updateDistribution();
+          });
+
+          div.appendChild(nameContainer);
+          div.appendChild(price);
+          div.appendChild(qty);
+          categoryDiv.appendChild(div);
+        });
+        
+        productList.appendChild(categoryDiv);
+      });
+
+      updateDistribution();
+    }
+
+    function updateDistribution() {
+      const participants = parseInt(participantsInput.value) || 1;
+      const activeItems = products.filter(p => p.qty > 0);
+      
+      if (activeItems.length === 0) {
+        distributionResults.innerHTML = '<div class="empty-state">Seleziona alcuni materiali per vedere la distribuzione</div>';
+        return;
+      }
+
+      distributionResults.innerHTML = "";
+
+      for (let i = 1; i <= participants; i++) {
+        const participantDiv = document.createElement("div");
+        participantDiv.className = "participant-result";
+        
+        const title = document.createElement("div");
+        title.className = "participant-title";
+        title.textContent = `Avventuriero ${i}`;
+        participantDiv.appendChild(title);
+
+        let totalCost = 0;
+
+        activeItems.forEach(item => {
+          const baseQuantity = Math.floor(item.qty / participants);
+          const remainder = item.qty % participants;
+          let quantity = baseQuantity;
+          
+          // Distribuisce il resto ai primi partecipanti
+          if (i <= remainder) {
+            quantity += 1;
+          }
+
+          if (quantity > 0) {
+            const itemDiv = document.createElement("div");
+            itemDiv.className = "item-distribution";
+            
+            const itemName = document.createElement("span");
+            itemName.textContent = `${item.name} x${quantity}`;
+            
+            const itemCost = document.createElement("span");
+            const cost = item.price * quantity;
+            itemCost.className = "currency";
+            itemCost.textContent = cost.toString();
+            
+            totalCost += cost;
+            
+            itemDiv.appendChild(itemName);
+            itemDiv.appendChild(itemCost);
+            participantDiv.appendChild(itemDiv);
+          }
+        });
+
+        const totalDiv = document.createElement("div");
+        totalDiv.className = "total-cost";
+        totalDiv.innerHTML = `Totale: <span class="currency">${totalCost}</span>`;
+        participantDiv.appendChild(totalDiv);
+        
+        distributionResults.appendChild(participantDiv);
+      }
+    }
+
+    // Rendering Impostazioni
+    function renderSettings() {
+      settingsList.innerHTML = "";
+
+      const categories = [...new Set(products.map(p => p.category))];
+      
+      categories.forEach(category => {
+        const categoryDiv = document.createElement("div");
+        categoryDiv.className = "category-section";
+        
+        const categoryTitle = document.createElement("h3");
+        categoryTitle.className = "category-title";
+        categoryTitle.textContent = `Materiali da ${category}`;
+        categoryDiv.appendChild(categoryTitle);
+
+        const categoryProducts = products.filter(p => p.category === category);
+        
+        categoryProducts.forEach((p) => {
+          const globalIndex = products.indexOf(p);
+          const div = document.createElement("div");
+          div.className = "settings-item";
+
+          const nameContainer = document.createElement("div");
+          const name = document.createElement("span");
+          name.className = "settings-name";
+          name.textContent = p.name;
+          
+          const tierBadge = document.createElement("span");
+          tierBadge.className = `tier-badge ${getTierClass(p.tier)}`;
+          tierBadge.textContent = p.tier;
+          
+          nameContainer.appendChild(name);
+          nameContainer.appendChild(tierBadge);
+
+          const priceInput = document.createElement("input");
+          priceInput.className = "settings-input";
+          priceInput.type = "number";
+          priceInput.min = "0";
+          priceInput.step = "1";
+          priceInput.value = p.price;
+          priceInput.placeholder = "Prezzo in br";
+
+          priceInput.addEventListener("input", () => {
+            products[globalIndex].price = parseInt(priceInput.value) || 0;
+          });
+
+          const removeBtn = document.createElement("button");
+          removeBtn.className = "remove-btn";
+          removeBtn.textContent = "✕";
+          removeBtn.onclick = () => removeProduct(globalIndex);
+
+          div.appendChild(nameContainer);
+          div.appendChild(priceInput);
+          if (products.length > 1) {
+            div.appendChild(removeBtn);
+          }
+          
+          categoryDiv.appendChild(div);
+        });
+        
+        settingsList.appendChild(categoryDiv);
+      });
+    }
+
+    function addNewProduct() {
+      const name = prompt("Nome del nuovo materiale:");
+      if (!name || !name.trim()) return;
+      
+      const category = prompt("Categoria (Cristalli/Mostri):", "Cristalli");
+      if (!category || !category.trim()) return;
+      
+              const tier = prompt("Tier (Novizio/Avanzato/Esperto/Custode):", "Novizio");
+      if (!tier || !tier.trim()) return;
+      
+      products.push({
+        name: name.trim(),
+        category: category.trim(),
+        tier: tier.trim(),
+        price: 0,
+        qty: 0
+      });
+      renderSettings();
+    }
+
+    function removeProduct(index) {
+      if (products.length > 1 && confirm("Sei sicuro di voler rimuovere questo materiale?")) {
+        products.splice(index, 1);
+        renderSettings();
+      }
+    }
+
+    // Event listeners
+    participantsInput.addEventListener("input", updateDistribution);
+
+    // Inizializzazione
+    renderMain();
+  </script>
 </body>
 </html>
