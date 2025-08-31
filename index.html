@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Abaco Tool - Calcolatore di Materiali</title>
   <link rel="icon" type="image/png" href="logo.png">
+  <link rel="shortcut icon" type="image/png" href="logo.png">
+  <link rel="apple-touch-icon" href="logo.png">
   <style>
     * {
       margin: 0;
@@ -368,211 +370,79 @@
     // Carica i prodotti dal file JSON
     async function loadProducts() {
       const productList = document.getElementById("product-list");
+      let jsonLoaded = false;
+      
+      // Tempo di caricamento hardcoded variabile (1-4 secondi)
+      const loadingTime = Math.floor(Math.random() * 3000) + 1000; // da 1000ms a 4000ms
+      
+      // Mostra sempre il messaggio di caricamento iniziale
+      productList.innerHTML = `
+        <div class="loading">
+          ⏳ Caricamento dati in corso...<br>
+          <small>Connessione al database materiali</small>
+        </div>
+      `;
+      
+      // Aspetta il tempo di caricamento simulato
+      await new Promise(resolve => setTimeout(resolve, loadingTime));
       
       try {
         // Prova prima con window.fs (ambiente Claude)
         if (window.fs && window.fs.readFile) {
           const data = await window.fs.readFile('products.json', { encoding: 'utf8' });
           defaultProducts = JSON.parse(data);
+          jsonLoaded = true;
         } else {
-          // Fallback per browser normali - carica via fetch
-          const response = await fetch('products.json');
-          if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
+          // Fallback per browser normali - carica via fetch con timeout
+          const controller = new AbortController();
+          const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 secondi timeout
+          
+          try {
+            const response = await fetch('products.json', { 
+              signal: controller.signal 
+            });
+            clearTimeout(timeoutId);
+            
+            if (!response.ok) {
+              throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            defaultProducts = await response.json();
+            jsonLoaded = true;
+          } catch (fetchError) {
+            if (fetchError.name === 'AbortError') {
+              throw new Error('Timeout: il caricamento del file JSON ha richiesto troppo tempo');
+            }
+            throw fetchError;
           }
-          defaultProducts = await response.json();
         }
         
-        products = [...defaultProducts.map(p => ({ ...p, qty: 0 }))];
-        renderMain();
+        if (jsonLoaded) {
+          products = [...defaultProducts.map(p => ({ ...p, qty: 0 }))];
+          renderMain();
+        }
       } catch (error) {
         console.error('Errore nel caricamento dei prodotti:', error);
         
-        // Usa i prodotti completi dal JSON come fallback
-        defaultProducts = [
-          {
-            "name": "Stagno grezzo",
-            "price": 12,
-            "category": "Cristalli",
-            "subcategory": "Metalli",
-            "tier": "Novizio"
-          },
-          {
-            "name": "Rame grezzo",
-            "price": 20,
-            "category": "Cristalli",
-            "subcategory": "Metalli",
-            "tier": "Avanzato"
-          },
-          {
-            "name": "Ferro grezzo",
-            "price": 25,
-            "category": "Cristalli",
-            "subcategory": "Metalli",
-            "tier": "Esperto"
-          },
-          {
-            "name": "Oro grezzo",
-            "price": 50,
-            "category": "Cristalli",
-            "subcategory": "Metalli",
-            "tier": "Custode"
-          },
-          {
-            "name": "Diamante grezzo",
-            "price": 500,
-            "category": "Cristalli",
-            "subcategory": "Metalli",
-            "tier": "Custode"
-          },
-          {
-            "name": "Argento grezzo",
-            "price": 500,
-            "category": "Cristalli",
-            "subcategory": "Metalli",
-            "tier": "Custode"
-          },
-          {
-            "name": "Carbone",
-            "price": 3,
-            "category": "Cristalli",
-            "subcategory": "Carburanti",
-            "tier": "Novizio"
-          },
-          {
-            "name": "Antracite",
-            "price": 6,
-            "category": "Cristalli",
-            "subcategory": "Carburanti",
-            "tier": "Esperto"
-          },
-          {
-            "name": "Fire Stone",
-            "price": 9,
-            "category": "Cristalli",
-            "subcategory": "Misto",
-            "tier": "Maestro"
-          },
-          {
-            "name": "Lapis",
-            "price": 1,
-            "category": "Cristalli",
-            "subcategory": "Misto",
-            "tier": "Novizio"
-          },
-          {
-            "name": "Redstone",
-            "price": 1,
-            "category": "Cristalli",
-            "subcategory": "Misto",
-            "tier": "Novizio"
-          },
-          {
-            "name": "Ametista",
-            "price": 1.5,
-            "category": "Cristalli",
-            "subcategory": "Misto",
-            "tier": "Avanzato"
-          },
-          {
-            "name": "Withering Dust",
-            "price": 2.5,
-            "category": "Cristalli",
-            "subcategory": "Misto",
-            "tier": "Custode"
-          },
-          {
-            "name": "Core Fragment",
-            "price": 1,
-            "category": "Aberrazioni",
-            "tier": "Tutti"
-          },
-          {
-            "name": "Revival star",
-            "price": 2,
-            "category": "Aberrazioni",
-            "tier": "Tutti"
-          },
-          {
-            "name": "Brim Powder",
-            "price": 1,
-            "category": "Aberrazioni",
-            "tier": "Novizio"
-          },
-          {
-            "name": "Carne Marcia",
-            "price": 1,
-            "category": "Aberrazioni",
-            "tier": "Novizio"
-          },
-          {
-            "name": "Occhio di Ragno",
-            "price": 1,
-            "category": "Aberrazioni",
-            "tier": "Avanzato"
-          },
-          {
-            "name": "Quarzo",
-            "price": 1,
-            "category": "Aberrazioni",
-            "tier": "Avanzato"
-          },
-          {
-            "name": "Therium",
-            "price": 1,
-            "category": "Aberrazioni",
-            "tier": "Avanzato"
-          },
-          {
-            "name": "Blaze Powder",
-            "price": 2,
-            "category": "Aberrazioni",
-            "tier": "Esperto"
-          },
-          {
-            "name": "Membrana",
-            "price": 2,
-            "category": "Aberrazioni",
-            "tier": "Esperto"
-          },
-          {
-            "name": "Prismarine Shard",
-            "price": 2,
-            "category": "Aberrazioni",
-            "tier": "Custode"
-          },
-          {
-            "name": "Slime Ball",
-            "price": 2,
-            "category": "Aberrazioni",
-            "tier": "Custode"
-          },
-          {
-            "name": "Lost Soul",
-            "price": 5,
-            "category": "Aberrazioni",
-            "tier": "Maestro"
-          },
-          {
-            "name": "Demon Heart",
-            "price": 5,
-            "category": "Aberrazioni",
-            "tier": "Maestro"
-          }
-        ];
-        
-        products = [...defaultProducts.map(p => ({ ...p, qty: 0 }))];
-        
+        // Mostra messaggio di caricamento aggiuntivo se fallisce
         productList.innerHTML = `
-          <div class="error">
-            ⚠️ File products.json non trovato - usando dati predefiniti<br>
-            <small>Per usare un file JSON esterno, assicurati che sia nella stessa cartella</small>
+          <div class="loading">
+            ⏳ Caricamento dati in corso...<br>
+            <small>Tentativo di connessione al database materiali</small>
           </div>
         `;
         
+        // Aspetta 10 secondi prima di mostrare l'errore finale
         setTimeout(() => {
-          renderMain();
-        }, 2000);
+          productList.innerHTML = `
+            <div class="error">
+              ❌ Impossibile caricare i dati dei materiali<br>
+              <br>
+              <strong>Per assistenza contatta:</strong><br>
+              🎮 Discord: <strong>picciobeffa</strong><br>
+              📱 Telegram: <strong>@piccionenberg</strong>
+            </div>
+          `;
+        }, 10000); // Aspetta 10 secondi prima di mostrare l'errore
       }
     }
 
