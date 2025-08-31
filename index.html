@@ -287,8 +287,19 @@
       padding: 40px;
     }
 
-    .currency::after {
+    .currency-br::after {
       content: ' br';
+      color: #68d391;
+      font-weight: 600;
+    }
+    
+    .currency-a::after {
+      content: ' a';
+      color: #c0c0c0;
+      font-weight: 600;
+    }
+    
+    .currency-mixed {
       color: #68d391;
       font-weight: 600;
     }
@@ -357,14 +368,39 @@
       { name: "Slime Ball", price: 2, category: "Aberrazioni", tier: "Custode" }
     ];
 
-    let products = [...defaultProducts.map(p => ({ ...p, qty: 0 }))];
+    function getTierClass(tier) {
+      return `tier-${tier.toLowerCase()}`;
+    }
 
-    const productList = document.getElementById("product-list");
+    let products = [...defaultProducts.map(p => ({ ...p, qty: 0 }))];
     const distributionResults = document.getElementById("distribution-results");
     const participantsInput = document.getElementById("participants");
 
-    function getTierClass(tier) {
-      return `tier-${tier.toLowerCase()}`;
+    // Funzione per formattare la valuta (conversione automatica br -> a)
+    function formatCurrency(value) {
+      if (value >= 100) {
+        const argenti = Math.floor(value / 100);
+        const bronzini = value % 100;
+        
+        if (bronzini === 0) {
+          return `${argenti}a`;
+        } else {
+          const bronziniDisplay = (bronzini % 1 === 0) ? bronzini.toString() : bronzini.toFixed(1);
+          return `${argenti}a ${bronziniDisplay}br`;
+        }
+      } else {
+        const display = (value % 1 === 0) ? value.toString() : value.toFixed(1);
+        return `${display}br`;
+      }
+    }
+
+    // Funzione per applicare la classe CSS corretta in base al valore
+    function getCurrencyClass(value) {
+      if (value >= 100) {
+        return 'currency-mixed';
+      } else {
+        return 'currency-br';
+      }
     }
 
     function renderMain() {
@@ -442,7 +478,7 @@
       nameContainer.appendChild(tierBadge);
 
       const price = document.createElement("span");
-      price.className = "product-price currency";
+      price.className = "product-price currency-br";
       price.textContent = (p.price % 1 === 0) ? p.price.toString() : p.price.toFixed(1);
 
       const qty = document.createElement("input");
@@ -543,8 +579,8 @@
           
           const itemCost = document.createElement("span");
           const cost = assigned.price * assigned.qty;
-          itemCost.className = "currency";
-          itemCost.textContent = (cost % 1 === 0) ? cost.toString() : cost.toFixed(1);
+          itemCost.className = getCurrencyClass(cost);
+          itemCost.textContent = formatCurrency(cost);
           
           itemDiv.appendChild(itemName);
           itemDiv.appendChild(itemCost);
