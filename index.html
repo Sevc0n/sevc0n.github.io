@@ -83,68 +83,8 @@
       z-index: 1;
     }
 
-    nav {
-      background: rgba(0, 0, 0, 0.3);
-      display: flex;
-      justify-content: center;
-      gap: 0;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    }
-
-    .tab-btn {
-      background: none;
-      border: none;
-      padding: 20px 40px;
-      font-size: 1.1rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      position: relative;
-      color: #a0aec0;
-    }
-
-    .tab-btn::after {
-      content: '';
-      position: absolute;
-      bottom: 0;
-      left: 50%;
-      width: 0;
-      height: 3px;
-      background: linear-gradient(135deg, #63b3ed, #4299e1);
-      transition: all 0.3s ease;
-      transform: translateX(-50%);
-    }
-
-    .tab-btn:hover {
-      background: rgba(99, 179, 237, 0.1);
-      color: #63b3ed;
-    }
-
-    .tab-btn.active {
-      color: #ffffff;
-      background: rgba(99, 179, 237, 0.15);
-    }
-
-    .tab-btn.active::after {
-      width: 100%;
-    }
-
     main {
       padding: 40px;
-    }
-
-    .tab {
-      display: none;
-      animation: fadeIn 0.4s ease-out;
-    }
-
-    .tab.active {
-      display: block;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
     }
 
     .grid {
@@ -253,7 +193,7 @@
     .tier-maestro { background: #4299e1; color: white; }
     .tier-tutti { background: linear-gradient(135deg, #667eea, #764ba2); color: white; }
 
-    .product input, .settings-input, #participants {
+    .product input, #participants {
       padding: 12px;
       border: 2px solid rgba(99, 179, 237, 0.3);
       border-radius: 8px;
@@ -264,7 +204,7 @@
       color: #ffffff;
     }
 
-    .product input:focus, .settings-input:focus, #participants:focus {
+    .product input:focus, #participants:focus {
       outline: none;
       border-color: #63b3ed;
       box-shadow: 0 0 0 3px rgba(99, 179, 237, 0.2);
@@ -340,64 +280,6 @@
       border: 1px solid rgba(72, 187, 120, 0.3);
     }
 
-    .settings-item {
-      display: grid;
-      grid-template-columns: 2fr 120px auto;
-      gap: 15px;
-      align-items: center;
-      margin: 20px 0;
-      padding: 20px;
-      background: rgba(99, 179, 237, 0.05);
-      border-radius: 12px;
-      transition: all 0.3s ease;
-      border: 1px solid rgba(99, 179, 237, 0.1);
-    }
-
-    .settings-item:hover {
-      background: rgba(99, 179, 237, 0.1);
-      border-color: rgba(99, 179, 237, 0.3);
-    }
-
-    .settings-name {
-      font-weight: 500;
-      color: #ffffff;
-    }
-
-    .add-product-btn {
-      background: linear-gradient(135deg, #63b3ed, #4299e1);
-      color: white;
-      border: none;
-      padding: 15px 30px;
-      border-radius: 10px;
-      font-size: 1rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      margin-top: 20px;
-      width: 100%;
-    }
-
-    .add-product-btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 10px 25px rgba(99, 179, 237, 0.4);
-    }
-
-    .remove-btn {
-      background: #f56565;
-      color: white;
-      border: none;
-      padding: 8px 15px;
-      border-radius: 6px;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      font-size: 0.9rem;
-    }
-
-    .remove-btn:hover {
-      background: #e53e3e;
-      transform: scale(1.05);
-    }
-
     .empty-state {
       text-align: center;
       color: #a0aec0;
@@ -419,155 +301,72 @@
       <p class="subtitle">Divisione intelligente di cristalli e aberrazioni per avventurieri</p>
     </header>
 
-    <nav>
-      <button class="tab-btn active" data-tab="main">📊 Calcolatore</button>
-      <button class="tab-btn" data-tab="settings">⚙️ Impostazioni</button>
-    </nav>
-
     <main>
-      <!-- Scheda principale -->
-      <div class="tab active" id="main">
-        <div class="grid">
-          <div class="card">
-            <h2>Lista Materiali</h2>
-            <div id="product-list"></div>
-          </div>
-
-          <div>
-            <div class="card participants-section">
-              <h2>Partecipanti</h2>
-              <label class="participants-label">Numero di partecipanti:</label>
-              <input type="number" id="participants" min="1" value="1">
-            </div>
-
-            <div class="card results-card">
-              <h2>Distribuzione</h2>
-              <div id="distribution-results"></div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Scheda impostazioni -->
-      <div class="tab" id="settings">
+      <div class="grid">
         <div class="card">
-          <h2>Gestione Materiali</h2>
-          <div id="settings-list"></div>
-          <button class="add-product-btn" onclick="addNewProduct()">+ Aggiungi Nuovo Materiale</button>
+          <h2>Lista Materiali</h2>
+          <div id="product-list"></div>
+        </div>
+
+        <div>
+          <div class="card participants-section">
+            <h2>Partecipanti</h2>
+            <label class="participants-label">Numero di partecipanti:</label>
+            <input type="number" id="participants" min="1" value="1">
+          </div>
+
+          <div class="card results-card">
+            <h2>Distribuzione</h2>
+            <div id="distribution-results"></div>
+          </div>
         </div>
       </div>
     </main>
   </div>
 
   <script>
-    let products = [];
-    let defaultProducts = [];
+    // Prodotti con prezzi aggiornati
+    const defaultProducts = [
+      // Cristalli - Metalli
+      { name: "Stagno grezzo", price: 12, category: "Cristalli", subcategory: "Metalli", tier: "Novizio" },
+      { name: "Rame grezzo", price: 20, category: "Cristalli", subcategory: "Metalli", tier: "Avanzato" },
+      { name: "Ferro grezzo", price: 25, category: "Cristalli", subcategory: "Metalli", tier: "Esperto" },
+      { name: "Oro grezzo", price: 50, category: "Cristalli", subcategory: "Metalli", tier: "Custode" },
+      
+      // Cristalli - Carburanti
+      { name: "Carbone", price: 3, category: "Cristalli", subcategory: "Carburanti", tier: "Novizio" },
+      { name: "Antracite", price: 6, category: "Cristalli", subcategory: "Carburanti", tier: "Esperto" },
+      
+      // Cristalli - Misto
+      { name: "Lapis", price: 1, category: "Cristalli", subcategory: "Misto", tier: "Novizio" },
+      { name: "Redstone", price: 1, category: "Cristalli", subcategory: "Misto", tier: "Novizio" },
+      { name: "Ametista", price: 1.5, category: "Cristalli", subcategory: "Misto", tier: "Avanzato" },
+      { name: "Withering Dust", price: 2.5, category: "Cristalli", subcategory: "Misto", tier: "Custode" },
+      
+      // Aberrazioni
+      { name: "Core Fragment", price: 1, category: "Aberrazioni", tier: "Tutti" },
+      { name: "Brim Powder", price: 1, category: "Aberrazioni", tier: "Novizio" },
+      { name: "Carne Marcia", price: 1, category: "Aberrazioni", tier: "Novizio" },
+      { name: "Revival star", price: 2, category: "Aberrazioni", tier: "Novizio" },
+      { name: "Occhio di Ragno", price: 1, category: "Aberrazioni", tier: "Avanzato" },
+      { name: "Quarzo", price: 1, category: "Aberrazioni", tier: "Avanzato" },
+      { name: "Therium", price: 1, category: "Aberrazioni", tier: "Avanzato" },
+      { name: "Blaze Powder", price: 2, category: "Aberrazioni", tier: "Esperto" },
+      { name: "Membrana", price: 2, category: "Aberrazioni", tier: "Esperto" },
+      { name: "Prismarine Shard", price: 2, category: "Aberrazioni", tier: "Custode" },
+      { name: "Slime Ball", price: 2, category: "Aberrazioni", tier: "Custode" }
+    ];
 
-    // Carica i prodotti dal file JSON
-    async function loadProductsFromJSON() {
-      try {
-        const response = await fetch('./products.json');
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        defaultProducts = await response.json();
-        console.log('Prodotti caricati dal file JSON:', defaultProducts.length);
-        return defaultProducts;
-      } catch (error) {
-        console.warn('Impossibile caricare products.json, uso prodotti predefiniti:', error);
-        // Fallback con prodotti predefiniti incorporati
-        defaultProducts = [
-          { name: "Stagno grezzo", price: 12, category: "Cristalli", subcategory: "Metalli", tier: "Novizio" },
-          { name: "Rame grezzo", price: 20, category: "Cristalli", subcategory: "Metalli", tier: "Avanzato" },
-          { name: "Ferro grezzo", price: 25, category: "Cristalli", subcategory: "Metalli", tier: "Esperto" },
-          { name: "Oro grezzo", price: 50, category: "Cristalli", subcategory: "Metalli", tier: "Custode" },
-          { name: "Carbone", price: 3, category: "Cristalli", subcategory: "Carburanti", tier: "Novizio" },
-          { name: "Antracite", price: 6, category: "Cristalli", subcategory: "Carburanti", tier: "Esperto" },
-          { name: "Lapis", price: 1, category: "Cristalli", subcategory: "Misto", tier: "Novizio" },
-          { name: "Redstone", price: 1, category: "Cristalli", subcategory: "Misto", tier: "Novizio" },
-          { name: "Ametista", price: 1.5, category: "Cristalli", subcategory: "Misto", tier: "Avanzato" },
-          { name: "Withering Dust", price: 2.5, category: "Cristalli", subcategory: "Misto", tier: "Custode" },
-          { name: "Core Fragment", price: 1, category: "Aberrazioni", tier: "Tutti" },
-          { name: "Brim Powder", price: 1, category: "Aberrazioni", tier: "Novizio" },
-          { name: "Carne Marcia", price: 1, category: "Aberrazioni", tier: "Novizio" },
-          { name: "Revival star", price: 2, category: "Aberrazioni", tier: "Novizio" },
-          { name: "Occhio di Ragno", price: 1, category: "Aberrazioni", tier: "Avanzato" },
-          { name: "Quarzo", price: 1, category: "Aberrazioni", tier: "Avanzato" },
-          { name: "Therium", price: 1, category: "Aberrazioni", tier: "Avanzato" },
-          { name: "Blaze Powder", price: 2, category: "Aberrazioni", tier: "Esperto" },
-          { name: "Membrana", price: 2, category: "Aberrazioni", tier: "Esperto" },
-          { name: "Prismarine Shard", price: 2, category: "Aberrazioni", tier: "Custode" },
-          { name: "Slime Ball", price: 2, category: "Aberrazioni", tier: "Custode" }
-        ];
-        return defaultProducts;
-      }
-    }
+    let products = [...defaultProducts.map(p => ({ ...p, qty: 0 }))];
 
     const productList = document.getElementById("product-list");
-    const settingsList = document.getElementById("settings-list");
     const distributionResults = document.getElementById("distribution-results");
     const participantsInput = document.getElementById("participants");
-
-    function loadProductsFromStorage() {
-      try {
-        const stored = JSON.parse(window.localStorage?.getItem('abacoProducts') || 'null');
-        if (stored && Array.isArray(stored)) {
-          return stored.map(p => ({ ...p, qty: 0 })); // Reset quantities on load
-        }
-      } catch (e) {
-        console.log('Nessun salvataggio trovato, uso prodotti predefiniti');
-      }
-      return [...defaultProducts.map(p => ({ ...p, qty: 0 }))];
-    }
-
-    function saveProductsToStorage() {
-      try {
-        const productsToSave = products.map(({ qty, ...rest }) => rest); // Save without quantities
-        window.localStorage?.setItem('abacoProducts', JSON.stringify(productsToSave));
-        console.log('Prodotti salvati');
-      } catch (e) {
-        console.log('Impossibile salvare i prodotti');
-      }
-    }
-
-    // Inizializza l'applicazione dopo aver caricato i prodotti
-    async function initializeApp() {
-      await loadProductsFromJSON();
-      
-      // Carica i prodotti dal localStorage o usa quelli predefiniti
-      products = loadProductsFromStorage();
-      
-      // Se non ci sono prodotti salvati, usa quelli dal JSON
-      if (products.length === 0 || products.every(p => !p.name)) {
-        products = [...defaultProducts.map(p => ({ ...p, qty: 0 }))];
-      }
-      
-      renderMain();
-      console.log('Applicazione inizializzata con', products.length, 'prodotti');
-    }
-
-    // Gestione tab
-    document.querySelectorAll('.tab-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const tabId = btn.dataset.tab;
-        
-        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-        
-        btn.classList.add('active');
-        document.getElementById(tabId).classList.add('active');
-        
-        if (tabId === 'settings') {
-          renderSettings();
-        }
-      });
-    });
 
     function getTierClass(tier) {
       return `tier-${tier.toLowerCase()}`;
     }
 
-    // Rendering Calcolatore
     function renderMain() {
       productList.innerHTML = "";
 
@@ -610,7 +409,7 @@
             categoryDiv.appendChild(subcategoryDiv);
           });
         } else {
-          // Per altre categorie, usa il vecchio sistema
+          // Per altre categorie, mostra direttamente i prodotti
           const categoryProducts = products.filter(p => p.category === category);
           
           categoryProducts.forEach((p) => {
@@ -700,7 +499,7 @@
           assignedValue += 1;
         }
 
-        // Ora distribuiamo gli oggetti per raggiungere questo valore
+        // Distribuisci gli oggetti per raggiungere questo valore
         let currentValue = 0;
         const itemsAssigned = [];
 
@@ -731,7 +530,7 @@
             }
           }
           
-          if (!assigned) break; // Non possiamo aggiungere più oggetti senza superare il valore
+          if (!assigned) break;
         }
 
         // Mostra gli oggetti assegnati
@@ -762,40 +561,11 @@
       }
     }
 
-    // Rendering Impostazioni
-    function renderSettings() {
-      settingsList.innerHTML = "";
+    // Event listeners
+    participantsInput.addEventListener("input", updateDistribution);
 
-      const categories = [...new Set(products.map(p => p.category))];
-      
-      categories.forEach(category => {
-        const categoryDiv = document.createElement("div");
-        categoryDiv.className = "category-section";
-        
-        const categoryTitle = document.createElement("h3");
-        categoryTitle.className = "category-title";
-        categoryTitle.textContent = `Materiali dai ${category}`;
-        categoryDiv.appendChild(categoryTitle);
-
-        if (category === "Cristalli") {
-          // Per i cristalli, raggruppa per sottocategorie
-          const subcategories = [...new Set(products.filter(p => p.category === category).map(p => p.subcategory))];
-          
-          subcategories.forEach(subcategory => {
-            const subcategoryDiv = document.createElement("div");
-            subcategoryDiv.style.marginLeft = "20px";
-            subcategoryDiv.style.marginBottom = "20px";
-            
-            const subcategoryTitle = document.createElement("h4");
-            subcategoryTitle.style.color = "#a0aec0";
-            subcategoryTitle.style.fontSize = "1rem";
-            subcategoryTitle.style.marginBottom = "10px";
-            subcategoryTitle.style.fontWeight = "500";
-            subcategoryTitle.textContent = subcategory;
-            subcategoryDiv.appendChild(subcategoryTitle);
-            
-            const subcategoryProducts = products.filter(p => p.category === category && p.subcategory === subcategory);
-            
-            subcategoryProducts.forEach((p) => {
-              const globalIndex = products.indexOf(p);
-              const
+    // Inizializzazione
+    renderMain();
+  </script>
+</body>
+</html>
