@@ -589,8 +589,8 @@
 
         const totalDiv = document.createElement("div");
         totalDiv.className = "total-cost";
-        const displayValue = (currentValue % 1 === 0) ? currentValue.toString() : currentValue.toFixed(1);
-        totalDiv.innerHTML = `Totale: <span class="currency">${displayValue}</span>`;
+        const formattedTotal = formatCurrency(currentValue);
+        totalDiv.innerHTML = `Totale: <span class="${getCurrencyClass(currentValue)}">${formattedTotal}</span>`;
         participantDiv.appendChild(totalDiv);
         
         distributionResults.appendChild(participantDiv);
