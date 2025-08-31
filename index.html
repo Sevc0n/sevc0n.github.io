@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Abaco Abisso - by piccionenberg</title>
+  <title>Abaco Tool - Calcolatore di Materiali</title>
   <style>
     * {
       margin: 0;
@@ -416,7 +416,7 @@
   <div class="container">
     <header>
       <h1>⚒️ Abaco per Divisione Abisso</h1>
-      <p class="subtitle">Divisione intelligente di cristalli e aberrazioni per abisso</p>
+      <p class="subtitle">Divisione intelligente di cristalli e aberrazioni per avventurieri</p>
     </header>
 
     <nav>
@@ -474,15 +474,15 @@
       
       // Cristalli - Misto
       { name: "Lapis", price: 1, category: "Cristalli", subcategory: "Misto", tier: "Novizio" },
-      { name: "Redstone", price: 1, category: "Cristalli", subcategory: "Carburanti", tier: "Novizio" }, 
-      { name: "Ametista", price: 1, category: "Cristalli", subcategory: "Misto", tier: "Avanzato" },     
-      { name: "Withering Dust", price: 2, category: "Cristalli", subcategory: "Carburanti", tier: "Custode" },
+      { name: "Redstone", price: 1, category: "Cristalli", subcategory: "Misto", tier: "Novizio" },
+      { name: "Ametista", price: 1, category: "Cristalli", subcategory: "Misto", tier: "Avanzato" },
+      { name: "Withering Dust", price: 2, category: "Cristalli", subcategory: "Misto", tier: "Custode" },
       
       // Aberrazioni - ordinati per tier (Core Fragment con tier "Tutti")
       { name: "Core Fragment", price: 1, category: "Aberrazioni", tier: "Tutti" },
-      { name: "Revival star", price: 2, category: "Aberrazioni", tier: "Tutti" },
       { name: "Brim Powder", price: 1, category: "Aberrazioni", tier: "Novizio" },
       { name: "Carne Marcia", price: 1, category: "Aberrazioni", tier: "Novizio" },
+      { name: "Revival star", price: 2, category: "Aberrazioni", tier: "Novizio" },
       { name: "Occhio di Ragno", price: 1, category: "Aberrazioni", tier: "Avanzato" },
       { name: "Quarzo", price: 1, category: "Aberrazioni", tier: "Avanzato" },
       { name: "Therium", price: 1, category: "Aberrazioni", tier: "Avanzato" },
@@ -495,6 +495,27 @@
     let products = [...defaultProducts.map(p => ({ ...p, qty: 0 }))];
 
     const productList = document.getElementById("product-list");
+    function loadProductsFromStorage() {
+      try {
+        const stored = JSON.parse(window.localStorage?.getItem('abacoProducts') || 'null');
+        if (stored && Array.isArray(stored)) {
+          return stored.map(p => ({ ...p, qty: 0 })); // Reset quantities on load
+        }
+      } catch (e) {
+        console.log('Nessun salvataggio trovato, uso prodotti predefiniti');
+      }
+      return [...defaultProducts.map(p => ({ ...p, qty: 0 }))];
+    }
+
+    function saveProductsToStorage() {
+      try {
+        const productsToSave = products.map(({ qty, ...rest }) => rest); // Save without quantities
+        window.localStorage?.setItem('abacoProducts', JSON.stringify(productsToSave));
+        console.log('Prodotti salvati');
+      } catch (e) {
+        console.log('Impossibile salvare i prodotti');
+      }
+    }
     const settingsList = document.getElementById("settings-list");
     const distributionResults = document.getElementById("distribution-results");
     const participantsInput = document.getElementById("participants");
@@ -626,6 +647,15 @@
         return;
       }
 
+      // Calcola il valore totale
+      let totalValue = 0;
+      activeItems.forEach(item => {
+        totalValue += item.price * item.qty;
+      });
+
+      const valuePerParticipant = Math.floor(totalValue / participants);
+      const remainingValue = totalValue % participants;
+
       distributionResults.innerHTML = "";
 
       for (let i = 1; i <= participants; i++) {
@@ -637,41 +667,68 @@
         title.textContent = `Partecipante ${i}`;
         participantDiv.appendChild(title);
 
-        let totalCost = 0;
+        let assignedValue = valuePerParticipant;
+        
+        // Distribuisce il resto ai primi partecipanti
+        if (i <= remainingValue) {
+          assignedValue += 1;
+        }
 
-        activeItems.forEach(item => {
-          const baseQuantity = Math.floor(item.qty / participants);
-          const remainder = item.qty % participants;
-          let quantity = baseQuantity;
+        // Ora distribuiamo gli oggetti per raggiungere questo valore
+        let currentValue = 0;
+        const itemsAssigned = [];
+
+        // Copia gli oggetti disponibili per la distribuzione
+        const availableItems = activeItems.map(item => ({
+          ...item,
+          remaining: item.qty
+        }));
+
+        // Algoritmo greedy per assegnare oggetti
+        availableItems.sort((a, b) => a.price - b.price); // Inizia dai meno costosi
+
+        while (currentValue < assignedValue && availableItems.some(item => item.remaining > 0)) {
+          let assigned = false;
           
-          // Distribuisce il resto ai primi partecipanti
-          if (i <= remainder) {
-            quantity += 1;
+          for (let item of availableItems) {
+            if (item.remaining > 0 && currentValue + item.price <= assignedValue) {
+              const existing = itemsAssigned.find(assigned => assigned.name === item.name);
+              if (existing) {
+                existing.qty++;
+              } else {
+                itemsAssigned.push({ name: item.name, qty: 1, price: item.price });
+              }
+              item.remaining--;
+              currentValue += item.price;
+              assigned = true;
+              break;
+            }
           }
+          
+          if (!assigned) break; // Non possiamo aggiungere più oggetti senza superare il valore
+        }
 
-          if (quantity > 0) {
-            const itemDiv = document.createElement("div");
-            itemDiv.className = "item-distribution";
-            
-            const itemName = document.createElement("span");
-            itemName.textContent = `${item.name} x${quantity}`;
-            
-            const itemCost = document.createElement("span");
-            const cost = item.price * quantity;
-            itemCost.className = "currency";
-            itemCost.textContent = cost.toString();
-            
-            totalCost += cost;
-            
-            itemDiv.appendChild(itemName);
-            itemDiv.appendChild(itemCost);
-            participantDiv.appendChild(itemDiv);
-          }
+        // Mostra gli oggetti assegnati
+        itemsAssigned.forEach(assigned => {
+          const itemDiv = document.createElement("div");
+          itemDiv.className = "item-distribution";
+          
+          const itemName = document.createElement("span");
+          itemName.textContent = `${assigned.name} x${assigned.qty}`;
+          
+          const itemCost = document.createElement("span");
+          const cost = assigned.price * assigned.qty;
+          itemCost.className = "currency";
+          itemCost.textContent = cost.toString();
+          
+          itemDiv.appendChild(itemName);
+          itemDiv.appendChild(itemCost);
+          participantDiv.appendChild(itemDiv);
         });
 
         const totalDiv = document.createElement("div");
         totalDiv.className = "total-cost";
-        totalDiv.innerHTML = `Totale: <span class="currency">${totalCost}</span>`;
+        totalDiv.innerHTML = `Totale: <span class="currency">${currentValue}</span>`;
         participantDiv.appendChild(totalDiv);
         
         distributionResults.appendChild(participantDiv);
@@ -761,6 +818,7 @@
 
       priceInput.addEventListener("input", () => {
         products[globalIndex].price = parseInt(priceInput.value) || 0;
+        saveProductsToStorage(); // Salva quando il prezzo cambia
       });
 
       const removeBtn = document.createElement("button");
