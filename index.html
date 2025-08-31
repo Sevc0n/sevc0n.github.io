@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Abaco Tool - Calcolatore di Materiali</title>
+  <link rel="icon" type="image/png" href="logo.png">
   <style>
     * {
       margin: 0;
@@ -287,14 +288,12 @@
       padding: 40px;
     }
 
-    .currency-br::after {
-      content: ' br';
+    .currency-br {
       color: #68d391;
       font-weight: 600;
     }
     
-    .currency-a::after {
-      content: ' a';
+    .currency-a {
       color: #c0c0c0;
       font-weight: 600;
     }
@@ -303,12 +302,35 @@
       color: #68d391;
       font-weight: 600;
     }
+
+    .logo {
+      width: 40px;
+      height: 40px;
+      margin-right: 15px;
+      vertical-align: middle;
+    }
+
+    .loading {
+      text-align: center;
+      color: #a0aec0;
+      padding: 40px;
+      font-style: italic;
+    }
+
+    .error {
+      text-align: center;
+      color: #f56565;
+      padding: 20px;
+      background: rgba(245, 101, 101, 0.1);
+      border-radius: 8px;
+      border: 1px solid rgba(245, 101, 101, 0.3);
+    }
   </style>
 </head>
 <body>
   <div class="container">
     <header>
-      <h1>⚒️ Abaco per Divisione Abisso</h1>
+      <h1><img src="logo.png" alt="Abaco Logo" class="logo" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline';">⚒️ Abaco per Divisione Abisso</h1>
       <p class="subtitle">Divisione intelligente di cristalli e aberrazioni per avventurieri</p>
     </header>
 
@@ -316,7 +338,9 @@
       <div class="grid">
         <div class="card">
           <h2>Lista Materiali</h2>
-          <div id="product-list"></div>
+          <div id="product-list">
+            <div class="loading">Caricamento materiali in corso...</div>
+          </div>
         </div>
 
         <div>
@@ -336,45 +360,225 @@
   </div>
 
   <script>
-    // Prodotti con prezzi aggiornati
-    const defaultProducts = [
-      // Cristalli - Metalli
-      { name: "Stagno grezzo", price: 12, category: "Cristalli", subcategory: "Metalli", tier: "Novizio" },
-      { name: "Rame grezzo", price: 20, category: "Cristalli", subcategory: "Metalli", tier: "Avanzato" },
-      { name: "Ferro grezzo", price: 25, category: "Cristalli", subcategory: "Metalli", tier: "Esperto" },
-      { name: "Oro grezzo", price: 50, category: "Cristalli", subcategory: "Metalli", tier: "Custode" },
-      
-      // Cristalli - Carburanti
-      { name: "Carbone", price: 3, category: "Cristalli", subcategory: "Carburanti", tier: "Novizio" },
-      { name: "Antracite", price: 6, category: "Cristalli", subcategory: "Carburanti", tier: "Esperto" },
-      
-      // Cristalli - Misto
-      { name: "Lapis", price: 1, category: "Cristalli", subcategory: "Misto", tier: "Novizio" },
-      { name: "Redstone", price: 1, category: "Cristalli", subcategory: "Misto", tier: "Novizio" },
-      { name: "Ametista", price: 1.5, category: "Cristalli", subcategory: "Misto", tier: "Avanzato" },
-      { name: "Withering Dust", price: 2.5, category: "Cristalli", subcategory: "Misto", tier: "Custode" },
-      
-      // Aberrazioni
-      { name: "Core Fragment", price: 1, category: "Aberrazioni", tier: "Tutti" },
-      { name: "Brim Powder", price: 1, category: "Aberrazioni", tier: "Novizio" },
-      { name: "Carne Marcia", price: 1, category: "Aberrazioni", tier: "Novizio" },
-      { name: "Revival star", price: 2, category: "Aberrazioni", tier: "Novizio" },
-      { name: "Occhio di Ragno", price: 1, category: "Aberrazioni", tier: "Avanzato" },
-      { name: "Quarzo", price: 1, category: "Aberrazioni", tier: "Avanzato" },
-      { name: "Therium", price: 1, category: "Aberrazioni", tier: "Avanzato" },
-      { name: "Blaze Powder", price: 2, category: "Aberrazioni", tier: "Esperto" },
-      { name: "Membrana", price: 2, category: "Aberrazioni", tier: "Esperto" },
-      { name: "Prismarine Shard", price: 2, category: "Aberrazioni", tier: "Custode" },
-      { name: "Slime Ball", price: 2, category: "Aberrazioni", tier: "Custode" }
-    ];
-
-    // Inizializza i prodotti
-    let products = [...defaultProducts.map(p => ({ ...p, qty: 0 }))];
-
-    // Elementi DOM
-    const productList = document.getElementById("product-list");
+    let defaultProducts = [];
+    let products = [];
     const distributionResults = document.getElementById("distribution-results");
     const participantsInput = document.getElementById("participants");
+
+    // Carica i prodotti dal file JSON
+    async function loadProducts() {
+      const productList = document.getElementById("product-list");
+      
+      try {
+        // Prova prima con window.fs (ambiente Claude)
+        if (window.fs && window.fs.readFile) {
+          const data = await window.fs.readFile('products.json', { encoding: 'utf8' });
+          defaultProducts = JSON.parse(data);
+        } else {
+          // Fallback per browser normali - carica via fetch
+          const response = await fetch('products.json');
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+          defaultProducts = await response.json();
+        }
+        
+        products = [...defaultProducts.map(p => ({ ...p, qty: 0 }))];
+        renderMain();
+      } catch (error) {
+        console.error('Errore nel caricamento dei prodotti:', error);
+        
+        // Usa i prodotti completi dal JSON come fallback
+        defaultProducts = [
+          {
+            "name": "Stagno grezzo",
+            "price": 12,
+            "category": "Cristalli",
+            "subcategory": "Metalli",
+            "tier": "Novizio"
+          },
+          {
+            "name": "Rame grezzo",
+            "price": 20,
+            "category": "Cristalli",
+            "subcategory": "Metalli",
+            "tier": "Avanzato"
+          },
+          {
+            "name": "Ferro grezzo",
+            "price": 25,
+            "category": "Cristalli",
+            "subcategory": "Metalli",
+            "tier": "Esperto"
+          },
+          {
+            "name": "Oro grezzo",
+            "price": 50,
+            "category": "Cristalli",
+            "subcategory": "Metalli",
+            "tier": "Custode"
+          },
+          {
+            "name": "Diamante grezzo",
+            "price": 500,
+            "category": "Cristalli",
+            "subcategory": "Metalli",
+            "tier": "Custode"
+          },
+          {
+            "name": "Argento grezzo",
+            "price": 500,
+            "category": "Cristalli",
+            "subcategory": "Metalli",
+            "tier": "Custode"
+          },
+          {
+            "name": "Carbone",
+            "price": 3,
+            "category": "Cristalli",
+            "subcategory": "Carburanti",
+            "tier": "Novizio"
+          },
+          {
+            "name": "Antracite",
+            "price": 6,
+            "category": "Cristalli",
+            "subcategory": "Carburanti",
+            "tier": "Esperto"
+          },
+          {
+            "name": "Fire Stone",
+            "price": 9,
+            "category": "Cristalli",
+            "subcategory": "Misto",
+            "tier": "Maestro"
+          },
+          {
+            "name": "Lapis",
+            "price": 1,
+            "category": "Cristalli",
+            "subcategory": "Misto",
+            "tier": "Novizio"
+          },
+          {
+            "name": "Redstone",
+            "price": 1,
+            "category": "Cristalli",
+            "subcategory": "Misto",
+            "tier": "Novizio"
+          },
+          {
+            "name": "Ametista",
+            "price": 1.5,
+            "category": "Cristalli",
+            "subcategory": "Misto",
+            "tier": "Avanzato"
+          },
+          {
+            "name": "Withering Dust",
+            "price": 2.5,
+            "category": "Cristalli",
+            "subcategory": "Misto",
+            "tier": "Custode"
+          },
+          {
+            "name": "Core Fragment",
+            "price": 1,
+            "category": "Aberrazioni",
+            "tier": "Tutti"
+          },
+          {
+            "name": "Revival star",
+            "price": 2,
+            "category": "Aberrazioni",
+            "tier": "Tutti"
+          },
+          {
+            "name": "Brim Powder",
+            "price": 1,
+            "category": "Aberrazioni",
+            "tier": "Novizio"
+          },
+          {
+            "name": "Carne Marcia",
+            "price": 1,
+            "category": "Aberrazioni",
+            "tier": "Novizio"
+          },
+          {
+            "name": "Occhio di Ragno",
+            "price": 1,
+            "category": "Aberrazioni",
+            "tier": "Avanzato"
+          },
+          {
+            "name": "Quarzo",
+            "price": 1,
+            "category": "Aberrazioni",
+            "tier": "Avanzato"
+          },
+          {
+            "name": "Therium",
+            "price": 1,
+            "category": "Aberrazioni",
+            "tier": "Avanzato"
+          },
+          {
+            "name": "Blaze Powder",
+            "price": 2,
+            "category": "Aberrazioni",
+            "tier": "Esperto"
+          },
+          {
+            "name": "Membrana",
+            "price": 2,
+            "category": "Aberrazioni",
+            "tier": "Esperto"
+          },
+          {
+            "name": "Prismarine Shard",
+            "price": 2,
+            "category": "Aberrazioni",
+            "tier": "Custode"
+          },
+          {
+            "name": "Slime Ball",
+            "price": 2,
+            "category": "Aberrazioni",
+            "tier": "Custode"
+          },
+          {
+            "name": "Lost Soul",
+            "price": 5,
+            "category": "Aberrazioni",
+            "tier": "Maestro"
+          },
+          {
+            "name": "Demon Heart",
+            "price": 5,
+            "category": "Aberrazioni",
+            "tier": "Maestro"
+          }
+        ];
+        
+        products = [...defaultProducts.map(p => ({ ...p, qty: 0 }))];
+        
+        productList.innerHTML = `
+          <div class="error">
+            ⚠️ File products.json non trovato - usando dati predefiniti<br>
+            <small>Per usare un file JSON esterno, assicurati che sia nella stessa cartella</small>
+          </div>
+        `;
+        
+        setTimeout(() => {
+          renderMain();
+        }, 2000);
+      }
+    }
+
+    function getTierClass(tier) {
+      return `tier-${tier.toLowerCase()}`;
+    }
 
     // Funzione per formattare la valuta (conversione automatica br -> a)
     function formatCurrency(value) {
@@ -403,11 +607,8 @@
       }
     }
 
-    function getTierClass(tier) {
-      return `tier-${tier.toLowerCase()}`;
-    }
-
     function renderMain() {
+      const productList = document.getElementById("product-list");
       productList.innerHTML = "";
 
       const categories = [...new Set(products.map(p => p.category))];
@@ -482,8 +683,8 @@
       nameContainer.appendChild(tierBadge);
 
       const price = document.createElement("span");
-      price.className = "product-price currency-br";
-      price.textContent = (p.price % 1 === 0) ? p.price.toString() : p.price.toFixed(1);
+      price.className = `product-price ${getCurrencyClass(p.price)}`;
+      price.textContent = formatCurrency(p.price);
 
       const qty = document.createElement("input");
       qty.type = "number";
@@ -604,17 +805,8 @@
     // Event listeners
     participantsInput.addEventListener("input", updateDistribution);
 
-    // Inizializzazione - esegui quando il DOM è pronto
-    document.addEventListener('DOMContentLoaded', function() {
-      renderMain();
-    });
-
-    // Fallback per compatibilità
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', renderMain);
-    } else {
-      renderMain();
-    }
+    // Inizializzazione
+    loadProducts();
   </script>
 </body>
 </html>
