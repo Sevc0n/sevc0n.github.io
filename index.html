@@ -462,17 +462,21 @@
   <script>
     // Prodotti da cristalli e aberrazioni
     const defaultProducts = [
-      // Cristalli - prima metalli, poi resto - ordinati per tier
-      { name: "Stagno grezzo", price: 15, category: "Cristalli", tier: "Novizio" },
-      { name: "Rame grezzo", price: 18, category: "Cristalli", tier: "Avanzato" },
-      { name: "Ferro grezzo", price: 25, category: "Cristalli", tier: "Esperto" },
-      { name: "Oro grezzo", price: 34, category: "Cristalli", tier: "Custode" },
-      { name: "Carbone", price: 2, category: "Cristalli", tier: "Novizio" },
-      { name: "Antracite", price: 4, category: "Cristalli", tier: "Esperto" },
-      { name: "Lapis", price: 1, category: "Cristalli", tier: "Novizio" },
-      { name: "Redstone", price: 1, category: "Cristalli", tier: "Novizio" },
-      { name: "Ametista", price: 1, category: "Cristalli", tier: "Avanzato" },
-      { name: "Withering Dust", price: 2, category: "Cristalli", tier: "Custode" },
+      // Cristalli - Metalli
+      { name: "Stagno grezzo", price: 15, category: "Cristalli", subcategory: "Metalli", tier: "Novizio" },
+      { name: "Rame grezzo", price: 18, category: "Cristalli", subcategory: "Metalli", tier: "Avanzato" },
+      { name: "Ferro grezzo", price: 25, category: "Cristalli", subcategory: "Metalli", tier: "Esperto" },
+      { name: "Oro grezzo", price: 34, category: "Cristalli", subcategory: "Metalli", tier: "Custode" },
+      
+      // Cristalli - Carburanti
+      { name: "Carbone", price: 2, category: "Cristalli", subcategory: "Carburanti", tier: "Novizio" },
+      { name: "Antracite", price: 4, category: "Cristalli", subcategory: "Carburanti", tier: "Esperto" },
+      
+      // Cristalli - Misto
+      { name: "Lapis", price: 1, category: "Cristalli", subcategory: "Misto", tier: "Novizio" },
+      { name: "Redstone", price: 1, category: "Cristalli", subcategory: "Carburanti", tier: "Novizio" }, 
+      { name: "Ametista", price: 1, category: "Cristalli", subcategory: "Misto", tier: "Avanzato" },     
+      { name: "Withering Dust", price: 2, category: "Cristalli", subcategory: "Carburanti", tier: "Custode" },
       
       // Aberrazioni - ordinati per tier (Core Fragment con tier "Tutti")
       { name: "Core Fragment", price: 1, category: "Aberrazioni", tier: "Tutti" },
@@ -531,50 +535,86 @@
         categoryTitle.textContent = `Materiali dai ${category}`;
         categoryDiv.appendChild(categoryTitle);
 
-        const categoryProducts = products.filter(p => p.category === category);
-        
-        categoryProducts.forEach((p, i) => {
-          const globalIndex = products.indexOf(p);
-          const div = document.createElement("div");
-          div.className = "product";
-
-          const nameContainer = document.createElement("div");
-          const name = document.createElement("span");
-          name.className = "product-name";
-          name.textContent = p.name;
+        if (category === "Cristalli") {
+          // Per i cristalli, raggruppa per sottocategorie
+          const subcategories = [...new Set(products.filter(p => p.category === category).map(p => p.subcategory))];
           
-          const tierBadge = document.createElement("span");
-          tierBadge.className = `tier-badge ${getTierClass(p.tier)}`;
-          tierBadge.textContent = p.tier;
-          
-          nameContainer.appendChild(name);
-          nameContainer.appendChild(tierBadge);
-
-          const price = document.createElement("span");
-          price.className = "product-price currency";
-          price.textContent = p.price.toString();
-
-          const qty = document.createElement("input");
-          qty.type = "number";
-          qty.min = "0";
-          qty.value = p.qty;
-          qty.placeholder = "Qtà";
-
-          qty.addEventListener("input", () => {
-            products[globalIndex].qty = parseInt(qty.value) || 0;
-            updateDistribution();
+          subcategories.forEach(subcategory => {
+            const subcategoryDiv = document.createElement("div");
+            subcategoryDiv.style.marginLeft = "20px";
+            subcategoryDiv.style.marginBottom = "20px";
+            
+            const subcategoryTitle = document.createElement("h4");
+            subcategoryTitle.style.color = "#a0aec0";
+            subcategoryTitle.style.fontSize = "1rem";
+            subcategoryTitle.style.marginBottom = "10px";
+            subcategoryTitle.style.fontWeight = "500";
+            subcategoryTitle.textContent = subcategory;
+            subcategoryDiv.appendChild(subcategoryTitle);
+            
+            const subcategoryProducts = products.filter(p => p.category === category && p.subcategory === subcategory);
+            
+            subcategoryProducts.forEach((p) => {
+              const globalIndex = products.indexOf(p);
+              const div = createProductElement(p, globalIndex);
+              subcategoryDiv.appendChild(div);
+            });
+            
+            categoryDiv.appendChild(subcategoryDiv);
           });
-
-          div.appendChild(nameContainer);
-          div.appendChild(price);
-          div.appendChild(qty);
-          categoryDiv.appendChild(div);
-        });
+        } else {
+          // Per altre categorie, usa il vecchio sistema
+          const categoryProducts = products.filter(p => p.category === category);
+          
+          categoryProducts.forEach((p) => {
+            const globalIndex = products.indexOf(p);
+            const div = createProductElement(p, globalIndex);
+            categoryDiv.appendChild(div);
+          });
+        }
         
         productList.appendChild(categoryDiv);
       });
 
       updateDistribution();
+    }
+
+    function createProductElement(p, globalIndex) {
+      const div = document.createElement("div");
+      div.className = "product";
+
+      const nameContainer = document.createElement("div");
+      const name = document.createElement("span");
+      name.className = "product-name";
+      name.textContent = p.name;
+      
+      const tierBadge = document.createElement("span");
+      tierBadge.className = `tier-badge ${getTierClass(p.tier)}`;
+      tierBadge.textContent = p.tier;
+      
+      nameContainer.appendChild(name);
+      nameContainer.appendChild(tierBadge);
+
+      const price = document.createElement("span");
+      price.className = "product-price currency";
+      price.textContent = p.price.toString();
+
+      const qty = document.createElement("input");
+      qty.type = "number";
+      qty.min = "0";
+      qty.value = p.qty;
+      qty.placeholder = "Qtà";
+
+      qty.addEventListener("input", () => {
+        products[globalIndex].qty = parseInt(qty.value) || 0;
+        updateDistribution();
+      });
+
+      div.appendChild(nameContainer);
+      div.appendChild(price);
+      div.appendChild(qty);
+      
+      return div;
     }
 
     function updateDistribution() {
@@ -653,53 +693,88 @@
         categoryTitle.textContent = `Materiali dai ${category}`;
         categoryDiv.appendChild(categoryTitle);
 
-        const categoryProducts = products.filter(p => p.category === category);
-        
-        categoryProducts.forEach((p) => {
-          const globalIndex = products.indexOf(p);
-          const div = document.createElement("div");
-          div.className = "settings-item";
-
-          const nameContainer = document.createElement("div");
-          const name = document.createElement("span");
-          name.className = "settings-name";
-          name.textContent = p.name;
+        if (category === "Cristalli") {
+          // Per i cristalli, raggruppa per sottocategorie
+          const subcategories = [...new Set(products.filter(p => p.category === category).map(p => p.subcategory))];
           
-          const tierBadge = document.createElement("span");
-          tierBadge.className = `tier-badge ${getTierClass(p.tier)}`;
-          tierBadge.textContent = p.tier;
-          
-          nameContainer.appendChild(name);
-          nameContainer.appendChild(tierBadge);
-
-          const priceInput = document.createElement("input");
-          priceInput.className = "settings-input";
-          priceInput.type = "number";
-          priceInput.min = "0";
-          priceInput.step = "1";
-          priceInput.value = p.price;
-          priceInput.placeholder = "Prezzo in br";
-
-          priceInput.addEventListener("input", () => {
-            products[globalIndex].price = parseInt(priceInput.value) || 0;
+          subcategories.forEach(subcategory => {
+            const subcategoryDiv = document.createElement("div");
+            subcategoryDiv.style.marginLeft = "20px";
+            subcategoryDiv.style.marginBottom = "20px";
+            
+            const subcategoryTitle = document.createElement("h4");
+            subcategoryTitle.style.color = "#a0aec0";
+            subcategoryTitle.style.fontSize = "1rem";
+            subcategoryTitle.style.marginBottom = "10px";
+            subcategoryTitle.style.fontWeight = "500";
+            subcategoryTitle.textContent = subcategory;
+            subcategoryDiv.appendChild(subcategoryTitle);
+            
+            const subcategoryProducts = products.filter(p => p.category === category && p.subcategory === subcategory);
+            
+            subcategoryProducts.forEach((p) => {
+              const globalIndex = products.indexOf(p);
+              const div = createSettingsElement(p, globalIndex);
+              subcategoryDiv.appendChild(div);
+            });
+            
+            categoryDiv.appendChild(subcategoryDiv);
           });
-
-          const removeBtn = document.createElement("button");
-          removeBtn.className = "remove-btn";
-          removeBtn.textContent = "✕";
-          removeBtn.onclick = () => removeProduct(globalIndex);
-
-          div.appendChild(nameContainer);
-          div.appendChild(priceInput);
-          if (products.length > 1) {
-            div.appendChild(removeBtn);
-          }
+        } else {
+          // Per altre categorie, usa il vecchio sistema
+          const categoryProducts = products.filter(p => p.category === category);
           
-          categoryDiv.appendChild(div);
-        });
+          categoryProducts.forEach((p) => {
+            const globalIndex = products.indexOf(p);
+            const div = createSettingsElement(p, globalIndex);
+            categoryDiv.appendChild(div);
+          });
+        }
         
         settingsList.appendChild(categoryDiv);
       });
+    }
+
+    function createSettingsElement(p, globalIndex) {
+      const div = document.createElement("div");
+      div.className = "settings-item";
+
+      const nameContainer = document.createElement("div");
+      const name = document.createElement("span");
+      name.className = "settings-name";
+      name.textContent = p.name;
+      
+      const tierBadge = document.createElement("span");
+      tierBadge.className = `tier-badge ${getTierClass(p.tier)}`;
+      tierBadge.textContent = p.tier;
+      
+      nameContainer.appendChild(name);
+      nameContainer.appendChild(tierBadge);
+
+      const priceInput = document.createElement("input");
+      priceInput.className = "settings-input";
+      priceInput.type = "number";
+      priceInput.min = "0";
+      priceInput.step = "1";
+      priceInput.value = p.price;
+      priceInput.placeholder = "Prezzo in br";
+
+      priceInput.addEventListener("input", () => {
+        products[globalIndex].price = parseInt(priceInput.value) || 0;
+      });
+
+      const removeBtn = document.createElement("button");
+      removeBtn.className = "remove-btn";
+      removeBtn.textContent = "✕";
+      removeBtn.onclick = () => removeProduct(globalIndex);
+
+      div.appendChild(nameContainer);
+      div.appendChild(priceInput);
+      if (products.length > 1) {
+        div.appendChild(removeBtn);
+      }
+      
+      return div;
     }
 
     function addNewProduct() {
@@ -712,9 +787,12 @@
               const tier = prompt("Tier (Novizio/Avanzato/Esperto/Custode/Tutti):", "Novizio");
       if (!tier || !tier.trim()) return;
       
+      const subcategory = prompt("Sottocategoria (Metalli/Carburanti/Misto) - solo per Cristalli:", "");
+      
       products.push({
         name: name.trim(),
         category: category.trim(),
+        subcategory: category.trim() === "Cristalli" ? (subcategory?.trim() || "Misto") : undefined,
         tier: tier.trim(),
         price: 0,
         qty: 0
