@@ -634,11 +634,11 @@
        price.className = `product-price ${getCurrencyClass(p.price)}`;
        price.textContent = formatCurrency(p.price);
  
-       const qty = document.createElement("input");
-       qty.type = "number";
-       qty.min = "0";
-       qty.value = p.qty;
-       qty.placeholder = "Qtà";
+               const qty = document.createElement("input");
+        qty.type = "number";
+        qty.min = "0";
+        qty.value = p.qty > 0 ? p.qty : "";
+        qty.placeholder = "Qtà";
  
        qty.addEventListener("input", () => {
          products[globalIndex].qty = parseInt(qty.value) || 0;
