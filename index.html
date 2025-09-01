@@ -703,8 +703,6 @@
           esuberoItems.sort((a, b) => b.price - a.price);
           
           // Distribuisce gli oggetti in modo bilanciato
-          let currentParticipant = 0;
-          
           esuberoItems.forEach(item => {
             let remainingQty = item.qty;
             
@@ -763,8 +761,24 @@
          title.textContent = `Partecipante ${i + 1}`;
          participantDiv.appendChild(title);
  
-                   // Mostra gli oggetti distribuiti
+                   // Raggruppa gli oggetti per nome e tipo (esubero o normale)
+          const groupedItems = {};
+          
           participantItems[i].forEach(item => {
+            const key = `${item.name}_${item.isEsubero ? 'esubero' : 'normale'}`;
+            if (!groupedItems[key]) {
+              groupedItems[key] = {
+                name: item.name,
+                qty: 0,
+                price: item.price,
+                isEsubero: item.isEsubero
+              };
+            }
+            groupedItems[key].qty += item.qty;
+          });
+          
+          // Mostra gli oggetti raggruppati
+          Object.values(groupedItems).forEach(item => {
             const itemDiv = document.createElement("div");
             itemDiv.className = "item-distribution";
             
