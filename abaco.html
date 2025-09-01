@@ -638,7 +638,7 @@
         qty.type = "number";
         qty.min = "0";
         qty.value = p.qty > 0 ? p.qty : "";
-        qty.placeholder = "Qtà";
+        qty.placeholder = "N°";
  
        qty.addEventListener("input", () => {
          products[globalIndex].qty = parseInt(qty.value) || 0;
