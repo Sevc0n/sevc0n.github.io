@@ -140,19 +140,19 @@
   },
   {
     "name": "Membrana",
-    "price": 2.5,
+    "price": 2,
     "category": "Aberrazioni",
     "tier": "Esperto"
   },
   {
     "name": "Prismarine Shard",
-    "price": 3,
+    "price": 2,
     "category": "Aberrazioni",
     "tier": "Custode"
   },
   {
     "name": "Slime Ball",
-    "price": 3,
+    "price": 2,
     "category": "Aberrazioni",
     "tier": "Custode"
   },
