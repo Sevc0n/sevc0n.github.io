@@ -15,7 +15,7 @@
   },
   {
     "name": "Ferro grezzo",
-    "price": 25,
+    "price": 27,
     "category": "Cristalli",
     "subcategory": "Metalli",
     "tier": "Esperto"
@@ -43,21 +43,21 @@
   },
   {
     "name": "Carbone",
-    "price": 3,
+    "price": 2,
     "category": "Cristalli",
     "subcategory": "Carburanti",
     "tier": "Novizio"
   },
   {
     "name": "Antracite",
-    "price": 6,
+    "price": 4,
     "category": "Cristalli",
     "subcategory": "Carburanti",
     "tier": "Esperto"
   },
   {
     "name": "Fire Stone",
-    "price": 9,
+    "price": 5,
     "category": "Cristalli",
     "subcategory": "Carburanti",
     "tier": "Maestro"
@@ -78,14 +78,14 @@
   },
   {
     "name": "Ametista",
-    "price": 1.5,
+    "price": 1,
     "category": "Cristalli",
     "subcategory": "Misto",
     "tier": "Avanzato"
   },
   {
     "name": "Withering Dust",
-    "price": 2.5,
+    "price": 2,
     "category": "Cristalli",
     "subcategory": "Misto",
     "tier": "Custode"
@@ -140,19 +140,19 @@
   },
   {
     "name": "Membrana",
-    "price": 2,
+    "price": 2.5,
     "category": "Aberrazioni",
     "tier": "Esperto"
   },
   {
     "name": "Prismarine Shard",
-    "price": 2,
+    "price": 3,
     "category": "Aberrazioni",
     "tier": "Custode"
   },
   {
     "name": "Slime Ball",
-    "price": 2,
+    "price": 3,
     "category": "Aberrazioni",
     "tier": "Custode"
   },
