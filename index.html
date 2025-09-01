@@ -333,499 +333,467 @@
     .contacts-section {
       background: rgba(30, 35, 55, 0.8);
       border-top: 1px solid rgba(255, 255, 255, 0.1);
-      padding: 30px 40px;
+      padding: 20px 40px;
       text-align: center;
-      margin-top: 40px;
+      margin-top: 30px;
     }
-
-    .contacts-title {
-      color: #63b3ed;
-      font-size: 1.3rem;
-      margin-bottom: 20px;
-      font-weight: 600;
-    }
-
-    .contact-item {
-      display: inline-block;
-      margin: 0 20px 10px 0;
-      padding: 10px 20px;
-      background: rgba(99, 179, 237, 0.1);
-      border: 1px solid rgba(99, 179, 237, 0.3);
-      border-radius: 25px;
-      color: #ffffff;
-      text-decoration: none;
-      transition: all 0.3s ease;
-      font-weight: 500;
-    }
-
-    .contact-item:hover {
-      background: rgba(99, 179, 237, 0.2);
-      border-color: rgba(99, 179, 237, 0.5);
-      transform: translateY(-2px);
-    }
-
-    .contact-item strong {
-      color: #63b3ed;
-    }
-
-    .fractional-display {
-      color: #fbb6ce;
-      font-size: 0.9em;
-      font-style: italic;
-    }
-  </style>
-</head>
-<body>
-  <div class="container">
-    <header>
-      <h1><img src="logo.png" alt="Abaco Logo" class="logo" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline';">⚒️ Abaco per Divisione Abisso</h1>
-      <p class="subtitle">Divisione intelligente di cristalli e aberrazioni per avventurieri</p>
-    </header>
-
-    <main>
-      <div class="grid">
-        <div class="card">
-          <h2>Lista Materiali</h2>
-          <div id="product-list">
-            <div class="loading">Caricamento materiali in corso...</div>
-          </div>
-        </div>
-
-        <div>
-          <div class="card participants-section">
-            <h2>Partecipanti</h2>
-            <label class="participants-label">Numero di partecipanti:</label>
-            <input type="number" id="participants" min="1" value="1">
-          </div>
-
-          <div class="card results-card">
-            <h2>Distribuzione</h2>
-            <div id="distribution-results"></div>
-          </div>
-        </div>
-      </div>
-    </main>
-
-    <div class="contacts-section">
-      <div class="contacts-title">📞 Contatti per Supporto</div>
-      <div>
-        <span class="contact-item">
-          🎮 Discord: <strong>picciobeffa</strong>
-        </span>
-        <span class="contact-item">
-          📱 Telegram: <strong>@piccionenberg</strong>
-        </span>
-      </div>
-    </div>
-  </div>
-
-  <script>
-    let defaultProducts = [];
-    let products = [];
-    const distributionResults = document.getElementById("distribution-results");
-    const participantsInput = document.getElementById("participants");
-
-    // Carica i prodotti dal file JSON
-    async function loadProducts() {
-      const productList = document.getElementById("product-list");
-      let jsonLoaded = false;
-      
-      // Tempo di caricamento hardcoded variabile (1-4 secondi)
-      const loadingTime = Math.floor(Math.random() * 3000) + 1000; // da 1000ms a 4000ms
-      
-      // Mostra sempre il messaggio di caricamento iniziale
-      productList.innerHTML = `
-        <div class="loading">
-          ⏳ Caricamento dati in corso...<br>
-          <small>Connessione al database materiali</small>
-        </div>
-      `;
-      
-      // Aspetta il tempo di caricamento simulato
-      await new Promise(resolve => setTimeout(resolve, loadingTime));
-      
-      try {
-        // Prova prima con window.fs (ambiente Claude)
-        if (window.fs && window.fs.readFile) {
-          const data = await window.fs.readFile('products.json', { encoding: 'utf8' });
-          defaultProducts = JSON.parse(data);
-          jsonLoaded = true;
-        } else {
-          // Fallback per browser normali - carica via fetch con timeout
-          const controller = new AbortController();
-          const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 secondi timeout
-          
-          try {
-            const response = await fetch('products.json', { 
-              signal: controller.signal 
-            });
-            clearTimeout(timeoutId);
-            
-            if (!response.ok) {
-              throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            defaultProducts = await response.json();
-            jsonLoaded = true;
-          } catch (fetchError) {
-            if (fetchError.name === 'AbortError') {
-              throw new Error('Timeout: il caricamento del file JSON ha richiesto troppo tempo');
-            }
-            throw fetchError;
-          }
-        }
-        
-        if (jsonLoaded) {
-          products = [...defaultProducts.map(p => ({ ...p, qty: 0 }))];
-          renderMain();
-        }
-      } catch (error) {
-        console.error('Errore nel caricamento dei prodotti:', error);
-        
-        // Mostra messaggio di caricamento aggiuntivo se fallisce
-        productList.innerHTML = `
-          <div class="loading">
-            ⏳ Caricamento dati in corso...<br>
-            <small>Tentativo di connessione al database materiali</small>
-          </div>
-        `;
-        
-        // Aspetta 10 secondi prima di mostrare l'errore finale
-        setTimeout(() => {
-          productList.innerHTML = `
-            <div class="error">
-              ❌ Impossibile caricare i dati dei materiali<br>
-              <br>
-              <strong>Per assistenza contatta:</strong><br>
-              🎮 Discord: <strong>picciobeffa</strong><br>
-              📱 Telegram: <strong>@piccionenberg</strong>
-            </div>
-          `;
-        }, 10000); // Aspetta 10 secondi prima di mostrare l'errore
-      }
-    }
-
-    function getTierClass(tier) {
-      return `tier-${tier.toLowerCase()}`;
-    }
-
-    // Funzione per formattare la valuta (conversione automatica br -> a)
-    function formatCurrency(value) {
-      if (value >= 100) {
-        const argenti = Math.floor(value / 100);
-        const bronzini = value % 100;
-        
-        if (bronzini === 0) {
-          return `${argenti}a`;
-        } else {
-          const bronziniDisplay = (bronzini % 1 === 0) ? bronzini.toString() : bronzini.toFixed(1);
-          return `${argenti}a ${bronziniDisplay}br`;
-        }
-      } else {
-        const display = (value % 1 === 0) ? value.toString() : value.toFixed(1);
-        return `${display}br`;
-      }
-    }
-
-    // Funzione per applicare la classe CSS corretta in base al valore
-    function getCurrencyClass(value) {
-      if (value >= 100) {
-        return 'currency-mixed';
-      } else {
-        return 'currency-br';
-      }
-    }
-
-    function renderMain() {
-      const productList = document.getElementById("product-list");
-      productList.innerHTML = "";
-
-      const categories = [...new Set(products.map(p => p.category))];
-      
-      categories.forEach(category => {
-        const categoryDiv = document.createElement("div");
-        categoryDiv.className = "category-section";
-        
-        const categoryTitle = document.createElement("h3");
-        categoryTitle.className = "category-title";
-        categoryTitle.textContent = `Materiali dai ${category}`;
-        categoryDiv.appendChild(categoryTitle);
-
-        if (category === "Cristalli") {
-          // Per i cristalli, raggruppa per sottocategorie
-          const subcategories = [...new Set(products.filter(p => p.category === category).map(p => p.subcategory))];
-          
-          subcategories.forEach(subcategory => {
-            const subcategoryDiv = document.createElement("div");
-            subcategoryDiv.style.marginLeft = "20px";
-            subcategoryDiv.style.marginBottom = "20px";
-            
-            const subcategoryTitle = document.createElement("h4");
-            subcategoryTitle.style.color = "#a0aec0";
-            subcategoryTitle.style.fontSize = "1rem";
-            subcategoryTitle.style.marginBottom = "10px";
-            subcategoryTitle.style.fontWeight = "500";
-            subcategoryTitle.textContent = subcategory;
-            subcategoryDiv.appendChild(subcategoryTitle);
-            
-            const subcategoryProducts = products.filter(p => p.category === category && p.subcategory === subcategory);
-            
-            subcategoryProducts.forEach((p) => {
-              const globalIndex = products.indexOf(p);
-              const div = createProductElement(p, globalIndex);
-              subcategoryDiv.appendChild(div);
-            });
-            
-            categoryDiv.appendChild(subcategoryDiv);
-          });
-        } else {
-          // Per altre categorie, mostra direttamente i prodotti
-          const categoryProducts = products.filter(p => p.category === category);
-          
-          categoryProducts.forEach((p) => {
-            const globalIndex = products.indexOf(p);
-            const div = createProductElement(p, globalIndex);
-            categoryDiv.appendChild(div);
-          });
-        }
-        
-        productList.appendChild(categoryDiv);
-      });
-
-      updateDistribution();
-    }
-
-    function createProductElement(p, globalIndex) {
-      const div = document.createElement("div");
-      div.className = "product";
-
-      const nameContainer = document.createElement("div");
-      const name = document.createElement("span");
-      name.className = "product-name";
-      name.textContent = p.name;
-      
-      const tierBadge = document.createElement("span");
-      tierBadge.className = `tier-badge ${getTierClass(p.tier)}`;
-      tierBadge.textContent = p.tier;
-      
-      nameContainer.appendChild(name);
-      nameContainer.appendChild(tierBadge);
-
-      const price = document.createElement("span");
-      price.className = `product-price ${getCurrencyClass(p.price)}`;
-      price.textContent = formatCurrency(p.price);
-
-      const qty = document.createElement("input");
-      qty.type = "number";
-      qty.min = "0";
-      qty.value = p.qty;
-      qty.placeholder = "Qtà";
-
-      qty.addEventListener("input", () => {
-        products[globalIndex].qty = parseInt(qty.value) || 0;
-        updateDistribution();
-      });
-
-      div.appendChild(nameContainer);
-      div.appendChild(price);
-      div.appendChild(qty);
-      
-      return div;
-    }
-
-    function updateDistribution() {
-      const participants = parseInt(participantsInput.value) || 1;
-      const activeItems = products.filter(p => p.qty > 0);
-      
-      if (activeItems.length === 0) {
-        distributionResults.innerHTML = '<div class="empty-state">Seleziona alcuni materiali per vedere la distribuzione</div>';
-        return;
-      }
-
-      distributionResults.innerHTML = "";
-      
-      const esuberoItems = [];
-
-      // Per ogni partecipante, calcola la sua quota
-      for (let i = 1; i <= participants; i++) {
-        const participantDiv = document.createElement("div");
-        participantDiv.className = "participant-result";
-        
-        const title = document.createElement("div");
-        title.className = "participant-title";
-        title.textContent = `Partecipante ${i}`;
-        participantDiv.appendChild(title);
-
-        let totalValue = 0;
-
-        // Calcola la distribuzione per ogni oggetto
-        activeItems.forEach(item => {
-          const itemsPerParticipant = Math.floor(item.qty / participants);
-          
-          if (itemsPerParticipant > 0) {
-            const itemDiv = document.createElement("div");
-            itemDiv.className = "item-distribution";
-            
-            const itemName = document.createElement("span");
-            itemName.textContent = `${item.name} x${itemsPerParticipant}`;
-            
-            const itemCost = document.createElement("span");
-            const cost = itemsPerParticipant * item.price;
-            totalValue += cost;
-            itemCost.className = getCurrencyClass(cost);
-            itemCost.textContent = formatCurrency(cost);
-            
-            itemDiv.appendChild(itemName);
-            itemDiv.appendChild(itemCost);
-            participantDiv.appendChild(itemDiv);
-          }
-        });
-
-        const totalDiv = document.createElement("div");
-        totalDiv.className = "total-cost";
-        const formattedTotal = formatCurrency(totalValue);
-        totalDiv.innerHTML = `Totale: <span class="${getCurrencyClass(totalValue)}">${formattedTotal}</span>`;
-        participantDiv.appendChild(totalDiv);
-        
-        distributionResults.appendChild(participantDiv);
-      }
-
-      // Calcola gli esuberi (oggetti rimanenti) e li ridistribuisce
-      activeItems.forEach(item => {
-        const itemsPerParticipant = Math.floor(item.qty / participants);
-        const totalDistributed = itemsPerParticipant * participants;
-        const remaining = item.qty - totalDistributed;
-        
-        if (remaining > 0) {
-          esuberoItems.push({
-            name: item.name,
-            qty: remaining,
-            price: item.price
-          });
-        }
-      });
-
-                                                                                                               // Distribuisce l'esubero equamente tra i partecipanti e mostra il rimanente
-          if (esuberoItems.length > 0) {
-            // Calcola il valore totale dell'esubero
-            const totalEsuberoValue = esuberoItems.reduce((total, item) => total + (item.qty * item.price), 0);
-            
-            // Calcola il valore per partecipante dell'esubero
-            const esuberoValuePerParticipant = totalEsuberoValue / participants;
-            
-            // Distribuisce l'esubero ai partecipanti
-            for (let i = 0; i < participants; i++) {
-              const participantDiv = distributionResults.children[i];
-              const totalDiv = participantDiv.querySelector('.total-cost');
-              
-              // Estrae il valore corrente dal totale (rimuove "Totale:" e tutto il resto)
-              const totalText = totalDiv.textContent;
-              const currentTotalMatch = totalText.match(/Totale:\s*([^\s]+)/);
-              let currentTotal = 0;
-              
-              if (currentTotalMatch) {
-                const totalValue = currentTotalMatch[1];
-                // Converte il valore formattato in numero
-                if (totalValue.includes('a')) {
-                  const parts = totalValue.split('a');
-                  const argenti = parseFloat(parts[0]) || 0;
-                  const bronzini = parseFloat(parts[1]) || 0;
-                  currentTotal = argenti * 100 + bronzini;
-                } else {
-                  currentTotal = parseFloat(totalValue.replace('br', '')) || 0;
-                }
-              }
-              
-              // Aggiunge l'esubero al totale del partecipante
-              const newTotal = currentTotal + esuberoValuePerParticipant;
-              const formattedNewTotal = formatCurrency(newTotal);
-              totalDiv.innerHTML = `Totale: <span class="${getCurrencyClass(newTotal)}">${formattedNewTotal}</span> <span class="fractional-display">(+${formatCurrency(esuberoValuePerParticipant)} esubero)</span>`;
-            }
-            
-            // Calcola gli oggetti rimanenti dopo la distribuzione
-            const remainingEsuberoItems = [];
-            
-            esuberoItems.forEach(item => {
-              // Calcola quanti oggetti interi possono essere distribuiti
-              const itemsPerParticipant = Math.floor(item.qty / participants);
-              const totalDistributed = itemsPerParticipant * participants;
-              const remaining = item.qty - totalDistributed;
-              
-              if (remaining > 0) {
-                remainingEsuberoItems.push({
-                  name: item.name,
-                  qty: remaining,
-                  price: item.price
-                });
-              }
-            });
-            
-            // Se ci sono ancora oggetti rimanenti, li mostra nella sezione esubero
-            if (remainingEsuberoItems.length > 0) {
-              const remainingEsuberoValue = remainingEsuberoItems.reduce((total, item) => total + (item.qty * item.price), 0);
-              
-              // Crea la sezione esubero per gli oggetti rimanenti
-              const esuberoDiv = document.createElement("div");
-              esuberoDiv.className = "participant-result";
-              esuberoDiv.style.background = "rgba(237, 137, 54, 0.2)";
-              esuberoDiv.style.borderColor = "rgba(237, 137, 54, 0.3)";
-              
-              const title = document.createElement("div");
-              title.className = "participant-title";
-              title.style.color = "#ed8936";
-              title.textContent = "📦 Oggetti Rimanenti";
-              esuberoDiv.appendChild(title);
-
-              // Mostra ogni oggetto rimanente
-              remainingEsuberoItems.forEach(item => {
-                const itemDiv = document.createElement("div");
-                itemDiv.className = "item-distribution";
-                
-                const itemName = document.createElement("span");
-                itemName.textContent = `${item.name} x${item.qty}`;
-                
-                const itemCost = document.createElement("span");
-                const cost = item.qty * item.price;
-                itemCost.className = getCurrencyClass(cost);
-                itemCost.textContent = formatCurrency(cost);
-                
-                itemDiv.appendChild(itemName);
-                itemDiv.appendChild(itemCost);
-                esuberoDiv.appendChild(itemDiv);
-              });
-
-              // Mostra il totale degli oggetti rimanenti
-              const totalDiv = document.createElement("div");
-              totalDiv.className = "total-cost";
-              totalDiv.style.background = "rgba(237, 137, 54, 0.2)";
-              totalDiv.style.borderColor = "rgba(237, 137, 54, 0.3)";
-              const formattedTotal = formatCurrency(remainingEsuberoValue);
-              totalDiv.innerHTML = `Totale Rimanente: <span class="${getCurrencyClass(remainingEsuberoValue)}">${formattedTotal}</span>`;
-              esuberoDiv.appendChild(totalDiv);
-              
-              distributionResults.appendChild(esuberoDiv);
-            }
-            
-            // Mostra un messaggio informativo sulla distribuzione
-            const infoDiv = document.createElement("div");
-            infoDiv.style.textAlign = "center";
-            infoDiv.style.marginTop = "20px";
-            infoDiv.style.padding = "15px";
-            infoDiv.style.background = "rgba(99, 179, 237, 0.1)";
-            infoDiv.style.borderRadius = "8px";
-            infoDiv.style.border = "1px solid rgba(99, 179, 237, 0.3)";
-            infoDiv.style.color = "#63b3ed";
-            infoDiv.style.fontSize = "0.9rem";
-            infoDiv.innerHTML = `📦 <strong>Esubero distribuito:</strong> ${formatCurrency(totalEsuberoValue)} distribuito equamente tra i partecipanti (${formatCurrency(esuberoValuePerParticipant)} ciascuno)`;
-            
-            distributionResults.appendChild(infoDiv);
-          }
-    }
-
-    // Event listeners
-    participantsInput.addEventListener("input", updateDistribution);
-
-    // Inizializzazione
-    loadProducts();
-  </script>
-</body>
+ 
+     .contacts-title {
+       color: #63b3ed;
+       font-size: 1.1rem;
+       margin-bottom: 15px;
+       font-weight: 600;
+     }
+ 
+     .contact-item {
+       display: inline-block;
+       margin: 0 15px 8px 0;
+       padding: 8px 16px;
+       background: rgba(99, 179, 237, 0.1);
+       border: 1px solid rgba(99, 179, 237, 0.3);
+       border-radius: 20px;
+       color: #ffffff;
+       text-decoration: none;
+       transition: all 0.3s ease;
+       font-weight: 500;
+       font-size: 0.9rem;
+     }
+ 
+     .contact-item:hover {
+       background: rgba(99, 179, 237, 0.2);
+       border-color: rgba(99, 179, 237, 0.5);
+       transform: translateY(-2px);
+     }
+ 
+     .contact-item strong {
+       color: #63b3ed;
+     }
+ 
+     .fractional-display {
+       color: #fbb6ce;
+       font-size: 0.9em;
+       font-style: italic;
+     }
+   </style>
+ </head>
+ <body>
+   <div class="container">
+     <header>
+       <h1><img src="logo.png" alt="Abaco Logo" class="logo" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline';">⚒️ Abaco per Divisione Abisso</h1>
+       <p class="subtitle">Divisione intelligente di cristalli e aberrazioni per avventurieri</p>
+     </header>
+ 
+     <main>
+       <div class="grid">
+         <div class="card">
+           <h2>Lista Materiali</h2>
+           <div id="product-list">
+             <div class="loading">Caricamento materiali in corso...</div>
+           </div>
+         </div>
+ 
+         <div>
+           <div class="card participants-section">
+             <h2>Partecipanti</h2>
+             <label class="participants-label">Numero di partecipanti:</label>
+             <input type="number" id="participants" min="1" value="1">
+           </div>
+ 
+           <div class="card results-card">
+             <h2>Distribuzione</h2>
+             <div id="distribution-results"></div>
+           </div>
+         </div>
+       </div>
+     </main>
+ 
+     <div class="contacts-section">
+       <div class="contacts-title">📞 Contatti</div>
+       <div>
+         <span class="contact-item">
+           🎮 Discord: <strong>picciobeffa</strong>
+         </span>
+         <span class="contact-item">
+           📱 Telegram: <strong>@piccionenberg</strong>
+         </span>
+       </div>
+     </div>
+   </div>
+ 
+   <script>
+     let defaultProducts = [];
+     let products = [];
+     const distributionResults = document.getElementById("distribution-results");
+     const participantsInput = document.getElementById("participants");
+ 
+     // Carica i prodotti dal file JSON
+     async function loadProducts() {
+       const productList = document.getElementById("product-list");
+       let jsonLoaded = false;
+       
+       // Tempo di caricamento hardcoded variabile (1-4 secondi)
+       const loadingTime = Math.floor(Math.random() * 3000) + 1000; // da 1000ms a 4000ms
+       
+       // Mostra sempre il messaggio di caricamento iniziale
+       productList.innerHTML = `
+         <div class="loading">
+           ⏳ Caricamento dati in corso...<br>
+           <small>Connessione al database materiali</small>
+         </div>
+       `;
+       
+       // Aspetta il tempo di caricamento simulato
+       await new Promise(resolve => setTimeout(resolve, loadingTime));
+       
+       try {
+         // Prova prima con window.fs (ambiente Claude)
+         if (window.fs && window.fs.readFile) {
+           const data = await window.fs.readFile('products.json', { encoding: 'utf8' });
+           defaultProducts = JSON.parse(data);
+           jsonLoaded = true;
+         } else {
+           // Fallback per browser normali - carica via fetch con timeout
+           const controller = new AbortController();
+           const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 secondi timeout
+           
+           try {
+             const response = await fetch('products.json', { 
+               signal: controller.signal 
+             });
+             clearTimeout(timeoutId);
+             
+             if (!response.ok) {
+               throw new Error(`HTTP error! status: ${response.status}`);
+             }
+             defaultProducts = await response.json();
+             jsonLoaded = true;
+           } catch (fetchError) {
+             if (fetchError.name === 'AbortError') {
+               throw new Error('Timeout: il caricamento del file JSON ha richiesto troppo tempo');
+             }
+             throw fetchError;
+           }
+         }
+         
+         if (jsonLoaded) {
+           products = [...defaultProducts.map(p => ({ ...p, qty: 0 }))];
+           renderMain();
+         }
+       } catch (error) {
+         console.error('Errore nel caricamento dei prodotti:', error);
+         
+         // Mostra messaggio di caricamento aggiuntivo se fallisce
+         productList.innerHTML = `
+           <div class="loading">
+             ⏳ Caricamento dati in corso...<br>
+             <small>Tentativo di connessione al database materiali</small>
+           </div>
+         `;
+         
+         // Aspetta 10 secondi prima di mostrare l'errore finale
+         setTimeout(() => {
+           productList.innerHTML = `
+             <div class="error">
+               ❌ Impossibile caricare i dati dei materiali<br>
+               <br>
+               <strong>Per assistenza contatta:</strong><br>
+               🎮 Discord: <strong>picciobeffa</strong><br>
+               📱 Telegram: <strong>@piccionenberg</strong>
+             </div>
+           `;
+         }, 10000); // Aspetta 10 secondi prima di mostrare l'errore
+       }
+     }
+ 
+     function getTierClass(tier) {
+       return `tier-${tier.toLowerCase()}`;
+     }
+ 
+     // Funzione per formattare la valuta (conversione automatica br -> a)
+     function formatCurrency(value) {
+       if (value >= 100) {
+         const argenti = Math.floor(value / 100);
+         const bronzini = value % 100;
+         
+         if (bronzini === 0) {
+           return `${argenti}a`;
+         } else {
+           const bronziniDisplay = (bronzini % 1 === 0) ? bronzini.toString() : bronzini.toFixed(1);
+           return `${argenti}a ${bronziniDisplay}br`;
+         }
+       } else {
+         const display = (value % 1 === 0) ? value.toString() : value.toFixed(1);
+         return `${display}br`;
+       }
+     }
+ 
+     // Funzione per applicare la classe CSS corretta in base al valore
+     function getCurrencyClass(value) {
+       if (value >= 100) {
+         return 'currency-mixed';
+       } else {
+         return 'currency-br';
+       }
+     }
+ 
+     function renderMain() {
+       const productList = document.getElementById("product-list");
+       productList.innerHTML = "";
+ 
+       const categories = [...new Set(products.map(p => p.category))];
+       
+       categories.forEach(category => {
+         const categoryDiv = document.createElement("div");
+         categoryDiv.className = "category-section";
+         
+         const categoryTitle = document.createElement("h3");
+         categoryTitle.className = "category-title";
+         categoryTitle.textContent = `Materiali dai ${category}`;
+         categoryDiv.appendChild(categoryTitle);
+ 
+         if (category === "Cristalli") {
+           // Per i cristalli, raggruppa per sottocategorie
+           const subcategories = [...new Set(products.filter(p => p.category === category).map(p => p.subcategory))];
+           
+           subcategories.forEach(subcategory => {
+             const subcategoryDiv = document.createElement("div");
+             subcategoryDiv.style.marginLeft = "20px";
+             subcategoryDiv.style.marginBottom = "20px";
+             
+             const subcategoryTitle = document.createElement("h4");
+             subcategoryTitle.style.color = "#a0aec0";
+             subcategoryTitle.style.fontSize = "1rem";
+             subcategoryTitle.style.marginBottom = "10px";
+             subcategoryTitle.style.fontWeight = "500";
+             subcategoryTitle.textContent = subcategory;
+             subcategoryDiv.appendChild(subcategoryTitle);
+             
+             const subcategoryProducts = products.filter(p => p.category === category && p.subcategory === subcategory);
+             
+             subcategoryProducts.forEach((p) => {
+               const globalIndex = products.indexOf(p);
+               const div = createProductElement(p, globalIndex);
+               subcategoryDiv.appendChild(div);
+             });
+             
+             categoryDiv.appendChild(subcategoryDiv);
+           });
+         } else {
+           // Per altre categorie, mostra direttamente i prodotti
+           const categoryProducts = products.filter(p => p.category === category);
+           
+           categoryProducts.forEach((p) => {
+             const globalIndex = products.indexOf(p);
+             const div = createProductElement(p, globalIndex);
+             categoryDiv.appendChild(div);
+           });
+         }
+         
+         productList.appendChild(categoryDiv);
+       });
+ 
+       updateDistribution();
+     }
+ 
+     function createProductElement(p, globalIndex) {
+       const div = document.createElement("div");
+       div.className = "product";
+ 
+       const nameContainer = document.createElement("div");
+       const name = document.createElement("span");
+       name.className = "product-name";
+       name.textContent = p.name;
+       
+       const tierBadge = document.createElement("span");
+       tierBadge.className = `tier-badge ${getTierClass(p.tier)}`;
+       tierBadge.textContent = p.tier;
+       
+       nameContainer.appendChild(name);
+       nameContainer.appendChild(tierBadge);
+ 
+       const price = document.createElement("span");
+       price.className = `product-price ${getCurrencyClass(p.price)}`;
+       price.textContent = formatCurrency(p.price);
+ 
+       const qty = document.createElement("input");
+       qty.type = "number";
+       qty.min = "0";
+       qty.value = p.qty;
+       qty.placeholder = "Qtà";
+ 
+       qty.addEventListener("input", () => {
+         products[globalIndex].qty = parseInt(qty.value) || 0;
+         updateDistribution();
+       });
+ 
+       div.appendChild(nameContainer);
+       div.appendChild(price);
+       div.appendChild(qty);
+       
+       return div;
+     }
+ 
+     function updateDistribution() {
+       const participants = parseInt(participantsInput.value) || 1;
+       const activeItems = products.filter(p => p.qty > 0);
+       
+       if (activeItems.length === 0) {
+         distributionResults.innerHTML = '<div class="empty-state">Seleziona alcuni materiali per vedere la distribuzione</div>';
+         return;
+       }
+ 
+       distributionResults.innerHTML = "";
+       
+       // Array per tenere traccia dei valori di ogni partecipante
+       const participantValues = new Array(participants).fill(0);
+       const participantItems = new Array(participants).fill().map(() => []);
+       
+       // Distribuzione base: divide equamente gli oggetti interi
+       activeItems.forEach(item => {
+         const itemsPerParticipant = Math.floor(item.qty / participants);
+         const totalDistributed = itemsPerParticipant * participants;
+         
+         if (itemsPerParticipant > 0) {
+           for (let i = 0; i < participants; i++) {
+             participantItems[i].push({
+               name: item.name,
+               qty: itemsPerParticipant,
+               price: item.price
+             });
+             participantValues[i] += itemsPerParticipant * item.price;
+           }
+         }
+       });
+       
+       // Calcola l'esubero (oggetti rimanenti)
+       const esuberoItems = [];
+       activeItems.forEach(item => {
+         const itemsPerParticipant = Math.floor(item.qty / participants);
+         const totalDistributed = itemsPerParticipant * participants;
+         const remaining = item.qty - totalDistributed;
+         
+         if (remaining > 0) {
+           esuberoItems.push({
+             name: item.name,
+             qty: remaining,
+             price: item.price
+           });
+         }
+       });
+       
+       // Se c'è esubero, lo distribuisce equamente tra i partecipanti
+       if (esuberoItems.length > 0) {
+         const totalEsuberoValue = esuberoItems.reduce((total, item) => total + (item.qty * item.price), 0);
+         const esuberoValuePerParticipant = totalEsuberoValue / participants;
+         
+         // Aggiunge il valore dell'esubero a ogni partecipante
+         for (let i = 0; i < participants; i++) {
+           participantValues[i] += esuberoValuePerParticipant;
+         }
+         
+         // Mostra messaggio informativo
+         const infoDiv = document.createElement("div");
+         infoDiv.style.textAlign = "center";
+         infoDiv.style.marginTop = "20px";
+         infoDiv.style.padding = "15px";
+         infoDiv.style.background = "rgba(99, 179, 237, 0.1)";
+         infoDiv.style.borderRadius = "8px";
+         infoDiv.style.border = "1px solid rgba(99, 179, 237, 0.3)";
+         infoDiv.style.color = "#63b3ed";
+         infoDiv.style.fontSize = "0.9rem";
+         infoDiv.innerHTML = `📦 <strong>Esubero distribuito:</strong> ${formatCurrency(totalEsuberoValue)} distribuito equamente tra i partecipanti (${formatCurrency(esuberoValuePerParticipant)} ciascuno)`;
+         
+         distributionResults.appendChild(infoDiv);
+       }
+       
+       // Mostra i risultati per ogni partecipante
+       for (let i = 0; i < participants; i++) {
+         const participantDiv = document.createElement("div");
+         participantDiv.className = "participant-result";
+         
+         const title = document.createElement("div");
+         title.className = "participant-title";
+         title.textContent = `Partecipante ${i + 1}`;
+         participantDiv.appendChild(title);
+ 
+         // Mostra gli oggetti distribuiti
+         participantItems[i].forEach(item => {
+           const itemDiv = document.createElement("div");
+           itemDiv.className = "item-distribution";
+           
+           const itemName = document.createElement("span");
+           itemName.textContent = `${item.name} x${item.qty}`;
+           
+           const itemCost = document.createElement("span");
+           const cost = item.qty * item.price;
+           itemCost.className = getCurrencyClass(cost);
+           itemCost.textContent = formatCurrency(cost);
+           
+           itemDiv.appendChild(itemName);
+           itemDiv.appendChild(itemCost);
+           participantDiv.appendChild(itemDiv);
+         });
+ 
+         // Mostra il totale (incluso esubero)
+         const totalDiv = document.createElement("div");
+         totalDiv.className = "total-cost";
+         const formattedTotal = formatCurrency(participantValues[i]);
+         totalDiv.innerHTML = `Totale: <span class="${getCurrencyClass(participantValues[i])}">${formattedTotal}</span>`;
+         participantDiv.appendChild(totalDiv);
+         
+         distributionResults.appendChild(participantDiv);
+       }
+       
+       // Mostra la sezione esubero con gli oggetti rimanenti
+       if (esuberoItems.length > 0) {
+         const esuberoDiv = document.createElement("div");
+         esuberoDiv.className = "participant-result";
+         esuberoDiv.style.background = "rgba(237, 137, 54, 0.2)";
+         esuberoDiv.style.borderColor = "rgba(237, 137, 54, 0.3)";
+         
+         const title = document.createElement("div");
+         title.className = "participant-title";
+         title.style.color = "#ed8936";
+         title.textContent = "📦 Oggetti Rimanenti";
+         esuberoDiv.appendChild(title);
+ 
+         // Mostra ogni oggetto rimanente
+         esuberoItems.forEach(item => {
+           const itemDiv = document.createElement("div");
+           itemDiv.className = "item-distribution";
+           
+           const itemName = document.createElement("span");
+           itemName.textContent = `${item.name} x${item.qty}`;
+           
+           const itemCost = document.createElement("span");
+           const cost = item.qty * item.price;
+           itemCost.className = getCurrencyClass(cost);
+           itemCost.textContent = formatCurrency(cost);
+           
+           itemDiv.appendChild(itemName);
+           itemDiv.appendChild(itemCost);
+           esuberoDiv.appendChild(itemDiv);
+         });
+ 
+         // Mostra il totale degli oggetti rimanenti
+         const totalDiv = document.createElement("div");
+         totalDiv.className = "total-cost";
+         totalDiv.style.background = "rgba(237, 137, 54, 0.2)";
+         totalDiv.style.borderColor = "rgba(237, 137, 54, 0.3)";
+         const remainingEsuberoValue = esuberoItems.reduce((total, item) => total + (item.qty * item.price), 0);
+         const formattedTotal = formatCurrency(remainingEsuberoValue);
+         totalDiv.innerHTML = `Totale Rimanente: <span class="${getCurrencyClass(remainingEsuberoValue)}">${formattedTotal}</span>`;
+         esuberoDiv.appendChild(totalDiv);
+         
+         distributionResults.appendChild(esuberoDiv);
+       }
+     }
+ 
+     // Event listeners
+     participantsInput.addEventListener("input", updateDistribution);
+ 
+     // Inizializzazione
+     loadProducts();
+   </script>
+ </body>
 </html>
