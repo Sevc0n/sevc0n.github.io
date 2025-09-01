@@ -385,12 +385,14 @@
  
      <main>
        <div class="grid">
-         <div class="card">
-           <h2>Lista Materiali</h2>
-           <div id="product-list">
-             <div class="loading">Caricamento materiali in corso...</div>
-           </div>
-         </div>
+                   <div class="card">
+            <h2>Lista Materiali
+              <button id="reload-data" style="float: right; background: rgba(99, 179, 237, 0.2); border: 1px solid rgba(99, 179, 237, 0.5); color: #63b3ed; padding: 5px 10px; border-radius: 5px; cursor: pointer; font-size: 0.8rem;" onclick="reloadData()">🔄 Ricarica Dati</button>
+            </h2>
+            <div id="product-list">
+              <div class="loading">Caricamento materiali in corso...</div>
+            </div>
+          </div>
  
          <div>
            <div class="card participants-section">
@@ -456,10 +458,12 @@
            const controller = new AbortController();
            const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 secondi timeout
            
-           try {
-             const response = await fetch('products.json', { 
-               signal: controller.signal 
-             });
+                     try {
+            // Aggiungi un timestamp per evitare la cache del browser
+            const timestamp = new Date().getTime();
+            const response = await fetch(`products.json?v=${timestamp}`, { 
+              signal: controller.signal 
+            });
              clearTimeout(timeoutId);
              
              if (!response.ok) {
@@ -475,10 +479,20 @@
            }
          }
          
-         if (jsonLoaded) {
-           products = [...defaultProducts.map(p => ({ ...p, qty: 0 }))];
-           renderMain();
-         }
+                 if (jsonLoaded) {
+          // Debug: mostra i dati caricati
+          console.log('Prodotti caricati dal JSON:', defaultProducts);
+          console.log('Numero di prodotti:', defaultProducts.length);
+          
+          products = [...defaultProducts.map(p => ({ ...p, qty: 0 }))];
+          renderMain();
+          
+          // Mostra messaggio di successo con timestamp
+          setTimeout(() => {
+            const timestamp = new Date().toLocaleTimeString();
+            console.log(`Dati aggiornati alle ${timestamp}`);
+          }, 1000);
+        }
        } catch (error) {
          console.error('Errore nel caricamento dei prodotti:', error);
          
@@ -789,11 +803,41 @@
        }
      }
  
-     // Event listeners
-     participantsInput.addEventListener("input", updateDistribution);
- 
-     // Inizializzazione
-     loadProducts();
+         // Funzione per ricaricare i dati manualmente
+    async function reloadData() {
+      const reloadButton = document.getElementById('reload-data');
+      const originalText = reloadButton.innerHTML;
+      
+      // Mostra che sta caricando
+      reloadButton.innerHTML = '⏳ Caricando...';
+      reloadButton.disabled = true;
+      
+      try {
+        await loadProducts();
+        reloadButton.innerHTML = '✅ Ricaricato!';
+        
+        // Torna al testo originale dopo 2 secondi
+        setTimeout(() => {
+          reloadButton.innerHTML = originalText;
+          reloadButton.disabled = false;
+        }, 2000);
+      } catch (error) {
+        reloadButton.innerHTML = '❌ Errore';
+        console.error('Errore nel ricaricamento:', error);
+        
+        // Torna al testo originale dopo 3 secondi
+        setTimeout(() => {
+          reloadButton.innerHTML = originalText;
+          reloadButton.disabled = false;
+        }, 3000);
+      }
+    }
+
+    // Event listeners
+    participantsInput.addEventListener("input", updateDistribution);
+
+    // Inizializzazione
+    loadProducts();
    </script>
  </body>
 </html>
