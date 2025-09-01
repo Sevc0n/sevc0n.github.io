@@ -1,0 +1,862 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Abaco Divisore - By piccionenberg</title>
+  <link rel="icon" type="image/png" href="logo.png">
+  <link rel="shortcut icon" type="image/png" href="logo.png">
+  <link rel="apple-touch-icon" href="logo.png">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+      min-height: 100vh;
+      padding: 20px;
+      color: #ffffff;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      background: rgba(20, 25, 45, 0.95);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+      overflow: hidden;
+      animation: slideIn 0.6s ease-out;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    header {
+      background: linear-gradient(135deg, #2d3748, #4a5568);
+      color: white;
+      padding: 30px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    header::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, rgba(255, 255, 255, 0.05) 0%, transparent 70%);
+      animation: pulse 4s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 0.3; }
+      50% { transform: scale(1.1); opacity: 0.6; }
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin-bottom: 10px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .subtitle {
+      font-size: 1.1rem;
+      opacity: 0.8;
+      position: relative;
+      z-index: 1;
+    }
+
+    main {
+      padding: 40px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 30px;
+      margin-bottom: 30px;
+    }
+
+    @media (max-width: 1024px) {
+      .grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+      }
+    }
+
+    .card {
+      background: rgba(45, 55, 72, 0.6);
+      border-radius: 15px;
+      padding: 30px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      transition: all 0.3s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
+      border-color: rgba(99, 179, 237, 0.3);
+    }
+
+    .card h2 {
+      color: #ffffff;
+      font-size: 1.5rem;
+      margin-bottom: 25px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .card h2::before {
+      content: '';
+      width: 4px;
+      height: 25px;
+      background: linear-gradient(135deg, #63b3ed, #4299e1);
+      border-radius: 2px;
+    }
+
+    .category-section {
+      margin-bottom: 30px;
+    }
+
+    .category-title {
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: #63b3ed;
+      margin-bottom: 15px;
+      padding: 10px 0;
+      border-bottom: 1px solid rgba(99, 179, 237, 0.3);
+    }
+
+    .product {
+      display: grid;
+      grid-template-columns: 2fr 120px 80px;
+      gap: 15px;
+      align-items: center;
+      margin: 12px 0;
+      padding: 15px;
+      background: rgba(99, 179, 237, 0.05);
+      border-radius: 10px;
+      transition: all 0.3s ease;
+      border: 1px solid rgba(99, 179, 237, 0.1);
+    }
+
+    .product:hover {
+      background: rgba(99, 179, 237, 0.1);
+      transform: translateX(5px);
+      border-color: rgba(99, 179, 237, 0.3);
+    }
+
+    .product-name {
+      font-weight: 500;
+      color: #ffffff;
+    }
+
+    .product-price {
+      font-weight: 600;
+      color: #68d391;
+      text-align: right;
+    }
+
+    .tier-badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      margin-left: 8px;
+    }
+
+    .tier-novizio { background: #a0aec0; color: #2d3748; }
+    .tier-avanzato { background: #ed8936; color: white; }
+    .tier-esperto { background: #718096; color: white; }
+    .tier-custode { background: #d69e2e; color: white; }
+    .tier-maestro { background: #4299e1; color: white; }
+    .tier-tutti { background: linear-gradient(135deg, #667eea, #764ba2); color: white; }
+
+    .product input, #participants {
+      padding: 12px;
+      border: 2px solid rgba(99, 179, 237, 0.3);
+      border-radius: 8px;
+      font-size: 1rem;
+      text-align: center;
+      transition: all 0.3s ease;
+      background: rgba(45, 55, 72, 0.8);
+      color: #ffffff;
+    }
+
+    .product input:focus, #participants:focus {
+      outline: none;
+      border-color: #63b3ed;
+      box-shadow: 0 0 0 3px rgba(99, 179, 237, 0.2);
+      transform: scale(1.02);
+    }
+
+    .participants-section {
+      text-align: center;
+    }
+
+    .participants-label {
+      display: block;
+      font-weight: 600;
+      color: #ffffff;
+      margin-bottom: 15px;
+      font-size: 1.1rem;
+    }
+
+    #participants {
+      width: 120px;
+      font-size: 1.2rem;
+      font-weight: 600;
+    }
+
+    .results-card {
+      background: linear-gradient(135deg, rgba(72, 187, 120, 0.2), rgba(56, 178, 172, 0.2));
+      color: white;
+      border: 1px solid rgba(72, 187, 120, 0.3);
+      max-height: none;
+      overflow: visible;
+    }
+
+    .results-card h2 {
+      color: white;
+      margin-bottom: 20px;
+    }
+
+    .results-card h2::before {
+      background: rgba(72, 187, 120, 0.6);
+    }
+
+    .participant-result {
+      margin: 20px 0;
+      padding: 20px;
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .participant-title {
+      font-size: 1.2rem;
+      font-weight: 600;
+      margin-bottom: 15px;
+      color: #63b3ed;
+      text-align: center;
+    }
+
+    .item-distribution {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 10px;
+      margin: 8px 0;
+      padding: 8px 12px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 6px;
+    }
+
+    .total-cost {
+      text-align: center;
+      margin-top: 15px;
+      padding: 12px;
+      background: rgba(72, 187, 120, 0.2);
+      border-radius: 8px;
+      font-weight: 600;
+      border: 1px solid rgba(72, 187, 120, 0.3);
+    }
+
+    .empty-state {
+      text-align: center;
+      color: #a0aec0;
+      font-style: italic;
+      padding: 40px;
+    }
+
+    .currency-br {
+      color: #68d391;
+      font-weight: 600;
+    }
+    
+    .currency-a {
+      color: #c0c0c0;
+      font-weight: 600;
+    }
+    
+    .currency-mixed {
+      color: #68d391;
+      font-weight: 600;
+    }
+
+    .logo {
+      width: 40px;
+      height: 40px;
+      margin-right: 15px;
+      vertical-align: middle;
+    }
+
+    .loading {
+      text-align: center;
+      color: #a0aec0;
+      padding: 40px;
+      font-style: italic;
+    }
+
+    .error {
+      text-align: center;
+      color: #f56565;
+      padding: 20px;
+      background: rgba(245, 101, 101, 0.1);
+      border-radius: 8px;
+      border: 1px solid rgba(245, 101, 101, 0.3);
+    }
+
+    .contacts-section {
+      background: rgba(30, 35, 55, 0.8);
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 20px 40px;
+      text-align: center;
+      margin-top: 30px;
+    }
+ 
+     .contacts-title {
+       color: #63b3ed;
+       font-size: 1.1rem;
+       margin-bottom: 15px;
+       font-weight: 600;
+     }
+ 
+     .contact-item {
+       display: inline-block;
+       margin: 0 15px 8px 0;
+       padding: 8px 16px;
+       background: rgba(99, 179, 237, 0.1);
+       border: 1px solid rgba(99, 179, 237, 0.3);
+       border-radius: 20px;
+       color: #ffffff;
+       text-decoration: none;
+       transition: all 0.3s ease;
+       font-weight: 500;
+       font-size: 0.9rem;
+     }
+ 
+     .contact-item:hover {
+       background: rgba(99, 179, 237, 0.2);
+       border-color: rgba(99, 179, 237, 0.5);
+       transform: translateY(-2px);
+     }
+ 
+     .contact-item strong {
+       color: #63b3ed;
+     }
+ 
+     .fractional-display {
+       color: #fbb6ce;
+       font-size: 0.9em;
+       font-style: italic;
+     }
+   </style>
+ </head>
+ <body>
+   <div class="container">
+           <header>
+        <h1><img src="logo.png" alt="Abaco Logo" class="logo" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline';">⚒️ Abaco per Divisione Abisso</h1>
+        <p class="subtitle">Divisore intelligente per bottini di abisso</p>
+        <a href="homepage.html" style="position: absolute; top: 20px; right: 20px; color: #63b3ed; text-decoration: none; font-size: 0.9rem; padding: 8px 12px; border: 1px solid rgba(99, 179, 237, 0.3); border-radius: 8px; transition: all 0.3s ease;" onmouseover="this.style.background='rgba(99, 179, 237, 0.1)'" onmouseout="this.style.background='transparent'">🏠 Homepage</a>
+      </header>
+ 
+     <main>
+       <div class="grid">
+                   <div class="card">
+            <h2>Lista Materiali
+              <button id="reload-data" style="float: right; background: rgba(99, 179, 237, 0.2); border: 1px solid rgba(99, 179, 237, 0.5); color: #63b3ed; padding: 5px 10px; border-radius: 5px; cursor: pointer; font-size: 0.8rem;" onclick="reloadData()">🔄 Ricarica Dati</button>
+            </h2>
+            <div id="product-list">
+              <div class="loading">Caricamento materiali in corso...</div>
+            </div>
+          </div>
+ 
+         <div>
+           <div class="card participants-section">
+             <h2>Partecipanti</h2>
+             <label class="participants-label">Numero di partecipanti:</label>
+             <input type="number" id="participants" min="1" value="1">
+           </div>
+ 
+           <div class="card results-card">
+             <h2>Distribuzione</h2>
+             <div id="distribution-results"></div>
+           </div>
+         </div>
+       </div>
+     </main>
+ 
+     <div class="contacts-section">
+       <div class="contacts-title">📞 Contatti</div>
+       <div>
+         <span class="contact-item">
+           🎮 Discord: <strong>picciobeffa</strong>
+         </span>
+         <span class="contact-item">
+           📱 Telegram: <strong>@piccionenberg</strong>
+         </span>
+       </div>
+     </div>
+   </div>
+ 
+   <script>
+     let defaultProducts = [];
+     let products = [];
+     const distributionResults = document.getElementById("distribution-results");
+     const participantsInput = document.getElementById("participants");
+ 
+     // Carica i prodotti dal file JSON
+     async function loadProducts() {
+       const productList = document.getElementById("product-list");
+       let jsonLoaded = false;
+       
+       // Tempo di caricamento hardcoded variabile (1-4 secondi)
+       const loadingTime = Math.floor(Math.random() * 3000) + 1000; // da 1000ms a 4000ms
+       
+       // Mostra sempre il messaggio di caricamento iniziale
+       productList.innerHTML = `
+         <div class="loading">
+           ⏳ Caricamento dati in corso...<br>
+           <small>Connessione al database materiali</small>
+         </div>
+       `;
+       
+       // Aspetta il tempo di caricamento simulato
+       await new Promise(resolve => setTimeout(resolve, loadingTime));
+       
+       try {
+         // Prova prima con window.fs (ambiente Claude)
+         if (window.fs && window.fs.readFile) {
+           const data = await window.fs.readFile('products.json', { encoding: 'utf8' });
+           defaultProducts = JSON.parse(data);
+           jsonLoaded = true;
+         } else {
+           // Fallback per browser normali - carica via fetch con timeout
+           const controller = new AbortController();
+           const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 secondi timeout
+           
+                     try {
+            // Aggiungi un timestamp per evitare la cache del browser
+            const timestamp = new Date().getTime();
+            const response = await fetch(`products.json?v=${timestamp}`, { 
+              signal: controller.signal 
+            });
+             clearTimeout(timeoutId);
+             
+             if (!response.ok) {
+               throw new Error(`HTTP error! status: ${response.status}`);
+             }
+             defaultProducts = await response.json();
+             jsonLoaded = true;
+           } catch (fetchError) {
+             if (fetchError.name === 'AbortError') {
+               throw new Error('Timeout: il caricamento del file JSON ha richiesto troppo tempo');
+             }
+             throw fetchError;
+           }
+         }
+         
+                 if (jsonLoaded) {
+          // Debug: mostra i dati caricati
+          console.log('Prodotti caricati dal JSON:', defaultProducts);
+          console.log('Numero di prodotti:', defaultProducts.length);
+          
+          products = [...defaultProducts.map(p => ({ ...p, qty: 0 }))];
+          renderMain();
+          
+          // Mostra messaggio di successo con timestamp
+          setTimeout(() => {
+            const timestamp = new Date().toLocaleTimeString();
+            console.log(`Dati aggiornati alle ${timestamp}`);
+          }, 1000);
+        }
+       } catch (error) {
+         console.error('Errore nel caricamento dei prodotti:', error);
+         
+         // Mostra messaggio di caricamento aggiuntivo se fallisce
+         productList.innerHTML = `
+           <div class="loading">
+             ⏳ Caricamento dati in corso...<br>
+             <small>Tentativo di connessione al database materiali</small>
+           </div>
+         `;
+         
+         // Aspetta 10 secondi prima di mostrare l'errore finale
+         setTimeout(() => {
+           productList.innerHTML = `
+             <div class="error">
+               ❌ Impossibile caricare i dati dei materiali<br>
+               <br>
+               <strong>Per assistenza contatta:</strong><br>
+               🎮 Discord: <strong>picciobeffa</strong><br>
+               📱 Telegram: <strong>@piccionenberg</strong>
+             </div>
+           `;
+         }, 10000); // Aspetta 10 secondi prima di mostrare l'errore
+       }
+     }
+ 
+     function getTierClass(tier) {
+       return `tier-${tier.toLowerCase()}`;
+     }
+ 
+     // Funzione per formattare la valuta (conversione automatica br -> a)
+     function formatCurrency(value) {
+       if (value >= 100) {
+         const argenti = Math.floor(value / 100);
+         const bronzini = value % 100;
+         
+         if (bronzini === 0) {
+           return `${argenti}a`;
+         } else {
+           const bronziniDisplay = (bronzini % 1 === 0) ? bronzini.toString() : bronzini.toFixed(1);
+           return `${argenti}a ${bronziniDisplay}br`;
+         }
+       } else {
+         const display = (value % 1 === 0) ? value.toString() : value.toFixed(1);
+         return `${display}br`;
+       }
+     }
+ 
+     // Funzione per applicare la classe CSS corretta in base al valore
+     function getCurrencyClass(value) {
+       if (value >= 100) {
+         return 'currency-mixed';
+       } else {
+         return 'currency-br';
+       }
+     }
+ 
+     function renderMain() {
+       const productList = document.getElementById("product-list");
+       productList.innerHTML = "";
+ 
+       const categories = [...new Set(products.map(p => p.category))];
+       
+       categories.forEach(category => {
+         const categoryDiv = document.createElement("div");
+         categoryDiv.className = "category-section";
+         
+         const categoryTitle = document.createElement("h3");
+         categoryTitle.className = "category-title";
+         categoryTitle.textContent = `Materiali dai ${category}`;
+         categoryDiv.appendChild(categoryTitle);
+ 
+         if (category === "Cristalli") {
+           // Per i cristalli, raggruppa per sottocategorie
+           const subcategories = [...new Set(products.filter(p => p.category === category).map(p => p.subcategory))];
+           
+           subcategories.forEach(subcategory => {
+             const subcategoryDiv = document.createElement("div");
+             subcategoryDiv.style.marginLeft = "20px";
+             subcategoryDiv.style.marginBottom = "20px";
+             
+             const subcategoryTitle = document.createElement("h4");
+             subcategoryTitle.style.color = "#a0aec0";
+             subcategoryTitle.style.fontSize = "1rem";
+             subcategoryTitle.style.marginBottom = "10px";
+             subcategoryTitle.style.fontWeight = "500";
+             subcategoryTitle.textContent = subcategory;
+             subcategoryDiv.appendChild(subcategoryTitle);
+             
+             const subcategoryProducts = products.filter(p => p.category === category && p.subcategory === subcategory);
+             
+             subcategoryProducts.forEach((p) => {
+               const globalIndex = products.indexOf(p);
+               const div = createProductElement(p, globalIndex);
+               subcategoryDiv.appendChild(div);
+             });
+             
+             categoryDiv.appendChild(subcategoryDiv);
+           });
+         } else {
+           // Per altre categorie, mostra direttamente i prodotti
+           const categoryProducts = products.filter(p => p.category === category);
+           
+           categoryProducts.forEach((p) => {
+             const globalIndex = products.indexOf(p);
+             const div = createProductElement(p, globalIndex);
+             categoryDiv.appendChild(div);
+           });
+         }
+         
+         productList.appendChild(categoryDiv);
+       });
+ 
+       updateDistribution();
+     }
+ 
+     function createProductElement(p, globalIndex) {
+       const div = document.createElement("div");
+       div.className = "product";
+ 
+       const nameContainer = document.createElement("div");
+       const name = document.createElement("span");
+       name.className = "product-name";
+       name.textContent = p.name;
+       
+       const tierBadge = document.createElement("span");
+       tierBadge.className = `tier-badge ${getTierClass(p.tier)}`;
+       tierBadge.textContent = p.tier;
+       
+       nameContainer.appendChild(name);
+       nameContainer.appendChild(tierBadge);
+ 
+       const price = document.createElement("span");
+       price.className = `product-price ${getCurrencyClass(p.price)}`;
+       price.textContent = formatCurrency(p.price);
+ 
+       const qty = document.createElement("input");
+       qty.type = "number";
+       qty.min = "0";
+       qty.value = p.qty;
+       qty.placeholder = "Qtà";
+ 
+       qty.addEventListener("input", () => {
+         products[globalIndex].qty = parseInt(qty.value) || 0;
+         updateDistribution();
+       });
+ 
+       div.appendChild(nameContainer);
+       div.appendChild(price);
+       div.appendChild(qty);
+       
+       return div;
+     }
+ 
+     function updateDistribution() {
+       const participants = parseInt(participantsInput.value) || 1;
+       const activeItems = products.filter(p => p.qty > 0);
+       
+       if (activeItems.length === 0) {
+         distributionResults.innerHTML = '<div class="empty-state">Seleziona alcuni materiali per vedere la distribuzione</div>';
+         return;
+       }
+ 
+       distributionResults.innerHTML = "";
+       
+       // Array per tenere traccia dei valori di ogni partecipante
+       const participantValues = new Array(participants).fill(0);
+       const participantItems = new Array(participants).fill().map(() => []);
+       
+       // Distribuzione base: divide equamente gli oggetti interi
+       activeItems.forEach(item => {
+         const itemsPerParticipant = Math.floor(item.qty / participants);
+         const totalDistributed = itemsPerParticipant * participants;
+         
+         if (itemsPerParticipant > 0) {
+           for (let i = 0; i < participants; i++) {
+             participantItems[i].push({
+               name: item.name,
+               qty: itemsPerParticipant,
+               price: item.price
+             });
+             participantValues[i] += itemsPerParticipant * item.price;
+           }
+         }
+       });
+       
+       // Calcola l'esubero (oggetti rimanenti)
+       const esuberoItems = [];
+       activeItems.forEach(item => {
+         const itemsPerParticipant = Math.floor(item.qty / participants);
+         const totalDistributed = itemsPerParticipant * participants;
+         const remaining = item.qty - totalDistributed;
+         
+         if (remaining > 0) {
+           esuberoItems.push({
+             name: item.name,
+             qty: remaining,
+             price: item.price
+           });
+         }
+       });
+       
+               // Se c'è esubero, lo distribuisce in modo bilanciato tra i partecipanti
+        if (esuberoItems.length > 0) {
+          const totalEsuberoValue = esuberoItems.reduce((total, item) => total + (item.qty * item.price), 0);
+          
+          // Ordina gli oggetti dell'esubero per valore (dal più alto al più basso)
+          esuberoItems.sort((a, b) => b.price - a.price);
+          
+          // Distribuisce gli oggetti in modo bilanciato
+          esuberoItems.forEach(item => {
+            let remainingQty = item.qty;
+            
+            // Distribuisce gli oggetti uno per uno, sempre al partecipante con valore più basso
+            while (remainingQty > 0) {
+              const qtyToGive = Math.min(1, remainingQty);
+              
+              // Trova il partecipante con il valore più basso
+              let minValueIndex = 0;
+              let minValue = participantValues[0];
+              
+              for (let i = 1; i < participants; i++) {
+                if (participantValues[i] < minValue) {
+                  minValue = participantValues[i];
+                  minValueIndex = i;
+                }
+              }
+              
+              // Aggiunge l'oggetto al partecipante con valore più basso
+              participantItems[minValueIndex].push({
+                name: item.name,
+                qty: qtyToGive,
+                price: item.price,
+                isEsubero: true // Marca come oggetto dell'esubero
+              });
+              
+              // Aggiorna il valore del partecipante
+              participantValues[minValueIndex] += qtyToGive * item.price;
+              
+              remainingQty -= qtyToGive;
+            }
+          });
+          
+          // Mostra messaggio informativo
+          const infoDiv = document.createElement("div");
+          infoDiv.style.textAlign = "center";
+          infoDiv.style.marginTop = "20px";
+          infoDiv.style.padding = "15px";
+          infoDiv.style.background = "rgba(99, 179, 237, 0.1)";
+          infoDiv.style.borderRadius = "8px";
+          infoDiv.style.border = "1px solid rgba(99, 179, 237, 0.3)";
+          infoDiv.style.color = "#63b3ed";
+          infoDiv.style.fontSize = "0.9rem";
+          infoDiv.innerHTML = `📦 <strong>Esubero distribuito:</strong> ${formatCurrency(totalEsuberoValue)} distribuito in modo bilanciato tra i partecipanti`;
+          
+          distributionResults.appendChild(infoDiv);
+        }
+       
+       // Mostra i risultati per ogni partecipante
+       for (let i = 0; i < participants; i++) {
+         const participantDiv = document.createElement("div");
+         participantDiv.className = "participant-result";
+         
+         const title = document.createElement("div");
+         title.className = "participant-title";
+         title.textContent = `Partecipante ${i + 1}`;
+         participantDiv.appendChild(title);
+ 
+                   // Raggruppa gli oggetti per nome e tipo (esubero o normale)
+          const groupedItems = {};
+          
+          participantItems[i].forEach(item => {
+            const key = `${item.name}_${item.isEsubero ? 'esubero' : 'normale'}`;
+            if (!groupedItems[key]) {
+              groupedItems[key] = {
+                name: item.name,
+                qty: 0,
+                price: item.price,
+                isEsubero: item.isEsubero
+              };
+            }
+            groupedItems[key].qty += item.qty;
+          });
+          
+          // Mostra gli oggetti raggruppati
+          Object.values(groupedItems).forEach(item => {
+            const itemDiv = document.createElement("div");
+            itemDiv.className = "item-distribution";
+            
+            // Se è un oggetto dell'esubero, applica lo stile arancione
+            if (item.isEsubero) {
+              itemDiv.style.background = "rgba(237, 137, 54, 0.2)";
+              itemDiv.style.borderColor = "rgba(237, 137, 54, 0.3)";
+              itemDiv.style.border = "1px solid rgba(237, 137, 54, 0.3)";
+            }
+            
+            const itemName = document.createElement("span");
+            itemName.textContent = `${item.name} x${item.qty}`;
+            
+            // Aggiungi un'icona per gli oggetti dell'esubero
+            if (item.isEsubero) {
+              itemName.innerHTML = `📦 ${item.name} x${item.qty}`;
+            }
+            
+            const itemCost = document.createElement("span");
+            const cost = item.qty * item.price;
+            itemCost.className = getCurrencyClass(cost);
+            itemCost.textContent = formatCurrency(cost);
+            
+            itemDiv.appendChild(itemName);
+            itemDiv.appendChild(itemCost);
+            participantDiv.appendChild(itemDiv);
+          });
+ 
+         // Mostra il totale (incluso esubero)
+         const totalDiv = document.createElement("div");
+         totalDiv.className = "total-cost";
+         const formattedTotal = formatCurrency(participantValues[i]);
+         totalDiv.innerHTML = `Totale: <span class="${getCurrencyClass(participantValues[i])}">${formattedTotal}</span>`;
+         participantDiv.appendChild(totalDiv);
+         
+         distributionResults.appendChild(participantDiv);
+       }
+       
+               // Non serve più mostrare una sezione esubero separata
+        // Tutti gli oggetti sono stati distribuiti tra i partecipanti
+     }
+ 
+         // Funzione per ricaricare i dati manualmente
+    async function reloadData() {
+      const reloadButton = document.getElementById('reload-data');
+      const originalText = reloadButton.innerHTML;
+      
+      // Mostra che sta caricando
+      reloadButton.innerHTML = '⏳ Caricando...';
+      reloadButton.disabled = true;
+      
+      try {
+        await loadProducts();
+        reloadButton.innerHTML = '✅ Ricaricato!';
+        
+        // Torna al testo originale dopo 2 secondi
+        setTimeout(() => {
+          reloadButton.innerHTML = originalText;
+          reloadButton.disabled = false;
+        }, 2000);
+      } catch (error) {
+        reloadButton.innerHTML = '❌ Errore';
+        console.error('Errore nel ricaricamento:', error);
+        
+        // Torna al testo originale dopo 3 secondi
+        setTimeout(() => {
+          reloadButton.innerHTML = originalText;
+          reloadButton.disabled = false;
+        }, 3000);
+      }
+    }
+
+    // Event listeners
+    participantsInput.addEventListener("input", updateDistribution);
+
+    // Inizializzazione
+    loadProducts();
+   </script>
+ </body>
+</html>
