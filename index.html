@@ -148,6 +148,7 @@
       background: linear-gradient(135deg, rgba(156, 163, 175, 0.2), rgba(107, 114, 128, 0.2));
       border-color: rgba(156, 163, 175, 0.3);
       opacity: 0.7;
+      cursor: pointer;
     }
 
     .tool-icon {
@@ -237,6 +238,32 @@
       font-size: 0.9rem;
     }
 
+    .github-button {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 6px 12px;
+      background: rgba(36, 41, 46, 0.8);
+      color: #ffffff;
+      text-decoration: none;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      transition: all 0.3s ease;
+      font-family: 'Courier New', monospace;
+    }
+
+    .github-button:hover {
+      background: rgba(36, 41, 46, 1);
+      border-color: rgba(255, 255, 255, 0.3);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    .github-button svg {
+      flex-shrink: 0;
+    }
+
     @media (max-width: 768px) {
       h1 {
         font-size: 2rem;
@@ -264,13 +291,13 @@
         <img src="logo.png" alt="Sevcon Logo" class="logo" onerror="this.style.display='none';">
         🛠️ Sevcon Tools
       </h1>
-      <p class="subtitle">Raccolta di strumenti utili per la community gaming</p>
+      <p class="subtitle">Raccolta di strumenti utili per Elysiumcraft</p>
     </header>
 
     <main>
       <div class="tools-grid">
                  <!-- Abaco Divisore -->
-         <div class="tool-card available" onclick="window.location.href='abaco.html'">
+         <div class="tool-card available" onclick="window.location.href='abaco/'">
           <span class="tool-icon">⚒️</span>
           <h3 class="tool-title">Abaco Divisore</h3>
           <p class="tool-description">
@@ -280,51 +307,55 @@
         </div>
 
                  <!-- Placeholder 1 -->
-         <div class="tool-card coming-soon">
+         <div class="tool-card coming-soon" onclick="window.location.href='futuro/'">
            <span class="tool-icon">🔮</span>
            <h3 class="tool-title">[REDACTED]</h3>
            <p class="tool-description">
-             prossimamente...
+             prossimamente...<br>
+             <small style="color: #a0aec0;">Cartella: /futuro/</small>
            </p>
            <span class="tool-status status-coming-soon">In Progettazione</span>
          </div>
 
          <!-- Placeholder 2 -->
-         <div class="tool-card coming-soon">
+         <div class="tool-card coming-soon" onclick="window.location.href='altro-tool/'">
            <span class="tool-icon">⚡</span>
            <h3 class="tool-title">[REDACTED]</h3>
            <p class="tool-description">
-             prossimamente...
+             prossimamente...<br>
+             <small style="color: #a0aec0;">Cartella: /altro-tool/</small>
            </p>
            <span class="tool-status status-coming-soon">In Progettazione</span>
          </div>
 
          <!-- Placeholder 3 -->
-         <div class="tool-card coming-soon">
+         <div class="tool-card coming-soon" onclick="window.location.href='nuovo-tool/'">
            <span class="tool-icon">🌟</span>
            <h3 class="tool-title">[REDACTED]</h3>
            <p class="tool-description">
-             prossimamente...
+             prossimamente...<br>
+             <small style="color: #a0aec0;">Cartella: /nuovo-tool/</small>
            </p>
            <span class="tool-status status-coming-soon">In Progettazione</span>
          </div>
 
          <!-- Placeholder 4 -->
-         <div class="tool-card coming-soon">
+         <div class="tool-card coming-soon" onclick="window.location.href='strumento/'">
            <span class="tool-icon">🎯</span>
            <h3 class="tool-title">[REDACTED]</h3>
            <p class="tool-description">
-             prossimamente...
+             <small style="color: #a0aec0;">Cartella: /strumento/</small>
            </p>
            <span class="tool-status status-coming-soon">In Progettazione</span>
          </div>
 
          <!-- Placeholder 5 -->
-         <div class="tool-card coming-soon">
+         <div class="tool-card coming-soon" onclick="window.location.href='ultimo-tool/'">
            <span class="tool-icon">🚀</span>
            <h3 class="tool-title">[REDACTED]</h3>
            <p class="tool-description">
-             prossimamente...
+             prossimamente...<br>
+             <small style="color: #aec0;">Cartella: /ultimo-tool/</small>
            </p>
            <span class="tool-status status-coming-soon">In Progettazione</span>
          </div>
@@ -346,14 +377,22 @@
     <div class="footer">
       <p style="display: flex; align-items: center; justify-content: center; gap: 10px;">
         <img src="logo.png" alt="Sevcon Logo" style="width: 20px; height: 20px; border-radius: 4px;" onerror="this.style.display='none';">
-        © 2024 Sevcon by piccionenberg - Creato con ❤️ per la community gaming
+        © 2025 Sevcon by piccionenberg - Creato con ❤️ per la community di Elysiumcraft
       </p>
+      <div style="text-align: center; margin-top: 15px;">
+        <a href="https://github.com/sevc0n/sevc0n.github.io" target="_blank" rel="noopener noreferrer" class="github-button">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+          </svg>
+          GitHub
+        </a>
+      </div>
     </div>
   </div>
 
   <script>
     // Aggiungi effetti di hover più fluidi
-    document.querySelectorAll('.tool-card.available').forEach(card => {
+    document.querySelectorAll('.tool-card.available, .tool-card.coming-soon').forEach(card => {
       card.addEventListener('mouseenter', function() {
         this.style.transform = 'translateY(-8px) scale(1.02)';
       });

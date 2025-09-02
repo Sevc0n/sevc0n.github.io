@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Test JSON - Abaco</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      background: #f0f0f0;
+    }
+    .test-result {
+      margin: 10px 0;
+      padding: 10px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+    .success { background: #d4edda; color: #155724; }
+    .error { background: #f8d7da; color: #721c24; }
+    .info { background: #d1ecf1; color: #0c5460; }
+  </style>
+</head>
+<body>
+  <h1>🧪 Test Accesso File JSON</h1>
+  
+  <div id="results"></div>
+  
+  <script>
+    const resultsDiv = document.getElementById('results');
+    
+    function addResult(message, type = 'info') {
+      const div = document.createElement('div');
+      div.className = `test-result ${type}`;
+      div.textContent = message;
+      resultsDiv.appendChild(div);
+    }
+    
+    async function testJSONAccess() {
+      addResult('🔍 Iniziando test di accesso al file JSON...', 'info');
+      
+      // Test 1: Path relativo
+      try {
+        const response = await fetch('./oggetti_abaco.json');
+        if (response.ok) {
+          const data = await response.json();
+          addResult(`✅ Path relativo OK - ${data.length} oggetti caricati`, 'success');
+        } else {
+          addResult(`❌ Path relativo fallito - Status: ${response.status}`, 'error');
+        }
+      } catch (error) {
+        addResult(`❌ Path relativo errore: ${error.message}`, 'error');
+      }
+      
+      // Test 2: Path assoluto
+      try {
+        const response = await fetch('/abaco/oggetti_abaco.json');
+        if (response.ok) {
+          const data = await response.json();
+          addResult(`✅ Path assoluto OK - ${data.length} oggetti caricati`, 'success');
+        } else {
+          addResult(`❌ Path assoluto fallito - Status: ${response.status}`, 'error');
+        }
+      } catch (error) {
+        addResult(`❌ Path assoluto errore: ${error.message}`, 'error');
+      }
+      
+      // Test 3: URL completo
+      try {
+        const fullUrl = window.location.origin + '/abaco/oggetti_abaco.json';
+        const response = await fetch(fullUrl);
+        if (response.ok) {
+          const data = await response.json();
+          addResult(`✅ URL completo OK - ${data.length} oggetti caricati`, 'success');
+        } else {
+          addResult(`❌ URL completo fallito - Status: ${response.status}`, 'error');
+        }
+      } catch (error) {
+        addResult(`❌ URL completo errore: ${error.message}`, 'error');
+      }
+      
+      // Test 4: Controllo file system
+      if (window.fs && window.fs.readFile) {
+        try {
+          const data = await window.fs.readFile('./oggetti_abaco.json', { encoding: 'utf8' });
+          const jsonData = JSON.parse(data);
+          addResult(`✅ File system OK - ${jsonData.length} oggetti caricati`, 'success');
+        } catch (error) {
+          addResult(`❌ File system errore: ${error.message}`, 'error');
+        }
+      } else {
+        addResult(`ℹ️ File system non disponibile (browser normale)`, 'info');
+      }
+      
+      addResult('🏁 Test completato!', 'info');
+    }
+    
+    // Esegui il test quando la pagina si carica
+    window.addEventListener('load', testJSONAccess);
+  </script>
+</body>
+</html>
