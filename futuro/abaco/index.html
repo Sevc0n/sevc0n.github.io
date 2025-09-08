@@ -275,6 +275,24 @@
         font-size: 0.8rem;
       }
 
+      .participant-controls {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+      }
+
+      .participant-label {
+        min-width: auto;
+        font-size: 0.9rem;
+      }
+
+      .class-select {
+        width: 100%;
+        min-width: auto;
+        font-size: 0.85rem;
+        padding: 10px;
+      }
+
       .product input {
         width: 100%;
         max-width: 120px;
@@ -458,6 +476,20 @@
         font-size: 0.75rem;
       }
 
+      .participant-controls {
+        padding: 8px;
+        gap: 6px;
+      }
+
+      .participant-label {
+        font-size: 0.85rem;
+      }
+
+      .class-select {
+        font-size: 0.8rem;
+        padding: 8px;
+      }
+
       .product input {
         padding: 10px;
         font-size: 0.95rem;
@@ -621,6 +653,20 @@
         font-size: 0.7rem;
       }
 
+      .participant-controls {
+        padding: 6px;
+        gap: 4px;
+      }
+
+      .participant-label {
+        font-size: 0.8rem;
+      }
+
+      .class-select {
+        font-size: 0.75rem;
+        padding: 6px;
+      }
+
       .product input {
         padding: 8px;
         font-size: 0.9rem;
@@ -717,6 +763,21 @@
         height: 44px;
         font-size: 1rem;
         min-height: 44px; /* Dimensione minima per touch */
+      }
+
+      .participant-controls {
+        gap: 8px;
+        padding: 12px;
+      }
+
+      .participant-label {
+        font-size: 1rem;
+      }
+
+      .class-select {
+        min-height: 44px; /* Dimensione minima per touch */
+        font-size: 1rem; /* Previene zoom su iOS */
+        padding: 12px;
       }
 
       .product input {
@@ -957,6 +1018,74 @@
     .quantity-input::-webkit-inner-spin-button {
       -webkit-appearance: none;
       margin: 0;
+    }
+
+    .participant-controls {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 10px 0;
+      padding: 10px;
+      background: rgba(99, 179, 237, 0.05);
+      border-radius: 8px;
+      border: 1px solid rgba(99, 179, 237, 0.1);
+    }
+
+    .participant-label {
+      font-weight: 600;
+      color: #63b3ed;
+      min-width: 100px;
+    }
+
+    .class-select {
+      padding: 8px 12px;
+      border: 2px solid rgba(99, 179, 237, 0.3);
+      border-radius: 6px;
+      background: rgba(45, 55, 72, 0.8);
+      color: #ffffff;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      min-width: 120px;
+    }
+
+    .class-select:focus {
+      outline: none;
+      border-color: #63b3ed;
+      box-shadow: 0 0 0 3px rgba(99, 179, 237, 0.2);
+    }
+
+    .class-select:hover {
+      border-color: rgba(99, 179, 237, 0.5);
+    }
+
+    .priority-info {
+      background: rgba(237, 137, 54, 0.1);
+      border: 1px solid rgba(237, 137, 54, 0.3);
+      border-radius: 8px;
+      padding: 15px;
+      margin: 20px 0;
+      color: #ed8936;
+      font-size: 0.9rem;
+    }
+
+    .priority-info h4 {
+      color: #ed8936;
+      margin-bottom: 10px;
+      font-size: 1rem;
+    }
+
+    .priority-list {
+      list-style: none;
+      padding: 0;
+    }
+
+    .priority-list li {
+      margin: 5px 0;
+      padding: 5px 10px;
+      background: rgba(237, 137, 54, 0.1);
+      border-radius: 4px;
+      border-left: 3px solid #ed8936;
     }
 
     .product input, #participants {
@@ -1261,6 +1390,23 @@
              <h2>Partecipanti</h2>
              <label class="participants-label">Numero di partecipanti:</label>
              <input type="number" id="participants" min="1" value="1">
+             
+             <div id="participant-classes" style="margin-top: 20px;">
+               <!-- Le classi dei partecipanti verranno generate dinamicamente -->
+             </div>
+             
+             <div class="priority-info">
+               <h4>📋 Sistema di Priorità e Stelline</h4>
+               <ul class="priority-list">
+                 <li><strong>Bassa priorità:</strong> Guerrieri, Ombre</li>
+                 <li><strong>Priorità Stagno:</strong> Bardi (almeno uno)</li>
+                 <li><strong>Priorità Maghi/Cacciatori:</strong> Materiali specifici per classe</li>
+                 <li><strong>Bilanciamento stelline:</strong> I partecipanti a bassa priorità ricevono materiali equivalenti in stelline</li>
+                 <li><strong>⭐ 1 stellina:</strong> brim, carnemarcia, quarzo, therium, occhio</li>
+                 <li><strong>⭐⭐ 2 stelline:</strong> blaze powder, membrana, slime ball, prismarine shard</li>
+                 <li><strong>⭐⭐⭐ 3 stelline:</strong> lost soul, demon heart</li>
+               </ul>
+             </div>
            </div>
  
            <div class="card results-card">
@@ -1293,7 +1439,179 @@
      let products = [];
      const distributionResults = document.getElementById("distribution-results");
      const participantsInput = document.getElementById("participants");
- 
+     const participantClassesContainer = document.getElementById("participant-classes");
+     
+     // Sistema di priorità basato sul file fornito
+     const prioritySystem = {
+       // Bassa priorità
+       lowPriority: ['Guerriero', 'Ombra'],
+       
+       // Priorità Stagno
+       tinPriority: ['Bardo'],
+       
+       // Priorità per classe e tier
+       classPriority: {
+         'Mago': {
+           'Novizio': ['Brim'],
+           'Avanzato': ['Occhio di ragno'],
+           'Esperto': ['Membrana'],
+           'Custode': ['Prismarine Shard'],
+           'Maestro': ['Lost Soul']
+         },
+         'Cacciatore': {
+           'Avanzato': ['Ametista'],
+           'Esperto': ['Membrana'],
+           'Custode': ['Prismarine Shard']
+         },
+         'Raccoglitore': {
+           'Avanzato': ['Occhio di ragno'],
+           'Esperto': ['Membrana'],
+           'Custode': ['Prismarine Shard'],
+           'Maestro': ['Lost Soul']
+         }
+       }
+     };
+     
+     // Sistema di stelline per bilanciamento
+     const starSystem = {
+       // 1 stellina
+       oneStar: ['brim', 'carnemarcia', 'quarzo', 'therium', 'occhio'],
+       // 2 stelline  
+       twoStars: ['blaze powder', 'membrana', 'slime ball', 'prismarine shard'],
+       // 3 stelline
+       threeStars: ['lost soul', 'demon heart']
+     };
+     
+     // Classi disponibili
+     const availableClasses = ['Guerriero', 'Mago', 'Cacciatore', 'Bardo', 'Raccoglitore', 'Ombra'];
+     
+     // Array per memorizzare le classi dei partecipanti
+     let participantClasses = [];
+
+     // Funzione per aggiornare i controlli delle classi
+     function updateParticipantClasses() {
+       const participants = parseInt(participantsInput.value) || 1;
+       participantClassesContainer.innerHTML = '';
+       
+       // Inizializza l'array se necessario
+       while (participantClasses.length < participants) {
+         participantClasses.push('Guerriero'); // Default
+       }
+       
+       // Tronca l'array se ci sono troppi partecipanti
+       participantClasses = participantClasses.slice(0, participants);
+       
+       for (let i = 0; i < participants; i++) {
+         const controlDiv = document.createElement('div');
+         controlDiv.className = 'participant-controls';
+         
+         const label = document.createElement('div');
+         label.className = 'participant-label';
+         label.textContent = `Partecipante ${i + 1}:`;
+         
+         const select = document.createElement('select');
+         select.className = 'class-select';
+         select.id = `participant-${i}-class`;
+         
+         availableClasses.forEach(className => {
+           const option = document.createElement('option');
+           option.value = className;
+           option.textContent = className;
+           if (className === participantClasses[i]) {
+             option.selected = true;
+           }
+           select.appendChild(option);
+         });
+         
+         select.addEventListener('change', () => {
+           participantClasses[i] = select.value;
+           updateDistribution();
+         });
+         
+         controlDiv.appendChild(label);
+         controlDiv.appendChild(select);
+         participantClassesContainer.appendChild(controlDiv);
+       }
+     }
+
+     // Funzione per calcolare la priorità di un materiale per un partecipante
+     function calculatePriority(itemName, participantClass, itemTier) {
+       let priority = 0;
+       
+       // Priorità bassa per Guerrieri e Ombre
+       if (prioritySystem.lowPriority.includes(participantClass)) {
+         priority = 1;
+       }
+       
+       // Priorità Stagno per Bardi
+       if (prioritySystem.tinPriority.includes(participantClass) && 
+           itemName.toLowerCase().includes('stagno')) {
+         priority = 3;
+       }
+       
+       // Priorità per classe e tier specifici
+       if (prioritySystem.classPriority[participantClass] && 
+           prioritySystem.classPriority[participantClass][itemTier]) {
+         const priorityItems = prioritySystem.classPriority[participantClass][itemTier];
+         if (priorityItems.some(priorityItem => 
+             itemName.toLowerCase().includes(priorityItem.toLowerCase()))) {
+           priority = 4;
+         }
+       }
+       
+       // Priorità media per altri materiali
+       if (priority === 0) {
+         priority = 2;
+       }
+       
+       return priority;
+     }
+
+     // Funzione per ottenere il numero di stelline di un materiale
+     function getItemStars(itemName) {
+       const name = itemName.toLowerCase();
+       
+       if (starSystem.oneStar.some(star => name.includes(star))) {
+         return 1;
+       } else if (starSystem.twoStars.some(star => name.includes(star))) {
+         return 2;
+       } else if (starSystem.threeStars.some(star => name.includes(star))) {
+         return 3;
+       }
+       
+       return 1; // Default a 1 stellina per materiali non specificati
+     }
+
+     // Funzione per trovare materiali equivalenti in stelline
+     function findEquivalentItems(targetStars, availableItems, excludeItems = []) {
+       const equivalents = [];
+       
+       // Cerca materiali con lo stesso numero di stelline
+       availableItems.forEach(item => {
+         if (excludeItems.includes(item.name)) return;
+         
+         const itemStars = getItemStars(item.name);
+         if (itemStars === targetStars && item.qty > 0) {
+           equivalents.push({
+             name: item.name,
+             qty: item.qty,
+             price: item.price,
+             stars: itemStars
+           });
+         }
+       });
+       
+       return equivalents;
+     }
+
+     // Funzione per calcolare il valore in stelline di un set di oggetti
+     function calculateStarValue(items) {
+       return items.reduce((total, item) => {
+         const stars = getItemStars(item.name);
+         return total + (item.qty * stars);
+       }, 0);
+     }
+
      // Carica i prodotti dal file JSON
      async function loadProducts() {
        const productList = document.getElementById("product-list");
@@ -1627,101 +1945,165 @@
          distributionResults.innerHTML = '<div class="empty-state">Seleziona alcuni materiali per vedere la distribuzione</div>';
          return;
        }
- 
+
        distributionResults.innerHTML = "";
        
        // Array per tenere traccia dei valori di ogni partecipante
        const participantValues = new Array(participants).fill(0);
        const participantItems = new Array(participants).fill().map(() => []);
+       const participantStarValues = new Array(participants).fill(0);
        
-       // Distribuzione base: divide equamente gli oggetti interi
+       // FASE 1: Distribuzione base equa
        activeItems.forEach(item => {
          const itemsPerParticipant = Math.floor(item.qty / participants);
-         const totalDistributed = itemsPerParticipant * participants;
          
          if (itemsPerParticipant > 0) {
            for (let i = 0; i < participants; i++) {
              participantItems[i].push({
                name: item.name,
                qty: itemsPerParticipant,
-               price: item.price
+               price: item.price,
+               stars: getItemStars(item.name),
+               isBase: true
              });
              participantValues[i] += itemsPerParticipant * item.price;
+             participantStarValues[i] += itemsPerParticipant * getItemStars(item.name);
            }
          }
        });
        
-       // Calcola l'esubero (oggetti rimanenti)
-       const esuberoItems = [];
+       // FASE 2: Distribuzione dell'esubero con sistema di stelline
        activeItems.forEach(item => {
          const itemsPerParticipant = Math.floor(item.qty / participants);
          const totalDistributed = itemsPerParticipant * participants;
          const remaining = item.qty - totalDistributed;
          
          if (remaining > 0) {
-           esuberoItems.push({
-             name: item.name,
-             qty: remaining,
-             price: item.price
+           const itemStars = getItemStars(item.name);
+           
+           // Calcola priorità per ogni partecipante per questo item
+           const participantPriorities = [];
+           for (let i = 0; i < participants; i++) {
+             const priority = calculatePriority(item.name, participantClasses[i] || 'Guerriero', item.tier);
+             participantPriorities.push({
+               index: i,
+               priority: priority,
+               currentValue: participantValues[i],
+               currentStarValue: participantStarValues[i]
+             });
+           }
+           
+           // Ordina per priorità (più alta prima) e poi per valore stelline (più basso prima)
+           participantPriorities.sort((a, b) => {
+             if (a.priority !== b.priority) {
+               return b.priority - a.priority; // Priorità più alta prima
+             }
+             return a.currentStarValue - b.currentStarValue; // Valore stelline più basso prima
            });
+           
+           // Distribuisci l'esubero seguendo l'ordine di priorità
+           let remainingToDistribute = remaining;
+           for (const participant of participantPriorities) {
+             if (remainingToDistribute <= 0) break;
+             
+             const qtyToGive = Math.min(1, remainingToDistribute);
+             participantItems[participant.index].push({
+               name: item.name,
+               qty: qtyToGive,
+               price: item.price,
+               stars: itemStars,
+               isEsubero: true,
+               priority: participant.priority
+             });
+             participantValues[participant.index] += qtyToGive * item.price;
+             participantStarValues[participant.index] += qtyToGive * itemStars;
+             remainingToDistribute -= qtyToGive;
+           }
          }
        });
        
-               // Se c'è esubero, lo distribuisce in modo bilanciato tra i partecipanti
-        if (esuberoItems.length > 0) {
-          const totalEsuberoValue = esuberoItems.reduce((total, item) => total + (item.qty * item.price), 0);
-          
-          // Ordina gli oggetti dell'esubero per valore (dal più alto al più basso)
-          esuberoItems.sort((a, b) => b.price - a.price);
-          
-          // Distribuisce gli oggetti in modo bilanciato
-          esuberoItems.forEach(item => {
-            let remainingQty = item.qty;
-            
-            // Distribuisce gli oggetti uno per uno, sempre al partecipante con valore più basso
-            while (remainingQty > 0) {
-              const qtyToGive = Math.min(1, remainingQty);
-              
-              // Trova il partecipante con il valore più basso
-              let minValueIndex = 0;
-              let minValue = participantValues[0];
-              
-              for (let i = 1; i < participants; i++) {
-                if (participantValues[i] < minValue) {
-                  minValue = participantValues[i];
-                  minValueIndex = i;
-                }
-              }
-              
-              // Aggiunge l'oggetto al partecipante con valore più basso
-              participantItems[minValueIndex].push({
-                name: item.name,
-                qty: qtyToGive,
-                price: item.price,
-                isEsubero: true // Marca come oggetto dell'esubero
-              });
-              
-              // Aggiorna il valore del partecipante
-              participantValues[minValueIndex] += qtyToGive * item.price;
-              
-              remainingQty -= qtyToGive;
-            }
-          });
-          
-          // Mostra messaggio informativo
-          const infoDiv = document.createElement("div");
-          infoDiv.style.textAlign = "center";
-          infoDiv.style.marginTop = "20px";
-          infoDiv.style.padding = "15px";
-          infoDiv.style.background = "rgba(99, 179, 237, 0.1)";
-          infoDiv.style.borderRadius = "8px";
-          infoDiv.style.border = "1px solid rgba(99, 179, 237, 0.3)";
-          infoDiv.style.color = "#63b3ed";
-          infoDiv.style.fontSize = "0.9rem";
-          infoDiv.innerHTML = `📦 <strong>Esubero distribuito:</strong> ${formatCurrency(totalEsuberoValue)} distribuito in modo bilanciato tra i partecipanti`;
-          
-          distributionResults.appendChild(infoDiv);
-        }
+       // FASE 3: Bilanciamento con stelline equivalenti
+       // Trova partecipanti con priorità bassa che hanno ricevuto materiali ad alta priorità
+       const lowPriorityParticipants = [];
+       const highPriorityParticipants = [];
+       
+       for (let i = 0; i < participants; i++) {
+         const participantClass = participantClasses[i] || 'Guerriero';
+         if (prioritySystem.lowPriority.includes(participantClass)) {
+           lowPriorityParticipants.push(i);
+         } else {
+           highPriorityParticipants.push(i);
+         }
+       }
+       
+       // Calcola il valore stelline medio dei partecipanti ad alta priorità
+       if (highPriorityParticipants.length > 0) {
+         const avgHighPriorityStarValue = highPriorityParticipants.reduce((sum, idx) => 
+           sum + participantStarValues[idx], 0) / highPriorityParticipants.length;
+         
+         // Bilanciamento per partecipanti a bassa priorità
+         lowPriorityParticipants.forEach(participantIdx => {
+           const currentStarValue = participantStarValues[participantIdx];
+           const deficit = avgHighPriorityStarValue - currentStarValue;
+           
+           if (deficit > 0) {
+             // Trova materiali equivalenti per bilanciare
+             const availableItems = activeItems.filter(item => item.qty > 0);
+             const participantItemsNames = participantItems[participantIdx].map(item => item.name);
+             
+             // Cerca materiali con 1, 2, 3 stelline per bilanciare
+             for (let targetStars = 1; targetStars <= 3 && deficit > 0; targetStars++) {
+               const equivalents = findEquivalentItems(targetStars, availableItems, participantItemsNames);
+               
+               if (equivalents.length > 0) {
+                 // Prendi il primo materiale equivalente disponibile
+                 const equivalent = equivalents[0];
+                 const qtyNeeded = Math.min(Math.ceil(deficit / targetStars), equivalent.qty);
+                 
+                 if (qtyNeeded > 0) {
+                   participantItems[participantIdx].push({
+                     name: equivalent.name,
+                     qty: qtyNeeded,
+                     price: equivalent.price,
+                     stars: targetStars,
+                     isCompensation: true,
+                     reason: `Bilanciamento stelline (${targetStars}⭐)`
+                   });
+                   participantValues[participantIdx] += qtyNeeded * equivalent.price;
+                   participantStarValues[participantIdx] += qtyNeeded * targetStars;
+                   
+                   // Aggiorna la quantità disponibile
+                   const itemIndex = activeItems.findIndex(item => item.name === equivalent.name);
+                   if (itemIndex !== -1) {
+                     activeItems[itemIndex].qty -= qtyNeeded;
+                   }
+                 }
+               }
+             }
+           }
+         });
+       }
+       
+       // Mostra messaggio informativo sul sistema di priorità e stelline
+       const infoDiv = document.createElement("div");
+       infoDiv.style.textAlign = "center";
+       infoDiv.style.marginTop = "20px";
+       infoDiv.style.padding = "15px";
+       infoDiv.style.background = "rgba(99, 179, 237, 0.1)";
+       infoDiv.style.borderRadius = "8px";
+       infoDiv.style.border = "1px solid rgba(99, 179, 237, 0.3)";
+       infoDiv.style.color = "#63b3ed";
+       infoDiv.style.fontSize = "0.9rem";
+       infoDiv.innerHTML = `
+         🎯 <strong>Distribuzione con priorità e stelline:</strong><br>
+         • Materiali distribuiti per priorità di classe<br>
+         • Bilanciamento automatico con stelline equivalenti<br>
+         • ⭐ 1 stellina: brim, carnemarcia, quarzo, therium, occhio<br>
+         • ⭐⭐ 2 stelline: blaze powder, membrana, slime ball, prismarine shard<br>
+         • ⭐⭐⭐ 3 stelline: lost soul, demon heart
+       `;
+       
+       distributionResults.appendChild(infoDiv);
        
                // Mostra cosa prende ogni partecipante (parte normale, non esubero)
         const baseDistributionDiv = document.createElement("div");
@@ -1789,36 +2171,65 @@
           
           const title = document.createElement("div");
           title.className = "participant-title";
-          title.textContent = `Partecipante ${i + 1}`;
+          const participantClass = participantClasses[i] || 'Guerriero';
+          const totalStars = participantItems[i].reduce((sum, item) => sum + (item.stars * item.qty), 0);
+          title.innerHTML = `Partecipante ${i + 1} (${participantClass}) - ⭐ ${totalStars} stelline totali`;
           participantDiv.appendChild(title);
           
-          // Mostra solo gli oggetti dell'esubero per questo partecipante
-          const esuberoItems = participantItems[i].filter(item => item.isEsubero);
+          // Mostra oggetti dell'esubero e compensazioni
+          const specialItems = participantItems[i].filter(item => item.isEsubero || item.isCompensation);
           
-          if (esuberoItems.length > 0) {
-            // Raggruppa gli oggetti dell'esubero per nome
-            const groupedEsuberoItems = {};
-            esuberoItems.forEach(item => {
-              if (!groupedEsuberoItems[item.name]) {
-                groupedEsuberoItems[item.name] = {
+          if (specialItems.length > 0) {
+            // Raggruppa gli oggetti per nome e tipo
+            const groupedItems = {};
+            specialItems.forEach(item => {
+              const key = `${item.name}_${item.isCompensation ? 'comp' : 'esubero'}`;
+              if (!groupedItems[key]) {
+                groupedItems[key] = {
                   name: item.name,
                   qty: 0,
-                  price: item.price
+                  price: item.price,
+                  stars: item.stars,
+                  priority: item.priority,
+                  isCompensation: item.isCompensation,
+                  reason: item.reason
                 };
               }
-              groupedEsuberoItems[item.name].qty += item.qty;
+              groupedItems[key].qty += item.qty;
             });
             
-            // Mostra gli oggetti dell'esubero raggruppati
-            Object.values(groupedEsuberoItems).forEach(item => {
+            // Mostra gli oggetti raggruppati
+            Object.values(groupedItems).forEach(item => {
               const itemDiv = document.createElement("div");
               itemDiv.className = "item-distribution";
-              itemDiv.style.background = "rgba(237, 137, 54, 0.2)";
-              itemDiv.style.borderColor = "rgba(237, 137, 54, 0.3)";
-              itemDiv.style.border = "1px solid rgba(237, 137, 54, 0.3)";
+              
+              // Colore basato sul tipo e priorità
+              if (item.isCompensation) {
+                itemDiv.style.background = "rgba(168, 85, 247, 0.2)";
+                itemDiv.style.border = "1px solid rgba(168, 85, 247, 0.3)";
+              } else if (item.priority === 4) {
+                itemDiv.style.background = "rgba(72, 187, 120, 0.2)";
+                itemDiv.style.border = "1px solid rgba(72, 187, 120, 0.3)";
+              } else if (item.priority === 3) {
+                itemDiv.style.background = "rgba(99, 179, 237, 0.2)";
+                itemDiv.style.border = "1px solid rgba(99, 179, 237, 0.3)";
+              } else {
+                itemDiv.style.background = "rgba(237, 137, 54, 0.2)";
+                itemDiv.style.border = "1px solid rgba(237, 137, 54, 0.3)";
+              }
               
               const itemName = document.createElement("span");
-              itemName.innerHTML = `📦 ${item.name} x${item.qty}`;
+              let icon = "📦";
+              if (item.isCompensation) {
+                icon = "⚖️";
+              } else if (item.priority === 4) {
+                icon = "⭐";
+              } else if (item.priority === 3) {
+                icon = "🎯";
+              }
+              
+              const starDisplay = "⭐".repeat(item.stars);
+              itemName.innerHTML = `${icon} ${item.name} x${item.qty} ${starDisplay}`;
               
               const itemCost = document.createElement("span");
               const cost = item.qty * item.price;
@@ -1828,23 +2239,38 @@
               itemDiv.appendChild(itemName);
               itemDiv.appendChild(itemCost);
               participantDiv.appendChild(itemDiv);
+              
+              // Mostra motivo per compensazioni
+              if (item.isCompensation && item.reason) {
+                const reasonDiv = document.createElement("div");
+                reasonDiv.style.fontSize = "0.8rem";
+                reasonDiv.style.color = "#a0aec0";
+                reasonDiv.style.fontStyle = "italic";
+                reasonDiv.style.marginTop = "2px";
+                reasonDiv.textContent = `(${item.reason})`;
+                itemDiv.appendChild(reasonDiv);
+              }
             });
           } else {
-            // Se non ha oggetti dell'esubero, mostra un messaggio
-            const noEsuberoDiv = document.createElement("div");
-            noEsuberoDiv.style.textAlign = "center";
-            noEsuberoDiv.style.padding = "15px";
-            noEsuberoDiv.style.color = "#a0aec0";
-            noEsuberoDiv.style.fontStyle = "italic";
-            noEsuberoDiv.textContent = "Nessun oggetto dell'esubero";
-            participantDiv.appendChild(noEsuberoDiv);
+            // Se non ha oggetti speciali, mostra un messaggio
+            const noSpecialDiv = document.createElement("div");
+            noSpecialDiv.style.textAlign = "center";
+            noSpecialDiv.style.padding = "15px";
+            noSpecialDiv.style.color = "#a0aec0";
+            noSpecialDiv.style.fontStyle = "italic";
+            noSpecialDiv.textContent = "Nessun oggetto speciale (solo distribuzione base)";
+            participantDiv.appendChild(noSpecialDiv);
           }
           
-          // Mostra il totale (incluso esubero)
+          // Mostra il totale (incluso esubero e compensazioni)
           const totalDiv = document.createElement("div");
           totalDiv.className = "total-cost";
           const formattedTotal = formatCurrency(participantValues[i]);
-          totalDiv.innerHTML = `Totale: <span class="${getCurrencyClass(participantValues[i])}">${formattedTotal}</span>`;
+          const totalStars = participantItems[i].reduce((sum, item) => sum + (item.stars * item.qty), 0);
+          totalDiv.innerHTML = `
+            Totale: <span class="${getCurrencyClass(participantValues[i])}">${formattedTotal}</span><br>
+            <small>⭐ ${totalStars} stelline totali</small>
+          `;
           participantDiv.appendChild(totalDiv);
           
           distributionResults.appendChild(participantDiv);
@@ -1885,10 +2311,14 @@
     }
 
     // Event listeners
-    participantsInput.addEventListener("input", updateDistribution);
+    participantsInput.addEventListener("input", () => {
+      updateParticipantClasses();
+      updateDistribution();
+    });
 
     // Inizializzazione
     loadProducts();
+    updateParticipantClasses();
    </script>
  </body>
 </html>
