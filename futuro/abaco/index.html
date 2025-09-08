@@ -14,6 +14,11 @@
       box-sizing: border-box;
     }
 
+    /* Regola globale per prevenire overflow */
+    * {
+      max-width: 100%;
+    }
+
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
@@ -345,6 +350,11 @@
         overflow-wrap: break-word;
       }
       
+      .category-section {
+        margin-bottom: 20px;
+        overflow-x: hidden;
+      }
+      
       .product {
         padding: 10px;
         margin: 8px 0;
@@ -461,6 +471,19 @@
       .card {
         padding: 10px;
         border-radius: 8px;
+        overflow-x: hidden;
+      }
+      
+      .category-section {
+        margin-bottom: 15px;
+        overflow-x: hidden;
+      }
+      
+      .category-title {
+        font-size: 1rem;
+        margin-bottom: 10px;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
       }
       
       .product {
@@ -497,11 +520,16 @@
       .participant-result {
         padding: 8px;
         margin: 8px 0;
+        overflow-x: hidden;
+        word-wrap: break-word;
       }
       
       .item-distribution {
         padding: 6px;
         font-size: 0.85rem;
+        overflow-x: hidden;
+        word-wrap: break-word;
+        min-width: 0;
       }
       
       .contacts-section {
@@ -587,6 +615,8 @@
 
     .category-section {
       margin-bottom: 30px;
+      overflow-x: hidden; /* Previene overflow delle sezioni */
+      word-wrap: break-word;
     }
 
     .category-title {
@@ -596,6 +626,8 @@
       margin-bottom: 15px;
       padding: 10px 0;
       border-bottom: 1px solid rgba(99, 179, 237, 0.3);
+      word-wrap: break-word;
+      overflow-wrap: break-word;
     }
 
     .product {
@@ -720,6 +752,8 @@
       background: rgba(0, 0, 0, 0.2);
       border-radius: 12px;
       border: 1px solid rgba(255, 255, 255, 0.1);
+      overflow-x: hidden; /* Previene overflow dei risultati */
+      word-wrap: break-word;
     }
 
     .participant-title {
@@ -738,6 +772,9 @@
       padding: 8px 12px;
       background: rgba(255, 255, 255, 0.05);
       border-radius: 6px;
+      overflow-x: hidden; /* Previene overflow delle distribuzioni */
+      word-wrap: break-word;
+      min-width: 0; /* Permette alla griglia di ridursi */
     }
 
     .total-cost {
