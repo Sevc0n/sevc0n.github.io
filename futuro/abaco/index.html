@@ -340,7 +340,7 @@
     .participant-controls {
       display: flex;
       align-items: center;
-      gap: 15px;
+      gap: 10px;
       margin-bottom: 15px;
       flex-wrap: wrap;
       justify-content: center;
@@ -359,7 +359,7 @@
       font-size: 14px;
       background: rgba(45, 55, 72, 0.8);
       color: #ffffff;
-      min-width: 120px;
+      min-width: 100px;
     }
 
     .class-select:focus {
@@ -393,6 +393,22 @@
 
     .priority-list li {
       margin-bottom: 5px;
+    }
+
+    #calculate-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(99, 179, 237, 0.4);
+    }
+
+    #calculate-btn:active {
+      transform: translateY(0);
+    }
+
+    #calculate-btn:disabled {
+      background: #a0aec0;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
     }
 
     .results-card {
@@ -582,14 +598,17 @@
       .participant-controls {
         flex-direction: column;
         align-items: stretch;
+        gap: 8px;
       }
       
       .participant-label {
         min-width: auto;
+        text-align: center;
       }
       
       .class-select {
         min-width: auto;
+        width: 100%;
       }
     }
 
@@ -703,10 +722,16 @@
              
              <div id="participant-classes"></div>
              
+             <div style="text-align: center; margin: 20px 0;">
+               <button id="calculate-btn" style="background: linear-gradient(135deg, #63b3ed, #4299e1); color: white; border: none; padding: 15px 30px; border-radius: 10px; font-size: 1.1rem; font-weight: bold; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(99, 179, 237, 0.3);">
+                 🧮 Calcola Divisione
+               </button>
+             </div>
+             
              <div class="priority-info">
                <h4>Sistema di Priorità per Riparazione Equipaggiamento</h4>
                <div class="priority-list">
-                 <p><strong>Classi disponibili:</strong></p>
+                 <p><strong>Classi e Maestranze disponibili:</strong></p>
                  <ul>
                    <li><strong>Guerriero/Ombra:</strong> Bassa priorità (prendono l'equivalente)</li>
                    <li><strong>Bardo:</strong> Priorità su Stagno</li>
@@ -714,6 +739,7 @@
                    <li><strong>Cacciatore:</strong> Priorità su Ametista, Membrana, Prismarine Shard</li>
                    <li><strong>Raccoglitore:</strong> Priorità su Occhio di ragno, Membrana, Prismarine Shard, Lost Soul</li>
                  </ul>
+                 <p><strong>Maestranze:</strong> Novizio, Avanzato, Esperto, Custode, Maestro</p>
                  <p><strong>Sistema Stelle per Pozioni:</strong> Ogni reagente ha un valore in stelle per le pozioni di cura. Il sistema bilancia le stelle tra tutti i partecipanti.</p>
                  <p><strong>Stelle:</strong> 1★ (Brim, Carnemarcia, Quarzo, Therium, Occhio) | 2★ (Blaze Powder, Membrana, Slime Ball, Prismarine Shard) | 3★ (Lost Soul, Demon Heart)</p>
                </div>
@@ -857,7 +883,9 @@
      };
 
      const availableClasses = ['Guerriero', 'Ombra', 'Mago', 'Bardo', 'Cacciatore', 'Raccoglitore'];
+     const availableTiers = ['Novizio', 'Avanzato', 'Esperto', 'Custode', 'Maestro'];
      let participantClasses = [];
+     let participantTiers = [];
      let defaultProducts = [];
      let products = [];
      const distributionResults = document.getElementById("distribution-results");
@@ -987,6 +1015,7 @@
        // Inizializza array se necessario
        if (participantClasses.length !== numParticipants) {
          participantClasses = new Array(numParticipants).fill('Guerriero');
+         participantTiers = new Array(numParticipants).fill('Novizio');
        }
        
        let html = '';
@@ -994,13 +1023,18 @@
          html += `
            <div class="participant-controls">
              <label class="participant-label">Partecipante ${i + 1}:</label>
-             <select class="class-select" data-index="${i}">
+             <select class="class-select" data-index="${i}" data-type="class">
                ${availableClasses.map(cls => 
                  `<option value="${cls}" ${participantClasses[i] === cls ? 'selected' : ''}>${cls}</option>`
                ).join('')}
              </select>
-             </div>
-           `;
+             <select class="class-select" data-index="${i}" data-type="tier">
+               ${availableTiers.map(tier => 
+                 `<option value="${tier}" ${participantTiers[i] === tier ? 'selected' : ''}>${tier}</option>`
+               ).join('')}
+             </select>
+           </div>
+         `;
        }
        
        container.innerHTML = html;
@@ -1009,8 +1043,13 @@
        container.querySelectorAll('.class-select').forEach(select => {
          select.addEventListener('change', (e) => {
            const index = parseInt(e.target.dataset.index);
-           participantClasses[index] = e.target.value;
-           updateDistribution();
+           const type = e.target.dataset.type;
+           if (type === 'class') {
+             participantClasses[index] = e.target.value;
+           } else if (type === 'tier') {
+             participantTiers[index] = e.target.value;
+           }
+           // Non aggiornare automaticamente la distribuzione
          });
        });
      }
@@ -1164,7 +1203,7 @@
          if (currentValue > 0) {
            qty.value = currentValue - 1;
            products[globalIndex].qty = currentValue - 1;
-           updateDistribution();
+           // Non aggiornare automaticamente la distribuzione
          }
        });
  
@@ -1176,7 +1215,7 @@
        qty.placeholder = "0";
        qty.addEventListener("input", () => {
          products[globalIndex].qty = parseInt(qty.value) || 0;
-         updateDistribution();
+         // Non aggiornare automaticamente la distribuzione
        });
  
        const plusBtn = document.createElement("button");
@@ -1186,7 +1225,7 @@
          const currentValue = parseInt(qty.value) || 0;
          qty.value = currentValue + 1;
          products[globalIndex].qty = currentValue + 1;
-         updateDistribution();
+         // Non aggiornare automaticamente la distribuzione
        });
 
        quantityContainer.appendChild(minusBtn);
@@ -1200,45 +1239,71 @@
      }
  
      function updateDistribution() {
+       // Funzione vuota - ora la divisione viene calcolata solo quando si preme il pulsante
+       const container = document.getElementById('distribution-results');
+       container.innerHTML = '<div class="empty-state">Inserisci le quantità dei materiali e premi "Calcola Divisione"</div>';
+     }
+
+     function calculateDistribution() {
        const numParticipants = parseInt(participantsInput.value) || 1;
        const container = document.getElementById('distribution-results');
+       const calculateBtn = document.getElementById('calculate-btn');
        
        if (numParticipants <= 0) {
          container.innerHTML = '<div class="empty-state">Inserisci un numero valido di partecipanti</div>';
          return;
        }
- 
-       // Raccogli tutti gli oggetti con quantità > 0
-       const selectedItems = [];
-       document.querySelectorAll('.quantity-input').forEach(input => {
-         const quantity = parseInt(input.value) || 0;
-         if (quantity > 0) {
-           const productName = input.closest('.product').querySelector('.product-name').textContent.replace(/\s+(Novizio|Avanzato|Esperto|Custode|Maestro|Tutti)$/, '');
-           const product = products.find(p => p.name === productName);
-           if (product) {
-             for (let i = 0; i < quantity; i++) {
-               selectedItems.push({...product});
+
+       // Disabilita il pulsante durante il calcolo
+       calculateBtn.disabled = true;
+       calculateBtn.innerHTML = '⏳ Calcolando...';
+
+       // Simula un piccolo delay per mostrare il feedback
+       setTimeout(() => {
+         // Raccogli tutti gli oggetti con quantità > 0
+         const selectedItems = [];
+         document.querySelectorAll('.quantity-input').forEach(input => {
+           const quantity = parseInt(input.value) || 0;
+           if (quantity > 0) {
+             const productName = input.closest('.product').querySelector('.product-name').textContent.replace(/\s+(Novizio|Avanzato|Esperto|Custode|Maestro|Tutti|Base)$/, '');
+             const product = products.find(p => p.name === productName);
+             if (product) {
+               for (let i = 0; i < quantity; i++) {
+                 selectedItems.push({...product});
+               }
              }
            }
-         }
-       });
-       
-       if (selectedItems.length === 0) {
-         container.innerHTML = '<div class="empty-state">Inserisci le quantità dei materiali per vedere la divisione</div>';
-         return;
-       }
+         });
 
-       // Calcola la distribuzione
-       const distribution = calculateDistribution(selectedItems, numParticipants);
-       renderDistribution(distribution);
+         if (selectedItems.length === 0) {
+           container.innerHTML = '<div class="empty-state">Inserisci le quantità dei materiali per vedere la divisione</div>';
+           calculateBtn.disabled = false;
+           calculateBtn.innerHTML = '🧮 Calcola Divisione';
+           return;
+         }
+
+         // Calcola la distribuzione
+         const distribution = performDistribution(selectedItems, numParticipants);
+         renderDistribution(distribution);
+         
+         // Riabilita il pulsante
+         calculateBtn.disabled = false;
+         calculateBtn.innerHTML = '✅ Calcolato!';
+         
+         // Torna al testo originale dopo 2 secondi
+         setTimeout(() => {
+           calculateBtn.innerHTML = '🧮 Calcola Divisione';
+         }, 2000);
+       }, 500);
      }
 
-     function calculateDistribution(items, numParticipants) {
+     function performDistribution(items, numParticipants) {
        const participants = [];
        for (let i = 0; i < numParticipants; i++) {
          participants.push({
            index: i,
            class: participantClasses[i] || 'Guerriero',
+           tier: participantTiers[i] || 'Novizio',
            items: [],
            totalValue: 0,
            starValue: 0
@@ -1332,7 +1397,7 @@
          html += `
            <div class="participant-result">
              <div class="participant-title">
-               Partecipante ${participant.index + 1} (${participant.class})
+               Partecipante ${participant.index + 1} (${participant.class} - ${participant.tier})
                <span style="float: right; font-size: 0.9rem; color: #a0aec0;">
                  Stelle: ${participant.starValue}
                </span>
@@ -1413,6 +1478,14 @@
     participantsInput.addEventListener("input", () => {
       updateParticipantClasses();
       updateDistribution();
+    });
+
+    // Event listener per il pulsante Calcola
+    document.addEventListener('DOMContentLoaded', () => {
+      const calculateBtn = document.getElementById('calculate-btn');
+      if (calculateBtn) {
+        calculateBtn.addEventListener('click', calculateDistribution);
+      }
     });
 
     // Inizializzazione
