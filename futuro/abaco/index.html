@@ -949,6 +949,14 @@
       background: rgba(45, 55, 72, 0.8);
       color: #ffffff;
       box-sizing: border-box;
+      /* Rimuove le freccette (spinner) dagli input numerici */
+      -moz-appearance: textfield;
+    }
+
+    .quantity-input::-webkit-outer-spin-button,
+    .quantity-input::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
     }
 
     .product input, #participants {
