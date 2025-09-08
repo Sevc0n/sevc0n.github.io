@@ -368,6 +368,13 @@
       box-shadow: 0 0 0 3px rgba(99, 179, 237, 0.2);
     }
 
+    .class-select:disabled {
+      background: rgba(45, 55, 72, 0.4);
+      color: #a0aec0;
+      cursor: not-allowed;
+      border-color: rgba(99, 179, 237, 0.1);
+    }
+
     .priority-info {
       background: rgba(99, 179, 237, 0.1);
       border: 1px solid rgba(99, 179, 237, 0.3);
@@ -720,6 +727,21 @@
              <label class="participants-label">Numero di partecipanti:</label>
              <input type="number" id="participants" min="1" value="4">
              
+             <div style="margin: 20px 0; text-align: center;">
+               <label class="participants-label">Tier Abisso (imposta per tutti):</label>
+               <select id="abyss-tier" style="padding: 8px 12px; border: 2px solid rgba(99, 179, 237, 0.3); border-radius: 8px; font-size: 14px; background: rgba(45, 55, 72, 0.8); color: #ffffff; min-width: 120px; margin-left: 10px;">
+                 <option value="">Seleziona Tier</option>
+                 <option value="Novizio">Novizio</option>
+                 <option value="Avanzato">Avanzato</option>
+                 <option value="Esperto">Esperto</option>
+                 <option value="Custode">Custode</option>
+                 <option value="Maestro">Maestro</option>
+               </select>
+               <div id="abyss-tier-info" style="margin-top: 10px; font-size: 0.9rem; color: #a0aec0; display: none;">
+                 ⚡ Tier dell'abisso attivo - tutti i partecipanti sono impostati a questo livello
+               </div>
+             </div>
+             
              <div id="participant-classes"></div>
              
              <div style="text-align: center; margin: 20px 0;">
@@ -1011,11 +1033,17 @@
      function updateParticipantClasses() {
        const numParticipants = parseInt(document.getElementById('participants').value);
        const container = document.getElementById('participant-classes');
+       const abyssTierSelect = document.getElementById('abyss-tier');
        
        // Inizializza array se necessario
        if (participantClasses.length !== numParticipants) {
          participantClasses = new Array(numParticipants).fill('Guerriero');
          participantTiers = new Array(numParticipants).fill('Novizio');
+       }
+       
+       // Se è selezionato un tier dell'abisso, imposta tutti i partecipanti a quel tier
+       if (abyssTierSelect.value) {
+         participantTiers = new Array(numParticipants).fill(abyssTierSelect.value);
        }
        
        let html = '';
@@ -1028,7 +1056,7 @@
                  `<option value="${cls}" ${participantClasses[i] === cls ? 'selected' : ''}>${cls}</option>`
                ).join('')}
              </select>
-             <select class="class-select" data-index="${i}" data-type="tier">
+             <select class="class-select" data-index="${i}" data-type="tier" ${abyssTierSelect.value ? 'disabled' : ''}>
                ${availableTiers.map(tier => 
                  `<option value="${tier}" ${participantTiers[i] === tier ? 'selected' : ''}>${tier}</option>`
                ).join('')}
@@ -1478,6 +1506,25 @@
     participantsInput.addEventListener("input", () => {
       updateParticipantClasses();
       updateDistribution();
+    });
+
+    // Event listener per il tier dell'abisso
+    document.addEventListener('DOMContentLoaded', () => {
+      const abyssTierSelect = document.getElementById('abyss-tier');
+      const abyssTierInfo = document.getElementById('abyss-tier-info');
+      if (abyssTierSelect) {
+        abyssTierSelect.addEventListener('change', () => {
+          updateParticipantClasses();
+          // Mostra/nascondi il messaggio informativo
+          if (abyssTierInfo) {
+            if (abyssTierSelect.value) {
+              abyssTierInfo.style.display = 'block';
+            } else {
+              abyssTierInfo.style.display = 'none';
+            }
+          }
+        });
+      }
     });
 
     // Event listener per il pulsante Calcola
