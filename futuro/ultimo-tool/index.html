@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Ultimo Tool - Sevcon Tools</title>
+  <link rel="icon" type="image/png" href="../logo.png">
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+      min-height: 100vh;
+      margin: 0;
+      padding: 20px;
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .container {
+      text-align: center;
+      background: rgba(20, 25, 45, 0.95);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      padding: 60px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      max-width: 600px;
+    }
+    
+    .icon {
+      font-size: 4rem;
+      margin-bottom: 20px;
+    }
+    
+    h1 {
+      font-size: 2.5rem;
+      margin-bottom: 20px;
+      color: #63b3ed;
+    }
+    
+    p {
+      font-size: 1.2rem;
+      margin-bottom: 30px;
+      opacity: 0.8;
+    }
+    
+    .back-link {
+      display: inline-block;
+      padding: 12px 24px;
+      background: rgba(99, 179, 237, 0.2);
+      border: 1px solid rgba(99, 179, 237, 0.5);
+      color: #63b3ed;
+      text-decoration: none;
+      border-radius: 8px;
+      transition: all 0.3s ease;
+    }
+    
+    .back-link:hover {
+      background: rgba(99, 179, 237, 0.3);
+      transform: translateY(-2px);
+    }
+
+    /* Media Queries per Responsività Mobile */
+    @media (max-width: 768px) {
+      body {
+        padding: 15px;
+      }
+      
+      .container {
+        padding: 40px 30px;
+        border-radius: 15px;
+        max-width: 90%;
+      }
+      
+      .icon {
+        font-size: 3.5rem;
+        margin-bottom: 15px;
+      }
+      
+      h1 {
+        font-size: 2rem;
+        margin-bottom: 15px;
+      }
+      
+      p {
+        font-size: 1.1rem;
+        margin-bottom: 25px;
+      }
+      
+      .back-link {
+        padding: 14px 28px;
+        font-size: 1rem;
+        min-height: 48px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+    }
+
+    @media (max-width: 480px) {
+      body {
+        padding: 10px;
+      }
+      
+      .container {
+        padding: 30px 20px;
+        border-radius: 12px;
+        max-width: 95%;
+      }
+      
+      .icon {
+        font-size: 3rem;
+        margin-bottom: 12px;
+      }
+      
+      h1 {
+        font-size: 1.8rem;
+        margin-bottom: 12px;
+      }
+      
+      p {
+        font-size: 1rem;
+        margin-bottom: 20px;
+        line-height: 1.5;
+      }
+      
+      .back-link {
+        padding: 12px 24px;
+        font-size: 0.95rem;
+        width: 100%;
+        max-width: 200px;
+        margin: 0 auto;
+      }
+    }
+
+    /* Ottimizzazioni Touch */
+    @media (hover: none) and (pointer: coarse) {
+      .back-link:hover {
+        transform: none;
+      }
+      
+      .back-link:active {
+        transform: scale(0.95);
+        transition: transform 0.1s ease;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="icon">🚀</div>
+    <h1>Ultimo Tool</h1>
+    <p>Questo tool è attualmente in progettazione.<br>Stay tuned per aggiornamenti!</p>
+    <a href="../" class="back-link">🏠 Torna alla Homepage</a>
+  </div>
+</body>
+</html>

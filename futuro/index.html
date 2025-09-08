@@ -2,74 +2,577 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Tool Futuro - Sevcon Tools</title>
-  <link rel="icon" type="image/png" href="../logo.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Sevcon Tools - Homepage (Mobile Test)</title>
+  <link rel="icon" type="image/png" href="logo.png">
+  <link rel="shortcut icon" type="image/png" href="logo.png">
+  <link rel="apple-touch-icon" href="logo.png">
   <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
       min-height: 100vh;
-      margin: 0;
       padding: 20px;
       color: #ffffff;
-      display: flex;
-      align-items: center;
-      justify-content: center;
     }
-    
+
     .container {
-      text-align: center;
+      max-width: 1200px;
+      margin: 0 auto;
       background: rgba(20, 25, 45, 0.95);
       backdrop-filter: blur(10px);
       border-radius: 20px;
-      padding: 60px;
       box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+      overflow: hidden;
+      animation: slideIn 0.6s ease-out;
       border: 1px solid rgba(255, 255, 255, 0.1);
-      max-width: 600px;
     }
-    
-    .icon {
-      font-size: 4rem;
-      margin-bottom: 20px;
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
-    
+
+    header {
+      background: linear-gradient(135deg, #2d3748, #4a5568);
+      color: white;
+      padding: 40px 30px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    header::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, rgba(255, 255, 255, 0.05) 0%, transparent 70%);
+      animation: pulse 4s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 0.3; }
+      50% { transform: scale(1.1); opacity: 0.6; }
+    }
+
     h1 {
-      font-size: 2.5rem;
-      margin-bottom: 20px;
-      color: #63b3ed;
+      font-size: 3rem;
+      font-weight: 700;
+      margin-bottom: 10px;
+      position: relative;
+      z-index: 1;
     }
-    
-    p {
-      font-size: 1.2rem;
-      margin-bottom: 30px;
+
+    .subtitle {
+      font-size: 1.3rem;
       opacity: 0.8;
+      position: relative;
+      z-index: 1;
+      margin-bottom: 20px;
     }
-    
-    .back-link {
-      display: inline-block;
-      padding: 12px 24px;
-      background: rgba(99, 179, 237, 0.2);
-      border: 1px solid rgba(99, 179, 237, 0.5);
-      color: #63b3ed;
-      text-decoration: none;
-      border-radius: 8px;
+
+    .logo {
+      width: 60px;
+      height: 60px;
+      margin-right: 20px;
+      vertical-align: middle;
+      border-radius: 12px;
+    }
+
+    main {
+      padding: 40px;
+    }
+
+    .tools-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 30px;
+      margin-bottom: 40px;
+    }
+
+    .tool-card {
+      background: rgba(45, 55, 72, 0.6);
+      border-radius: 15px;
+      padding: 30px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.1);
       transition: all 0.3s ease;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
     }
-    
-    .back-link:hover {
-      background: rgba(99, 179, 237, 0.3);
+
+    .tool-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(99, 179, 237, 0.1), transparent);
+      transition: left 0.5s ease;
+    }
+
+    .tool-card:hover::before {
+      left: 100%;
+    }
+
+    .tool-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+      border-color: rgba(99, 179, 237, 0.5);
+    }
+
+    .tool-card.available {
+      background: linear-gradient(135deg, rgba(72, 187, 120, 0.2), rgba(56, 178, 172, 0.2));
+      border-color: rgba(72, 187, 120, 0.3);
+    }
+
+    .tool-card.coming-soon {
+      background: linear-gradient(135deg, rgba(156, 163, 175, 0.2), rgba(107, 114, 128, 0.2));
+      border-color: rgba(156, 163, 175, 0.3);
+      opacity: 0.7;
+      cursor: pointer;
+    }
+
+    .tool-icon {
+      font-size: 3rem;
+      margin-bottom: 20px;
+      display: block;
+    }
+
+    .tool-title {
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin-bottom: 15px;
+      color: #ffffff;
+    }
+
+    .tool-description {
+      color: #a0aec0;
+      line-height: 1.6;
+      margin-bottom: 20px;
+    }
+
+    .tool-status {
+      display: inline-block;
+      padding: 5px 12px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .status-available {
+      background: rgba(72, 187, 120, 0.3);
+      color: #68d391;
+      border: 1px solid rgba(72, 187, 120, 0.5);
+    }
+
+    .status-coming-soon {
+      background: rgba(156, 163, 175, 0.3);
+      color: #a0aec0;
+      border: 1px solid rgba(156, 163, 175, 0.5);
+    }
+
+    .contacts-section {
+      background: rgba(30, 35, 55, 0.8);
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 30px 40px;
+      text-align: center;
+      margin-top: 40px;
+    }
+
+    .contacts-title {
+      color: #63b3ed;
+      font-size: 1.2rem;
+      margin-bottom: 20px;
+      font-weight: 600;
+    }
+
+    .contact-item {
+      display: inline-block;
+      margin: 0 20px 10px 0;
+      padding: 10px 20px;
+      background: rgba(99, 179, 237, 0.1);
+      border: 1px solid rgba(99, 179, 237, 0.3);
+      border-radius: 25px;
+      color: #ffffff;
+      text-decoration: none;
+      transition: all 0.3s ease;
+      font-weight: 500;
+      font-size: 1rem;
+    }
+
+    .contact-item:hover {
+      background: rgba(99, 179, 237, 0.2);
+      border-color: rgba(99, 179, 237, 0.5);
       transform: translateY(-2px);
+    }
+
+    .contact-item strong {
+      color: #63b3ed;
+    }
+
+    .footer {
+      text-align: center;
+      padding: 20px;
+      color: #a0aec0;
+      font-size: 0.9rem;
+    }
+
+    .github-button {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 6px 12px;
+      background: rgba(36, 41, 46, 0.8);
+      color: #ffffff;
+      text-decoration: none;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      transition: all 0.3s ease;
+      font-family: 'Courier New', monospace;
+    }
+
+    .github-button:hover {
+      background: rgba(36, 41, 46, 1);
+      border-color: rgba(255, 255, 255, 0.3);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    .github-button svg {
+      flex-shrink: 0;
+    }
+
+    /* Media Queries per Responsività Mobile */
+    @media (max-width: 1200px) {
+      .container {
+        margin: 10px;
+        border-radius: 15px;
+      }
+      
+      main {
+        padding: 30px 20px;
+      }
+      
+      .tools-grid {
+        gap: 25px;
+      }
+    }
+
+    @media (max-width: 768px) {
+      body {
+        padding: 10px;
+      }
+      
+      .container {
+        margin: 0;
+        border-radius: 10px;
+      }
+      
+      header {
+        padding: 30px 20px;
+      }
+      
+      h1 {
+        font-size: 2rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+      
+      .logo {
+        width: 50px;
+        height: 50px;
+        margin-right: 10px;
+      }
+      
+      .subtitle {
+        font-size: 1.1rem;
+        margin-bottom: 15px;
+      }
+      
+      main {
+        padding: 20px 15px;
+      }
+      
+      .tools-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+      }
+      
+      .tool-card {
+        padding: 20px;
+        margin-bottom: 10px;
+      }
+      
+      .tool-icon {
+        font-size: 2.5rem;
+        margin-bottom: 15px;
+      }
+      
+      .tool-title {
+        font-size: 1.3rem;
+        margin-bottom: 12px;
+      }
+      
+      .tool-description {
+        font-size: 0.95rem;
+        line-height: 1.5;
+        margin-bottom: 15px;
+      }
+      
+      .contacts-section {
+        padding: 25px 20px;
+        margin-top: 30px;
+      }
+      
+      .contact-item {
+        display: block;
+        margin: 8px 0;
+        padding: 12px 16px;
+        font-size: 0.95rem;
+        text-align: center;
+      }
+      
+      .footer {
+        padding: 15px;
+        font-size: 0.85rem;
+      }
+      
+      .footer p {
+        flex-direction: column;
+        gap: 5px;
+        text-align: center;
+      }
+    }
+
+    @media (max-width: 480px) {
+      body {
+        padding: 5px;
+      }
+      
+      header {
+        padding: 25px 15px;
+      }
+      
+      h1 {
+        font-size: 1.8rem;
+        flex-direction: column;
+        text-align: center;
+      }
+      
+      .logo {
+        width: 45px;
+        height: 45px;
+        margin-right: 0;
+        margin-bottom: 10px;
+      }
+      
+      .subtitle {
+        font-size: 1rem;
+      }
+      
+      main {
+        padding: 15px 10px;
+      }
+      
+      .tool-card {
+        padding: 15px;
+        border-radius: 12px;
+      }
+      
+      .tool-icon {
+        font-size: 2.2rem;
+      }
+      
+      .tool-title {
+        font-size: 1.2rem;
+      }
+      
+      .tool-description {
+        font-size: 0.9rem;
+      }
+      
+      .contacts-section {
+        padding: 20px 15px;
+      }
+      
+      .contact-item {
+        padding: 10px 12px;
+        font-size: 0.9rem;
+      }
+      
+      .github-button {
+        padding: 8px 12px;
+        font-size: 0.85rem;
+      }
+    }
+
+    /* Ottimizzazioni Touch */
+    @media (hover: none) and (pointer: coarse) {
+      .tool-card {
+        min-height: 120px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+      }
+      
+      .tool-card:hover {
+        transform: none;
+      }
+      
+      .tool-card:active {
+        transform: scale(0.98);
+        transition: transform 0.1s ease;
+      }
+      
+      .contact-item:hover {
+        transform: none;
+      }
+      
+      .contact-item:active {
+        transform: scale(0.95);
+        transition: transform 0.1s ease;
+      }
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <div class="icon">🔮</div>
-    <h1>Tool Futuro</h1>
-    <p>Questo tool è attualmente in progettazione.<br>Stay tuned per aggiornamenti!</p>
-    <a href="../" class="back-link">🏠 Torna alla Homepage</a>
+    <header>
+      <h1>
+        <img src="logo.png" alt="Sevcon Logo" class="logo" onerror="this.style.display='none';">
+        🛠️ Sevcon Tools
+      </h1>
+      <p class="subtitle">Raccolta di strumenti utili per Elysiumcraft - VERSIONE MOBILE TEST</p>
+    </header>
+
+    <main>
+      <div class="tools-grid">
+        <!-- Abaco Divisore -->
+        <div class="tool-card available" onclick="window.location.href='abaco/'">
+          <span class="tool-icon">⚒️</span>
+          <h3 class="tool-title">Abaco Divisore</h3>
+          <p class="tool-description">
+            Divisore intelligente per bottini di abisso. Distribuisce automaticamente i materiali tra i partecipanti in modo equo e bilanciato.
+          </p>
+          <span class="tool-status status-available">Disponibile</span>
+        </div>
+
+        <!-- Placeholder 1 -->
+        <div class="tool-card coming-soon" onclick="window.location.href='altro-tool/'">
+          <span class="tool-icon">⚡</span>
+          <h3 class="tool-title">[REDACTED]</h3>
+          <p class="tool-description">
+            prossimamente...
+          </p>
+          <span class="tool-status status-coming-soon">In Progettazione</span>
+        </div>
+
+        <!-- Placeholder 2 -->
+        <div class="tool-card coming-soon" onclick="window.location.href='nuovo-tool/'">
+          <span class="tool-icon">🌟</span>
+          <h3 class="tool-title">[REDACTED]</h3>
+          <p class="tool-description">
+            prossimamente...
+          </p>
+          <span class="tool-status status-coming-soon">In Progettazione</span>
+        </div>
+
+        <!-- Placeholder 3 -->
+        <div class="tool-card coming-soon" onclick="window.location.href='strumento/'">
+          <span class="tool-icon">🎯</span>
+          <h3 class="tool-title">[REDACTED]</h3>
+          <p class="tool-description">
+            prossimamente...
+          </p>
+          <span class="tool-status status-coming-soon">In Progettazione</span>
+        </div>
+
+        <!-- Placeholder 4 -->
+        <div class="tool-card coming-soon" onclick="window.location.href='ultimo-tool/'">
+          <span class="tool-icon">🚀</span>
+          <h3 class="tool-title">[REDACTED]</h3>
+          <p class="tool-description">
+            prossimamente...
+          </p>
+          <span class="tool-status status-coming-soon">In Progettazione</span>
+        </div>
+      </div>
+    </main>
+
+    <div class="contacts-section">
+      <div class="contacts-title">📞 Contatti & Supporto</div>
+      <div>
+        <span class="contact-item">
+          🎮 Discord: <strong>picciobeffa</strong>
+        </span>
+        <span class="contact-item">
+          📱 Telegram: <strong>@piccionenberg</strong>
+        </span>
+      </div>
+    </div>
+
+    <div class="footer">
+      <p style="display: flex; align-items: center; justify-content: center; gap: 10px;">
+        <img src="logo.png" alt="Sevcon Logo" style="width: 20px; height: 20px; border-radius: 4px;" onerror="this.style.display='none';">
+        © 2025 Sevcon by piccionenberg - Creato con ❤️ per la community di Elysiumcraft - MOBILE TEST
+      </p>
+      <div style="text-align: center; margin-top: 15px;">
+        <a href="../" class="github-button">🏠 Torna al Sito Originale</a>
+      </div>
+    </div>
   </div>
+
+  <script>
+    // Aggiungi effetti di hover più fluidi
+    document.querySelectorAll('.tool-card.available, .tool-card.coming-soon').forEach(card => {
+      card.addEventListener('mouseenter', function() {
+        this.style.transform = 'translateY(-8px) scale(1.02)';
+      });
+      
+      card.addEventListener('mouseleave', function() {
+        this.style.transform = 'translateY(0) scale(1)';
+      });
+    });
+
+    // Effetto di caricamento progressivo delle card
+    document.addEventListener('DOMContentLoaded', function() {
+      const cards = document.querySelectorAll('.tool-card');
+      cards.forEach((card, index) => {
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(20px)';
+        
+        setTimeout(() => {
+          card.style.transition = 'all 0.6s ease';
+          card.style.opacity = '1';
+          card.style.transform = 'translateY(0)';
+        }, index * 150);
+      });
+    });
+  </script>
 </body>
 </html>
-

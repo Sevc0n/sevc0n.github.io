@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Accesso Area Test - Sevcon Tools</title>
+  <link rel="icon" type="image/png" href="logo.png">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #ffffff;
+    }
+
+    .container {
+      background: rgba(20, 25, 45, 0.95);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      padding: 40px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      text-align: center;
+      max-width: 400px;
+      width: 90%;
+      animation: slideIn 0.6s ease-out;
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .logo {
+      width: 60px;
+      height: 60px;
+      margin: 0 auto 20px;
+      display: block;
+      border-radius: 12px;
+    }
+
+    h1 {
+      font-size: 1.8rem;
+      margin-bottom: 10px;
+      color: #63b3ed;
+    }
+
+    .subtitle {
+      color: #a0aec0;
+      margin-bottom: 30px;
+      font-size: 1rem;
+    }
+
+    .form-group {
+      margin-bottom: 25px;
+    }
+
+    .form-group label {
+      display: block;
+      font-weight: 600;
+      color: #ffffff;
+      margin-bottom: 10px;
+      font-size: 1.1rem;
+    }
+
+    .code-input {
+      width: 100%;
+      padding: 15px;
+      border: 2px solid rgba(99, 179, 237, 0.3);
+      border-radius: 10px;
+      font-size: 1.2rem;
+      text-align: center;
+      background: rgba(45, 55, 72, 0.8);
+      color: #ffffff;
+      transition: all 0.3s ease;
+      letter-spacing: 2px;
+      font-weight: 600;
+    }
+
+    .code-input:focus {
+      outline: none;
+      border-color: #63b3ed;
+      box-shadow: 0 0 0 3px rgba(99, 179, 237, 0.2);
+      transform: scale(1.02);
+    }
+
+    .code-input::placeholder {
+      color: #a0aec0;
+      letter-spacing: normal;
+      font-weight: normal;
+    }
+
+    .btn {
+      display: inline-block;
+      padding: 15px 30px;
+      background: linear-gradient(135deg, #63b3ed, #4299e1);
+      border: none;
+      border-radius: 10px;
+      color: white;
+      text-decoration: none;
+      font-size: 1.1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      width: 100%;
+      margin-bottom: 15px;
+    }
+
+    .btn:hover {
+      background: linear-gradient(135deg, #4299e1, #3182ce);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(99, 179, 237, 0.3);
+    }
+
+    .btn:active {
+      transform: scale(0.98);
+    }
+
+    .btn:disabled {
+      background: #a0aec0;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    .back-link {
+      display: inline-block;
+      padding: 10px 20px;
+      background: rgba(99, 179, 237, 0.1);
+      border: 1px solid rgba(99, 179, 237, 0.3);
+      color: #63b3ed;
+      text-decoration: none;
+      border-radius: 8px;
+      transition: all 0.3s ease;
+      font-size: 0.9rem;
+    }
+
+    .back-link:hover {
+      background: rgba(99, 179, 237, 0.2);
+      transform: translateY(-1px);
+    }
+
+    .error-message {
+      background: rgba(245, 101, 101, 0.1);
+      border: 1px solid rgba(245, 101, 101, 0.3);
+      color: #f56565;
+      padding: 12px;
+      border-radius: 8px;
+      margin-top: 15px;
+      font-size: 0.9rem;
+      display: none;
+    }
+
+    .success-message {
+      background: rgba(72, 187, 120, 0.1);
+      border: 1px solid rgba(72, 187, 120, 0.3);
+      color: #68d391;
+      padding: 12px;
+      border-radius: 8px;
+      margin-top: 15px;
+      font-size: 0.9rem;
+      display: none;
+    }
+
+    .hint {
+      color: #a0aec0;
+      font-size: 0.8rem;
+      margin-top: 10px;
+      font-style: italic;
+    }
+
+    /* Animazioni */
+    .shake {
+      animation: shake 0.5s ease-in-out;
+    }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-5px); }
+      75% { transform: translateX(5px); }
+    }
+
+    .pulse {
+      animation: pulse 0.3s ease-in-out;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+      100% { transform: scale(1); }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <img src="logo.png" alt="Sevcon Logo" class="logo" onerror="this.style.display='none';">
+    <h1>🔐 Accesso Area Test</h1>
+    <p class="subtitle">Inserisci il codice per accedere alla versione mobile di test</p>
+    
+    <form id="accessForm">
+      <div class="form-group">
+        <label for="accessCode">Codice di Accesso:</label>
+        <input 
+          type="text" 
+          id="accessCode" 
+          class="code-input" 
+          placeholder="Inserisci il codice"
+          maxlength="6"
+          autocomplete="off"
+          required
+        >
+      </div>
+      
+      <button type="submit" class="btn" id="submitBtn">
+        🚀 Accedi al Test
+      </button>
+      
+      <div class="error-message" id="errorMessage">
+        ❌ Codice errato. Riprova.
+      </div>
+      
+      <div class="success-message" id="successMessage">
+        ✅ Accesso autorizzato! Reindirizzamento...
+      </div>
+    </form>
+    
+    <div class="hint">
+      💡 Il codice è un numero di 6 cifre
+    </div>
+    
+    <a href="index.html" class="back-link">🏠 Torna alla Homepage</a>
+  </div>
+
+  <script>
+    // Codice di accesso (puoi cambiarlo)
+    const ACCESS_CODE = "202501";
+    
+    const form = document.getElementById('accessForm');
+    const codeInput = document.getElementById('accessCode');
+    const submitBtn = document.getElementById('submitBtn');
+    const errorMessage = document.getElementById('errorMessage');
+    const successMessage = document.getElementById('successMessage');
+    
+    // Formattazione input (solo numeri)
+    codeInput.addEventListener('input', function(e) {
+      // Rimuove tutti i caratteri non numerici
+      e.target.value = e.target.value.replace(/[^0-9]/g, '');
+      
+      // Limita a 6 cifre
+      if (e.target.value.length > 6) {
+        e.target.value = e.target.value.slice(0, 6);
+      }
+    });
+    
+    // Gestione submit form
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      const enteredCode = codeInput.value.trim();
+      
+      // Reset messaggi
+      errorMessage.style.display = 'none';
+      successMessage.style.display = 'none';
+      
+      if (enteredCode === ACCESS_CODE) {
+        // Codice corretto
+        successMessage.style.display = 'block';
+        submitBtn.disabled = true;
+        submitBtn.textContent = '✅ Accesso Autorizzato';
+        
+        // Animazione di successo
+        codeInput.classList.add('pulse');
+        setTimeout(() => {
+          codeInput.classList.remove('pulse');
+        }, 300);
+        
+        // Reindirizzamento dopo 1.5 secondi
+        setTimeout(() => {
+          window.location.href = 'futuro/';
+        }, 1500);
+        
+      } else {
+        // Codice errato
+        errorMessage.style.display = 'block';
+        
+        // Animazione di errore
+        codeInput.classList.add('shake');
+        setTimeout(() => {
+          codeInput.classList.remove('shake');
+        }, 500);
+        
+        // Svuota il campo
+        codeInput.value = '';
+        codeInput.focus();
+      }
+    });
+    
+    // Focus automatico sul campo
+    codeInput.focus();
+    
+    // Gestione tasto Enter
+    codeInput.addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') {
+        form.dispatchEvent(new Event('submit'));
+      }
+    });
+    
+    // Debug info (rimuovi in produzione)
+    console.log('🔐 Sistema di accesso attivo');
+    console.log('💡 Codice di accesso:', ACCESS_CODE);
+  </script>
+</body>
+</html>
