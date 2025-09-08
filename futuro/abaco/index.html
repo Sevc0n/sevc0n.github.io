@@ -368,12 +368,6 @@
       box-shadow: 0 0 0 3px rgba(99, 179, 237, 0.2);
     }
 
-    .class-select:disabled {
-      background: rgba(45, 55, 72, 0.4);
-      color: #a0aec0;
-      cursor: not-allowed;
-      border-color: rgba(99, 179, 237, 0.1);
-    }
 
     .priority-info {
       background: rgba(99, 179, 237, 0.1);
@@ -738,7 +732,7 @@
                  <option value="Maestro">Maestro</option>
                </select>
                <div id="abyss-tier-info" style="margin-top: 10px; font-size: 0.9rem; color: #a0aec0; display: none;">
-                 ⚡ Tier dell'abisso attivo - tutti i partecipanti sono impostati a questo livello
+                 ⚡ Tier dell'abisso attivo - tutti i partecipanti sono impostati a questo livello (puoi modificare individualmente)
                </div>
              </div>
              
@@ -1056,7 +1050,7 @@
                  `<option value="${cls}" ${participantClasses[i] === cls ? 'selected' : ''}>${cls}</option>`
                ).join('')}
              </select>
-             <select class="class-select" data-index="${i}" data-type="tier" ${abyssTierSelect.value ? 'disabled' : ''}>
+             <select class="class-select" data-index="${i}" data-type="tier">
                ${availableTiers.map(tier => 
                  `<option value="${tier}" ${participantTiers[i] === tier ? 'selected' : ''}>${tier}</option>`
                ).join('')}
