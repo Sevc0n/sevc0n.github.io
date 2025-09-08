@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="it">
 <head>
@@ -17,6 +18,13 @@
     /* Regola globale per prevenire overflow */
     * {
       max-width: 100%;
+      box-sizing: border-box;
+    }
+    
+    /* Regola specifica per prevenire overflow orizzontale */
+    html, body {
+      overflow-x: hidden;
+      max-width: 100vw;
     }
 
     body {
@@ -204,9 +212,11 @@
         gap: 10px;
         padding: 12px;
         text-align: center;
-        overflow-x: hidden; /* Previene overflow dei prodotti */
+        overflow: hidden; /* Previene overflow dei prodotti */
         word-wrap: break-word;
         min-width: 0;
+        max-width: 100%;
+        box-sizing: border-box;
       }
       
       .product-name {
@@ -352,14 +362,18 @@
       
       .category-section {
         margin-bottom: 20px;
-        overflow-x: hidden;
+        overflow: hidden;
+        max-width: 100%;
+        box-sizing: border-box;
       }
       
       .product {
         padding: 10px;
         margin: 8px 0;
-        overflow-x: hidden;
+        overflow: hidden;
         word-wrap: break-word;
+        max-width: 100%;
+        box-sizing: border-box;
       }
       
       .product-name {
@@ -419,11 +433,16 @@
         padding: 10px;
         font-size: 0.95rem;
         word-wrap: break-word;
+        overflow: hidden;
+        max-width: 100%;
+        box-sizing: border-box;
       }
       
       .contacts-section {
         padding: 15px 10px;
-        overflow-x: hidden;
+        overflow: hidden;
+        max-width: 100%;
+        box-sizing: border-box;
       }
       
       .contact-item {
@@ -431,6 +450,9 @@
         font-size: 0.85rem;
         word-wrap: break-word;
         overflow-wrap: break-word;
+        overflow: hidden;
+        max-width: 100%;
+        box-sizing: border-box;
       }
       
       .homepage-link {
@@ -438,6 +460,9 @@
         padding: 8px 12px;
         margin-top: 12px;
         word-wrap: break-word;
+        overflow: hidden;
+        max-width: 100%;
+        box-sizing: border-box;
       }
     }
 
@@ -476,7 +501,9 @@
       
       .category-section {
         margin-bottom: 15px;
-        overflow-x: hidden;
+        overflow: hidden;
+        max-width: 100%;
+        box-sizing: border-box;
       }
       
       .category-title {
@@ -490,6 +517,9 @@
         padding: 8px;
         margin: 6px 0;
         gap: 5px;
+        overflow: hidden;
+        max-width: 100%;
+        box-sizing: border-box;
       }
       
       .product-name {
@@ -520,25 +550,45 @@
       .participant-result {
         padding: 8px;
         margin: 8px 0;
-        overflow-x: hidden;
+        overflow: hidden;
         word-wrap: break-word;
+        max-width: 100%;
+        box-sizing: border-box;
       }
       
       .item-distribution {
         padding: 6px;
         font-size: 0.85rem;
-        overflow-x: hidden;
+        overflow: hidden;
         word-wrap: break-word;
         min-width: 0;
+        max-width: 100%;
+        box-sizing: border-box;
       }
       
       .contacts-section {
         padding: 10px 5px;
+        overflow: hidden;
+        max-width: 100%;
+        box-sizing: border-box;
       }
       
       .contact-item {
         padding: 6px 8px;
         font-size: 0.8rem;
+        overflow: hidden;
+        max-width: 100%;
+        box-sizing: border-box;
+        word-wrap: break-word;
+      }
+      
+      .contact-item:hover {
+        transform: none;
+      }
+      
+      .contact-item:active {
+        transform: scale(0.95);
+        transition: transform 0.1s ease;
       }
     }
 
@@ -549,6 +599,9 @@
         display: flex;
         flex-direction: column;
         justify-content: center;
+        overflow: hidden;
+        max-width: 100%;
+        box-sizing: border-box;
       }
       
       .product:hover {
@@ -563,11 +616,33 @@
       .product input {
         min-height: 44px; /* Dimensione minima per touch */
         font-size: 1rem; /* Previene zoom su iOS */
+        overflow: hidden;
+        max-width: 100%;
+        box-sizing: border-box;
       }
       
       #participants {
         min-height: 44px;
         font-size: 1rem;
+        overflow: hidden;
+        max-width: 100%;
+        box-sizing: border-box;
+      }
+      
+      .contact-item:hover {
+        transform: none;
+      }
+      
+      .contact-item:active {
+        transform: scale(0.95);
+        transition: transform 0.1s ease;
+      }
+      
+      .contact-item {
+        overflow: hidden;
+        max-width: 100%;
+        box-sizing: border-box;
+        word-wrap: break-word;
       }
       
       .contact-item:hover {
@@ -587,6 +662,9 @@
       box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
       border: 1px solid rgba(255, 255, 255, 0.1);
       transition: all 0.3s ease;
+      overflow: hidden;
+      max-width: 100%;
+      box-sizing: border-box;
     }
 
     .card:hover {
@@ -603,6 +681,10 @@
       display: flex;
       align-items: center;
       gap: 10px;
+      overflow: hidden;
+      max-width: 100%;
+      box-sizing: border-box;
+      word-wrap: break-word;
     }
 
     .card h2::before {
@@ -615,8 +697,10 @@
 
     .category-section {
       margin-bottom: 30px;
-      overflow-x: hidden; /* Previene overflow delle sezioni */
+      overflow: hidden; /* Previene overflow delle sezioni */
       word-wrap: break-word;
+      max-width: 100%; /* Limita la larghezza massima */
+      box-sizing: border-box; /* Include padding e border nella larghezza */
     }
 
     .category-title {
@@ -628,6 +712,9 @@
       border-bottom: 1px solid rgba(99, 179, 237, 0.3);
       word-wrap: break-word;
       overflow-wrap: break-word;
+      overflow: hidden;
+      max-width: 100%;
+      box-sizing: border-box;
     }
 
     .product {
@@ -641,9 +728,11 @@
       border-radius: 10px;
       transition: all 0.3s ease;
       border: 1px solid rgba(99, 179, 237, 0.1);
-      overflow-x: hidden; /* Previene overflow dei prodotti */
+      overflow: hidden; /* Previene overflow dei prodotti */
       word-wrap: break-word;
       min-width: 0; /* Permette alla griglia di ridursi */
+      max-width: 100%; /* Limita la larghezza massima */
+      box-sizing: border-box; /* Include padding e border nella larghezza */
     }
 
     .product:hover {
@@ -666,6 +755,8 @@
       overflow-wrap: break-word;
       hyphens: auto;
       min-width: 0; /* Permette al contenuto di ridursi */
+      max-width: 100%; /* Limita la larghezza massima */
+      overflow: hidden; /* Previene overflow del testo */
     }
 
     .product-price {
@@ -673,6 +764,9 @@
       color: #68d391;
       text-align: right;
       min-width: 0; /* Permette al contenuto di ridursi */
+      max-width: 100%; /* Limita la larghezza massima */
+      overflow: hidden; /* Previene overflow del prezzo */
+      white-space: nowrap; /* Evita che il prezzo vada a capo */
     }
 
     .tier-badge {
@@ -682,6 +776,10 @@
       font-size: 0.7rem;
       font-weight: 600;
       margin-left: 8px;
+      overflow: hidden;
+      max-width: 100%;
+      box-sizing: border-box;
+      white-space: nowrap;
     }
 
     .tier-novizio { background: #a0aec0; color: #2d3748; }
@@ -702,6 +800,8 @@
       color: #ffffff;
       box-sizing: border-box; /* Include padding e border nella larghezza */
       max-width: 100%;
+      overflow: hidden;
+      white-space: nowrap;
     }
 
     .product input:focus, #participants:focus {
@@ -752,8 +852,10 @@
       background: rgba(0, 0, 0, 0.2);
       border-radius: 12px;
       border: 1px solid rgba(255, 255, 255, 0.1);
-      overflow-x: hidden; /* Previene overflow dei risultati */
+      overflow: hidden; /* Previene overflow dei risultati */
       word-wrap: break-word;
+      max-width: 100%;
+      box-sizing: border-box;
     }
 
     .participant-title {
@@ -762,6 +864,10 @@
       margin-bottom: 15px;
       color: #63b3ed;
       text-align: center;
+      overflow: hidden;
+      max-width: 100%;
+      box-sizing: border-box;
+      word-wrap: break-word;
     }
 
     .item-distribution {
@@ -772,9 +878,11 @@
       padding: 8px 12px;
       background: rgba(255, 255, 255, 0.05);
       border-radius: 6px;
-      overflow-x: hidden; /* Previene overflow delle distribuzioni */
+      overflow: hidden; /* Previene overflow delle distribuzioni */
       word-wrap: break-word;
       min-width: 0; /* Permette alla griglia di ridursi */
+      max-width: 100%;
+      box-sizing: border-box;
     }
 
     .total-cost {
@@ -785,6 +893,10 @@
       border-radius: 8px;
       font-weight: 600;
       border: 1px solid rgba(72, 187, 120, 0.3);
+      overflow: hidden;
+      max-width: 100%;
+      box-sizing: border-box;
+      word-wrap: break-word;
     }
 
     .empty-state {
@@ -792,6 +904,10 @@
       color: #a0aec0;
       font-style: italic;
       padding: 40px;
+      overflow: hidden;
+      max-width: 100%;
+      box-sizing: border-box;
+      word-wrap: break-word;
     }
 
     .currency-br {
@@ -814,6 +930,9 @@
       height: 40px;
       margin-right: 15px;
       vertical-align: middle;
+      max-width: 100%;
+      box-sizing: border-box;
+      overflow: hidden;
     }
 
     .loading {
@@ -821,6 +940,10 @@
       color: #a0aec0;
       padding: 40px;
       font-style: italic;
+      overflow: hidden;
+      max-width: 100%;
+      box-sizing: border-box;
+      word-wrap: break-word;
     }
 
     .error {
@@ -830,6 +953,10 @@
       background: rgba(245, 101, 101, 0.1);
       border-radius: 8px;
       border: 1px solid rgba(245, 101, 101, 0.3);
+      overflow: hidden;
+      max-width: 100%;
+      box-sizing: border-box;
+      word-wrap: break-word;
     }
 
     .warning {
@@ -839,6 +966,10 @@
       background: rgba(237, 137, 54, 0.1);
       border-radius: 8px;
       border: 1px solid rgba(237, 137, 54, 0.3);
+      overflow: hidden;
+      max-width: 100%;
+      box-sizing: border-box;
+      word-wrap: break-word;
     }
 
     .contacts-section {
@@ -847,6 +978,9 @@
       padding: 20px 40px;
       text-align: center;
       margin-top: 30px;
+      overflow: hidden;
+      max-width: 100%;
+      box-sizing: border-box;
     }
  
      .contacts-title {
@@ -854,6 +988,10 @@
        font-size: 1.1rem;
        margin-bottom: 15px;
        font-weight: 600;
+       overflow: hidden;
+       max-width: 100%;
+       box-sizing: border-box;
+       word-wrap: break-word;
      }
  
      .contact-item {
@@ -868,6 +1006,10 @@
        transition: all 0.3s ease;
        font-weight: 500;
        font-size: 0.9rem;
+       overflow: hidden;
+       max-width: 100%;
+       box-sizing: border-box;
+       word-wrap: break-word;
      }
  
      .contact-item:hover {
@@ -884,6 +1026,10 @@
       color: #fbb6ce;
       font-size: 0.9em;
       font-style: italic;
+      overflow: hidden;
+      max-width: 100%;
+      box-sizing: border-box;
+      word-wrap: break-word;
     }
 
     .homepage-link {
@@ -903,6 +1049,10 @@
       height: auto;
       z-index: 10;
       background: transparent;
+      overflow: hidden;
+      max-width: 100%;
+      box-sizing: border-box;
+      word-wrap: break-word;
     }
 
     .homepage-link:hover {
@@ -1180,12 +1330,18 @@
              const subcategoryDiv = document.createElement("div");
              subcategoryDiv.style.marginLeft = "20px";
              subcategoryDiv.style.marginBottom = "20px";
+             subcategoryDiv.style.overflow = "hidden";
+             subcategoryDiv.style.maxWidth = "100%";
+             subcategoryDiv.style.boxSizing = "border-box";
              
              const subcategoryTitle = document.createElement("h4");
              subcategoryTitle.style.color = "#a0aec0";
              subcategoryTitle.style.fontSize = "1rem";
              subcategoryTitle.style.marginBottom = "10px";
              subcategoryTitle.style.fontWeight = "500";
+             subcategoryTitle.style.overflow = "hidden";
+             subcategoryTitle.style.wordWrap = "break-word";
+             subcategoryTitle.style.maxWidth = "100%";
              subcategoryTitle.textContent = subcategory;
              subcategoryDiv.appendChild(subcategoryTitle);
              
