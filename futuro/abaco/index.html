@@ -257,6 +257,24 @@
         word-wrap: break-word;
       }
       
+      .quantity-container {
+        max-width: 100px;
+        gap: 3px;
+      }
+
+      .quantity-btn {
+        width: 28px;
+        height: 28px;
+        font-size: 1rem;
+      }
+
+      .quantity-input {
+        min-width: 40px;
+        max-width: 50px;
+        height: 28px;
+        font-size: 0.8rem;
+      }
+
       .product input {
         width: 100%;
         max-width: 120px;
@@ -422,6 +440,24 @@
         word-wrap: break-word;
       }
       
+      .quantity-container {
+        max-width: 90px;
+        gap: 2px;
+      }
+
+      .quantity-btn {
+        width: 26px;
+        height: 26px;
+        font-size: 0.9rem;
+      }
+
+      .quantity-input {
+        min-width: 35px;
+        max-width: 45px;
+        height: 26px;
+        font-size: 0.75rem;
+      }
+
       .product input {
         padding: 10px;
         font-size: 0.95rem;
@@ -567,6 +603,24 @@
         padding: 1px 4px;
       }
       
+      .quantity-container {
+        max-width: 80px;
+        gap: 2px;
+      }
+
+      .quantity-btn {
+        width: 24px;
+        height: 24px;
+        font-size: 0.8rem;
+      }
+
+      .quantity-input {
+        min-width: 30px;
+        max-width: 40px;
+        height: 24px;
+        font-size: 0.7rem;
+      }
+
       .product input {
         padding: 8px;
         font-size: 0.9rem;
@@ -645,6 +699,26 @@
         transition: transform 0.1s ease;
       }
       
+      .quantity-container {
+        max-width: 120px;
+        gap: 5px;
+      }
+
+      .quantity-btn {
+        width: 44px;
+        height: 44px;
+        font-size: 1.2rem;
+        min-height: 44px; /* Dimensione minima per touch */
+      }
+
+      .quantity-input {
+        min-width: 50px;
+        max-width: 60px;
+        height: 44px;
+        font-size: 1rem;
+        min-height: 44px; /* Dimensione minima per touch */
+      }
+
       .product input {
         min-height: 44px; /* Dimensione minima per touch */
         font-size: 1rem; /* Previene zoom su iOS */
@@ -825,6 +899,57 @@
     .tier-custode { background: #d69e2e; color: white; }
     .tier-maestro { background: #4299e1; color: white; }
     .tier-tutti { background: linear-gradient(135deg, #667eea, #764ba2); color: white; }
+
+    .quantity-container {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      max-width: 120px;
+      width: 100%;
+    }
+
+    .quantity-btn {
+      width: 32px;
+      height: 32px;
+      border: 2px solid rgba(99, 179, 237, 0.3);
+      border-radius: 6px;
+      background: rgba(45, 55, 72, 0.8);
+      color: #63b3ed;
+      font-size: 1.2rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .quantity-btn:hover {
+      background: rgba(99, 179, 237, 0.2);
+      border-color: rgba(99, 179, 237, 0.5);
+      transform: scale(1.05);
+    }
+
+    .quantity-btn:active {
+      transform: scale(0.95);
+    }
+
+    .quantity-input {
+      flex: 1;
+      min-width: 50px;
+      max-width: 60px;
+      height: 32px;
+      padding: 0 8px;
+      border: 2px solid rgba(99, 179, 237, 0.3);
+      border-radius: 6px;
+      font-size: 0.9rem;
+      text-align: center;
+      transition: all 0.3s ease;
+      background: rgba(45, 55, 72, 0.8);
+      color: #ffffff;
+      box-sizing: border-box;
+    }
 
     .product input, #participants {
       padding: 12px;
@@ -1414,7 +1539,7 @@
      function createProductElement(p, globalIndex) {
        const div = document.createElement("div");
        div.className = "product";
- 
+
        const nameContainer = document.createElement("div");
        const name = document.createElement("span");
        name.className = "product-name";
@@ -1426,25 +1551,62 @@
        
        nameContainer.appendChild(name);
        nameContainer.appendChild(tierBadge);
- 
+
        const price = document.createElement("span");
        price.className = `product-price ${getCurrencyClass(p.price)}`;
        price.textContent = formatCurrency(p.price);
- 
-               const qty = document.createElement("input");
-        qty.type = "number";
-        qty.min = "0";
-        qty.value = p.qty > 0 ? p.qty : "";
-        qty.placeholder = "N°";
- 
+
+       // Container per i controlli di quantità
+       const quantityContainer = document.createElement("div");
+       quantityContainer.className = "quantity-container";
+
+       // Pulsante meno
+       const minusBtn = document.createElement("button");
+       minusBtn.className = "quantity-btn";
+       minusBtn.textContent = "−";
+       minusBtn.type = "button";
+       minusBtn.addEventListener("click", () => {
+         const currentValue = parseInt(qty.value) || 0;
+         if (currentValue > 0) {
+           qty.value = currentValue - 1;
+           products[globalIndex].qty = currentValue - 1;
+           updateDistribution();
+         }
+       });
+
+       // Input quantità
+       const qty = document.createElement("input");
+       qty.type = "number";
+       qty.min = "0";
+       qty.className = "quantity-input";
+       qty.value = p.qty > 0 ? p.qty : "";
+       qty.placeholder = "0";
+
        qty.addEventListener("input", () => {
          products[globalIndex].qty = parseInt(qty.value) || 0;
          updateDistribution();
        });
- 
+
+       // Pulsante più
+       const plusBtn = document.createElement("button");
+       plusBtn.className = "quantity-btn";
+       plusBtn.textContent = "+";
+       plusBtn.type = "button";
+       plusBtn.addEventListener("click", () => {
+         const currentValue = parseInt(qty.value) || 0;
+         qty.value = currentValue + 1;
+         products[globalIndex].qty = currentValue + 1;
+         updateDistribution();
+       });
+
+       // Assembla il container
+       quantityContainer.appendChild(minusBtn);
+       quantityContainer.appendChild(qty);
+       quantityContainer.appendChild(plusBtn);
+
        div.appendChild(nameContainer);
        div.appendChild(price);
-       div.appendChild(qty);
+       div.appendChild(quantityContainer);
        
        return div;
      }
