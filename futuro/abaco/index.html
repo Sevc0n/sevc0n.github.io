@@ -1640,6 +1640,23 @@
          console.log('Tentativo di caricamento JSON da:', window.location.href);
          console.log('Directory corrente:', window.location.pathname);
          console.log('URL base:', window.location.origin + window.location.pathname);
+         console.log('Hostname:', window.location.hostname);
+         console.log('Protocol:', window.location.protocol);
+         
+         // Test diretto del file JSON
+         console.log('Test diretto del file JSON...');
+         try {
+           const testResponse = await fetch('./oggetti_abaco.json');
+           console.log('Test response status:', testResponse.status);
+           console.log('Test response ok:', testResponse.ok);
+           if (testResponse.ok) {
+             const testData = await testResponse.text();
+             console.log('Test data length:', testData.length);
+             console.log('Test data preview:', testData.substring(0, 200));
+           }
+         } catch (testError) {
+           console.log('Test diretto fallito:', testError.message);
+         }
          
          // Prova prima con window.fs (ambiente Claude)
          if (window.fs && window.fs.readFile) {
@@ -1661,8 +1678,12 @@
                'oggetti_abaco.json',
                '../abaco/oggetti_abaco.json',
                'abaco/oggetti_abaco.json',
+               '../futuro/abaco/oggetti_abaco.json',
+               'futuro/abaco/oggetti_abaco.json',
                window.location.origin + '/abaco/oggetti_abaco.json',
-               window.location.origin + '/sevc0n.github.io/abaco/oggetti_abaco.json'
+               window.location.origin + '/futuro/abaco/oggetti_abaco.json',
+               window.location.origin + '/sevc0n.github.io/abaco/oggetti_abaco.json',
+               window.location.origin + '/sevc0n.github.io/futuro/abaco/oggetti_abaco.json'
              ];
              
              let pathSuccess = false;
@@ -1756,6 +1777,9 @@
            productList.innerHTML = `
              <div class="error">
                ❌ Impossibile caricare i dati dei materiali<br>
+               <br>
+               <strong>Errore:</strong> ${error.message}<br>
+               <strong>URL corrente:</strong> ${window.location.href}<br>
                <br>
                <strong>Per assistenza contatta:</strong><br>
                🎮 Discord: <strong>picciobeffa</strong><br>
