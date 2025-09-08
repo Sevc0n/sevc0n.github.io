@@ -1612,9 +1612,9 @@
        }, 0);
      }
 
-     // Carica i prodotti dai dati incorporati - VERSIONE SEMPLIFICATA
-     function loadProducts() {
-       console.log('=== INIZIO CARICAMENTO SEMPLIFICATO ===');
+     // Carica i prodotti dal file JSON
+     async function loadProducts() {
+       console.log('=== CARICAMENTO DA FILE JSON ===');
        
        const productList = document.getElementById("product-list");
        if (!productList) {
@@ -1622,17 +1622,87 @@
          return;
        }
        
-       console.log('Elemento product-list trovato');
-       
        // Mostra messaggio di caricamento
        productList.innerHTML = `
          <div class="loading">
-           ⏳ Caricamento materiali...<br>
-           <small>Inizializzazione database</small>
+           ⏳ Caricamento materiali dal database...<br>
+           <small>Connessione al file JSON</small>
          </div>
        `;
        
-       // Dati incorporati direttamente
+       try {
+         console.log('Tentativo di caricamento JSON...');
+         console.log('URL corrente:', window.location.href);
+         console.log('Protocollo:', window.location.protocol);
+         
+         // Se siamo su file://, mostra un messaggio di aiuto
+         if (window.location.protocol === 'file:') {
+           console.warn('Protocollo file:// rilevato - problemi CORS possibili');
+           productList.innerHTML = `
+             <div class="warning">
+               ⚠️ Problema di caricamento rilevato<br>
+               <br>
+               <strong>Soluzione:</strong><br>
+               1. Usa un server web locale (es. Live Server in VS Code)<br>
+               2. Oppure carica la pagina da un server web<br>
+               <br>
+               <strong>Per testare subito:</strong><br>
+               Apri la console (F12) e digita:<br>
+               <code>loadProductsFromFallback()</code>
+               <br><br>
+               <button onclick="loadProductsFromFallback()" style="padding: 10px; background: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer;">
+                 Carica Dati di Test
+               </button>
+             </div>
+           `;
+           return;
+         }
+         
+         // Prova a caricare il JSON
+         const response = await fetch('./oggetti_abaco.json');
+         
+         if (!response.ok) {
+           throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+         }
+         
+         const data = await response.json();
+         console.log('JSON caricato con successo:', data.length, 'prodotti');
+         
+         defaultProducts = data;
+         products = data.map(p => ({ ...p, qty: 0 }));
+         
+         renderMain();
+         
+         console.log('Caricamento completato con successo');
+         
+       } catch (error) {
+         console.error('Errore nel caricamento JSON:', error);
+         
+         productList.innerHTML = `
+           <div class="error">
+             ❌ Errore nel caricamento del file JSON<br>
+             <br>
+             <strong>Errore:</strong> ${error.message}<br>
+             <br>
+             <strong>Soluzioni:</strong><br>
+             1. Usa un server web locale<br>
+             2. Verifica che il file oggetti_abaco.json esista<br>
+             <br>
+             <button onclick="loadProductsFromFallback()" style="padding: 10px; background: #FF9800; color: white; border: none; border-radius: 5px; cursor: pointer;">
+               Carica Dati di Test
+             </button>
+           </div>
+         `;
+       }
+     }
+     
+     // Funzione di fallback per caricare dati di test
+     function loadProductsFromFallback() {
+       console.log('Caricamento dati di fallback...');
+       
+       const productList = document.getElementById("product-list");
+       
+       // Dati di fallback
        defaultProducts = [
          { name: "Stagno grezzo", price: 12, category: "Cristalli", subcategory: "Metalli", tier: "Novizio" },
          { name: "Rame grezzo", price: 20, category: "Cristalli", subcategory: "Metalli", tier: "Avanzato" },
@@ -1662,28 +1732,20 @@
          { name: "Demon Heart", price: 5, category: "Aberrazioni", tier: "Maestro" }
        ];
        
-       console.log('Dati assegnati:', defaultProducts.length, 'prodotti');
-       
-       // Crea array products
        products = defaultProducts.map(p => ({ ...p, qty: 0 }));
-       console.log('Array products creato:', products.length, 'prodotti');
        
-       // Chiama renderMain
-       console.log('Chiamata renderMain...');
        try {
          renderMain();
-         console.log('renderMain completata con successo');
-       } catch (renderError) {
-         console.error('Errore in renderMain:', renderError);
+         console.log('Dati di fallback caricati con successo');
+       } catch (error) {
+         console.error('Errore nel rendering dei dati di fallback:', error);
          productList.innerHTML = `
            <div class="error">
-             ❌ Errore nel rendering<br>
-             <small>${renderError.message}</small>
+             ❌ Errore critico nel rendering<br>
+             <small>${error.message}</small>
            </div>
          `;
        }
-       
-       console.log('=== CARICAMENTO COMPLETATO ===');
      }
  
      function getTierClass(tier) {
