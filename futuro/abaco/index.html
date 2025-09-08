@@ -1267,6 +1267,7 @@
      }
 
      function calculateDistribution() {
+       console.log('calculateDistribution called');
        const numParticipants = parseInt(participantsInput.value) || 1;
        const container = document.getElementById('distribution-results');
        const calculateBtn = document.getElementById('calculate-btn');
@@ -1305,7 +1306,10 @@
          }
 
          // Calcola la distribuzione
+         console.log('Selected items:', selectedItems);
+         console.log('Number of participants:', numParticipants);
          const distribution = performDistribution(selectedItems, numParticipants);
+         console.log('Distribution result:', distribution);
          renderDistribution(distribution);
          
          // Riabilita il pulsante
@@ -1412,6 +1416,7 @@
      }
 
      function renderDistribution(participants) {
+       console.log('renderDistribution called with:', participants);
        const container = document.getElementById('distribution-results');
        
        let html = '';
@@ -1521,16 +1526,19 @@
       }
     });
 
-    // Event listener per il pulsante Calcola
+    // Inizializzazione
+    loadProducts();
+    
+    // Event listener per il pulsante Calcola (dopo che tutte le funzioni sono definite)
     document.addEventListener('DOMContentLoaded', () => {
       const calculateBtn = document.getElementById('calculate-btn');
       if (calculateBtn) {
         calculateBtn.addEventListener('click', calculateDistribution);
+        console.log('Event listener added to calculate button');
+      } else {
+        console.log('Calculate button not found');
       }
     });
-
-    // Inizializzazione
-    loadProducts();
    </script>
  </body>
 </html>
