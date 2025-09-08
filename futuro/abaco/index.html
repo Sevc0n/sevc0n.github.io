@@ -1293,8 +1293,11 @@
            const quantity = parseInt(input.value) || 0;
            console.log(`Input ${index}: quantity = ${quantity}`);
            if (quantity > 0) {
-             const productName = input.closest('.product').querySelector('.product-name').textContent.replace(/\s+(Novizio|Avanzato|Esperto|Custode|Maestro|Tutti|Base)$/, '');
-             console.log(`Product name: ${productName}`);
+             const productNameElement = input.closest('.product').querySelector('.product-name');
+             const fullText = productNameElement.textContent;
+             const productName = fullText.replace(/\s*(Novizio|Avanzato|Esperto|Custode|Maestro|Tutti|Base)\s*$/, '').trim();
+             console.log(`Full text: "${fullText}"`);
+             console.log(`Product name: "${productName}"`);
              const product = products.find(p => p.name === productName);
              console.log(`Found product:`, product);
              if (product) {
