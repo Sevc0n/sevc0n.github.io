@@ -121,6 +121,13 @@
         grid-template-columns: 1fr;
         gap: 20px;
       }
+      
+      .product {
+        grid-template-columns: 1fr 100px 70px;
+        gap: 10px;
+        min-width: 0;
+        overflow-x: hidden;
+      }
     }
 
     @media (max-width: 768px) {
@@ -194,6 +201,7 @@
         text-align: center;
         overflow-x: hidden; /* Previene overflow dei prodotti */
         word-wrap: break-word;
+        min-width: 0;
       }
       
       .product-name {
@@ -423,6 +431,89 @@
       }
     }
 
+    /* Media query per schermi molto piccoli */
+    @media (max-width: 360px) {
+      body {
+        padding: 2px;
+      }
+      
+      .container {
+        border-radius: 8px;
+      }
+      
+      header {
+        padding: 15px 10px;
+      }
+      
+      h1 {
+        font-size: 1.5rem;
+      }
+      
+      .logo {
+        width: 30px;
+        height: 30px;
+      }
+      
+      main {
+        padding: 10px 5px;
+      }
+      
+      .card {
+        padding: 10px;
+        border-radius: 8px;
+      }
+      
+      .product {
+        padding: 8px;
+        margin: 6px 0;
+        gap: 5px;
+      }
+      
+      .product-name {
+        font-size: 0.9rem;
+      }
+      
+      .product-price {
+        font-size: 0.85rem;
+      }
+      
+      .tier-badge {
+        font-size: 0.6rem;
+        padding: 1px 4px;
+      }
+      
+      .product input {
+        padding: 8px;
+        font-size: 0.9rem;
+        max-width: 80px;
+      }
+      
+      #participants {
+        width: 100px;
+        font-size: 0.9rem;
+        padding: 8px;
+      }
+      
+      .participant-result {
+        padding: 8px;
+        margin: 8px 0;
+      }
+      
+      .item-distribution {
+        padding: 6px;
+        font-size: 0.85rem;
+      }
+      
+      .contacts-section {
+        padding: 10px 5px;
+      }
+      
+      .contact-item {
+        padding: 6px 8px;
+        font-size: 0.8rem;
+      }
+    }
+
     /* Ottimizzazioni Touch per Abaco */
     @media (hover: none) and (pointer: coarse) {
       .product {
@@ -520,6 +611,7 @@
       border: 1px solid rgba(99, 179, 237, 0.1);
       overflow-x: hidden; /* Previene overflow dei prodotti */
       word-wrap: break-word;
+      min-width: 0; /* Permette alla griglia di ridursi */
     }
 
     .product:hover {
@@ -528,18 +620,27 @@
       border-color: rgba(99, 179, 237, 0.3);
     }
 
+    /* Disabilita transform su schermi piccoli per evitare overflow */
+    @media (max-width: 768px) {
+      .product:hover {
+        transform: none;
+      }
+    }
+
     .product-name {
       font-weight: 500;
       color: #ffffff;
       word-wrap: break-word;
       overflow-wrap: break-word;
       hyphens: auto;
+      min-width: 0; /* Permette al contenuto di ridursi */
     }
 
     .product-price {
       font-weight: 600;
       color: #68d391;
       text-align: right;
+      min-width: 0; /* Permette al contenuto di ridursi */
     }
 
     .tier-badge {
