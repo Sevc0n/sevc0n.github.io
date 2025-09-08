@@ -1283,13 +1283,20 @@
 
        // Simula un piccolo delay per mostrare il feedback
        setTimeout(() => {
+         console.log('Starting item collection...');
          // Raccogli tutti gli oggetti con quantità > 0
          const selectedItems = [];
-         document.querySelectorAll('.quantity-input').forEach(input => {
+         const quantityInputs = document.querySelectorAll('.quantity-input');
+         console.log('Found quantity inputs:', quantityInputs.length);
+         
+         quantityInputs.forEach((input, index) => {
            const quantity = parseInt(input.value) || 0;
+           console.log(`Input ${index}: quantity = ${quantity}`);
            if (quantity > 0) {
              const productName = input.closest('.product').querySelector('.product-name').textContent.replace(/\s+(Novizio|Avanzato|Esperto|Custode|Maestro|Tutti|Base)$/, '');
+             console.log(`Product name: ${productName}`);
              const product = products.find(p => p.name === productName);
+             console.log(`Found product:`, product);
              if (product) {
                for (let i = 0; i < quantity; i++) {
                  selectedItems.push({...product});
@@ -1298,7 +1305,10 @@
            }
          });
 
+         console.log('Total selected items:', selectedItems.length);
+         
          if (selectedItems.length === 0) {
+           console.log('No items selected, showing empty state');
            container.innerHTML = '<div class="empty-state">Inserisci le quantità dei materiali per vedere la divisione</div>';
            calculateBtn.disabled = false;
            calculateBtn.innerHTML = '🧮 Calcola Divisione';
@@ -1308,9 +1318,12 @@
          // Calcola la distribuzione
          console.log('Selected items:', selectedItems);
          console.log('Number of participants:', numParticipants);
+         console.log('Calling performDistribution...');
          const distribution = performDistribution(selectedItems, numParticipants);
          console.log('Distribution result:', distribution);
+         console.log('Calling renderDistribution...');
          renderDistribution(distribution);
+         console.log('renderDistribution completed');
          
          // Riabilita il pulsante
          calculateBtn.disabled = false;
@@ -1324,6 +1337,7 @@
      }
 
      function performDistribution(items, numParticipants) {
+       console.log('performDistribution called with', items.length, 'items and', numParticipants, 'participants');
        const participants = [];
        for (let i = 0; i < numParticipants; i++) {
          participants.push({
