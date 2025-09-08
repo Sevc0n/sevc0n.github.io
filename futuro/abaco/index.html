@@ -20,6 +20,7 @@
       min-height: 100vh;
       padding: 20px;
       color: #ffffff;
+      overflow-x: hidden; /* Previene overflow orizzontale globale */
     }
 
     .container {
@@ -32,6 +33,8 @@
       overflow: hidden;
       animation: slideIn 0.6s ease-out;
       border: 1px solid rgba(255, 255, 255, 0.1);
+      width: 100%;
+      box-sizing: border-box; /* Include padding e border nella larghezza */
     }
 
     @keyframes slideIn {
@@ -123,15 +126,19 @@
     @media (max-width: 768px) {
       body {
         padding: 10px;
+        overflow-x: hidden; /* Previene overflow orizzontale */
       }
       
       .container {
         margin: 0;
         border-radius: 10px;
+        max-width: 100%;
+        overflow-x: hidden; /* Previene overflow del container */
       }
       
       header {
         padding: 25px 20px;
+        overflow-x: hidden; /* Previene overflow dell'header */
       }
       
       h1 {
@@ -141,25 +148,33 @@
         justify-content: center;
         flex-wrap: wrap;
         gap: 10px;
+        word-wrap: break-word; /* Permette il wrap del testo */
+        overflow-wrap: break-word;
       }
       
       .logo {
         width: 40px;
         height: 40px;
         margin-right: 10px;
+        flex-shrink: 0; /* Previene la compressione del logo */
       }
       
       .subtitle {
         font-size: 1rem;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
       }
       
       main {
         padding: 20px 15px;
+        overflow-x: hidden; /* Previene overflow del main */
       }
       
       .card {
         padding: 20px;
         border-radius: 12px;
+        overflow-x: hidden; /* Previene overflow delle card */
+        word-wrap: break-word;
       }
       
       .card h2 {
@@ -168,6 +183,8 @@
         flex-direction: column;
         align-items: flex-start;
         gap: 10px;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
       }
       
       .product {
@@ -175,40 +192,53 @@
         gap: 10px;
         padding: 12px;
         text-align: center;
+        overflow-x: hidden; /* Previene overflow dei prodotti */
+        word-wrap: break-word;
       }
       
       .product-name {
         margin-bottom: 8px;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        hyphens: auto; /* Aggiunge trattini automatici */
       }
       
       .product-price {
         text-align: center;
         margin-bottom: 8px;
+        word-wrap: break-word;
       }
       
       .product input {
         width: 100%;
         max-width: 120px;
         margin: 0 auto;
+        box-sizing: border-box; /* Include padding e border nella larghezza */
       }
       
       .participants-section {
         text-align: center;
+        overflow-x: hidden;
       }
       
       #participants {
         width: 150px;
         font-size: 1.1rem;
+        max-width: 100%;
+        box-sizing: border-box;
       }
       
       .participant-result {
         padding: 15px;
         margin: 15px 0;
+        overflow-x: hidden;
+        word-wrap: break-word;
       }
       
       .participant-title {
         font-size: 1.1rem;
         margin-bottom: 12px;
+        word-wrap: break-word;
       }
       
       .item-distribution {
@@ -216,11 +246,14 @@
         gap: 8px;
         text-align: center;
         padding: 10px;
+        overflow-x: hidden;
+        word-wrap: break-word;
       }
       
       .contacts-section {
         padding: 20px 15px;
         margin-top: 25px;
+        overflow-x: hidden;
       }
       
       .contact-item {
@@ -229,6 +262,8 @@
         padding: 10px 12px;
         font-size: 0.9rem;
         text-align: center;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
       }
       
       .homepage-link {
@@ -239,22 +274,27 @@
         margin-top: 15px;
         font-size: 0.85rem;
         padding: 10px 16px;
+        word-wrap: break-word;
       }
     }
 
     @media (max-width: 480px) {
       body {
         padding: 5px;
+        overflow-x: hidden;
       }
       
       header {
         padding: 20px 15px;
+        overflow-x: hidden;
       }
       
       h1 {
         font-size: 1.7rem;
         flex-direction: column;
         text-align: center;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
       }
       
       .logo {
@@ -262,93 +302,124 @@
         height: 35px;
         margin-right: 0;
         margin-bottom: 8px;
+        flex-shrink: 0;
       }
       
       .subtitle {
         font-size: 0.95rem;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
       }
       
       main {
         padding: 15px 10px;
+        overflow-x: hidden;
       }
       
       .card {
         padding: 15px;
         border-radius: 10px;
+        overflow-x: hidden;
+        word-wrap: break-word;
       }
       
       .card h2 {
         font-size: 1.2rem;
         margin-bottom: 15px;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
       }
       
       .category-title {
         font-size: 1.1rem;
         margin-bottom: 12px;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
       }
       
       .product {
         padding: 10px;
         margin: 8px 0;
+        overflow-x: hidden;
+        word-wrap: break-word;
       }
       
       .product-name {
         font-size: 0.95rem;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        hyphens: auto;
       }
       
       .product-price {
         font-size: 0.9rem;
+        word-wrap: break-word;
       }
       
       .tier-badge {
         font-size: 0.65rem;
         padding: 2px 6px;
+        word-wrap: break-word;
       }
       
       .product input {
         padding: 10px;
         font-size: 0.95rem;
         max-width: 100px;
+        width: 100%;
+        box-sizing: border-box;
       }
       
       #participants {
         width: 120px;
         font-size: 1rem;
         padding: 10px;
+        max-width: 100%;
+        box-sizing: border-box;
       }
       
       .participant-result {
         padding: 12px;
         margin: 12px 0;
+        overflow-x: hidden;
+        word-wrap: break-word;
       }
       
       .participant-title {
         font-size: 1rem;
+        word-wrap: break-word;
       }
       
       .item-distribution {
         padding: 8px;
         font-size: 0.9rem;
+        overflow-x: hidden;
+        word-wrap: break-word;
       }
       
       .total-cost {
         padding: 10px;
         font-size: 0.95rem;
+        word-wrap: break-word;
       }
       
       .contacts-section {
         padding: 15px 10px;
+        overflow-x: hidden;
       }
       
       .contact-item {
         padding: 8px 10px;
         font-size: 0.85rem;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
       }
       
       .homepage-link {
         font-size: 0.8rem;
         padding: 8px 12px;
         margin-top: 12px;
+        word-wrap: break-word;
       }
     }
 
@@ -447,6 +518,8 @@
       border-radius: 10px;
       transition: all 0.3s ease;
       border: 1px solid rgba(99, 179, 237, 0.1);
+      overflow-x: hidden; /* Previene overflow dei prodotti */
+      word-wrap: break-word;
     }
 
     .product:hover {
@@ -458,6 +531,9 @@
     .product-name {
       font-weight: 500;
       color: #ffffff;
+      word-wrap: break-word;
+      overflow-wrap: break-word;
+      hyphens: auto;
     }
 
     .product-price {
@@ -491,6 +567,8 @@
       transition: all 0.3s ease;
       background: rgba(45, 55, 72, 0.8);
       color: #ffffff;
+      box-sizing: border-box; /* Include padding e border nella larghezza */
+      max-width: 100%;
     }
 
     .product input:focus, #participants:focus {
