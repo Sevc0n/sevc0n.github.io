@@ -1,2306 +1,1170 @@
-
 <!DOCTYPE html>
 <html lang="it">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Abaco Divisore - By piccionenberg</title>
-  <link rel="icon" type="image/png" href="../logo.png">
-  <link rel="shortcut icon" type="image/png" href="../logo.png">
-  <link rel="apple-touch-icon" href="../logo.png">
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
-    /* Regola globale per prevenire overflow */
-    * {
-      max-width: 100%;
-      box-sizing: border-box;
-    }
-    
-    /* Regola specifica per prevenire overflow orizzontale */
-    html, body {
-      overflow-x: hidden;
-      max-width: 100vw;
-    }
-
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
-      min-height: 100vh;
-      padding: 20px;
-      color: #ffffff;
-      overflow-x: hidden; /* Previene overflow orizzontale globale */
-    }
-
-    .container {
-      max-width: 1200px;
-      margin: 0 auto;
-      background: rgba(20, 25, 45, 0.95);
-      backdrop-filter: blur(10px);
-      border-radius: 20px;
-      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
-      overflow: hidden;
-      animation: slideIn 0.6s ease-out;
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      width: 100%;
-      box-sizing: border-box; /* Include padding e border nella larghezza */
-      position: relative; /* Contesto per elementi assoluti */
-    }
-
-    @keyframes slideIn {
-      from {
-        opacity: 0;
-        transform: translateY(30px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    header {
-      background: linear-gradient(135deg, #2d3748, #4a5568);
-      color: white;
-      padding: 30px;
-      text-align: center;
-      position: relative;
-      overflow: hidden;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-      max-width: 100%;
-      box-sizing: border-box;
-      width: 100%;
-    }
-
-    header::before {
-      content: '';
-      position: absolute;
-      top: -50%;
-      left: -50%;
-      width: 200%;
-      height: 200%;
-      background: radial-gradient(circle, rgba(255, 255, 255, 0.05) 0%, transparent 70%);
-      animation: pulse 4s ease-in-out infinite;
-    }
-
-    @keyframes pulse {
-      0%, 100% { transform: scale(1); opacity: 0.3; }
-      50% { transform: scale(1.1); opacity: 0.6; }
-    }
-
-    h1 {
-      font-size: 2.5rem;
-      font-weight: 700;
-      margin-bottom: 10px;
-      position: relative;
-      z-index: 1;
-      overflow: hidden;
-      max-width: 100%;
-      box-sizing: border-box;
-      word-wrap: break-word;
-    }
-
-    .subtitle {
-      font-size: 1.1rem;
-      opacity: 0.8;
-      position: relative;
-      z-index: 1;
-      overflow: hidden;
-      max-width: 100%;
-      box-sizing: border-box;
-      word-wrap: break-word;
-    }
-
-    main {
-      padding: 40px;
-      overflow: hidden;
-      max-width: 100%;
-      box-sizing: border-box;
-      width: 100%;
-      position: relative;
-    }
-
-    .grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 30px;
-      margin-bottom: 30px;
-      overflow: hidden;
-      max-width: 100%;
-      box-sizing: border-box;
-      width: 100%;
-      position: relative;
-    }
-
-    /* Media Queries per Responsività Mobile */
-    @media (max-width: 1200px) {
-      .container {
-        margin: 10px;
-        border-radius: 15px;
-      }
-      
-      main {
-        padding: 30px 20px;
-      }
-      
-      .grid {
-        gap: 25px;
-      }
-    }
-
-    @media (max-width: 1024px) {
-      .grid {
-        grid-template-columns: 1fr;
-        gap: 20px;
-      }
-      
-      .product {
-        grid-template-columns: 1fr 100px 70px;
-        gap: 10px;
-        min-width: 0;
-        overflow-x: hidden;
-      }
-    }
-
-    @media (max-width: 768px) {
-      body {
-        padding: 10px;
-        overflow-x: hidden; /* Previene overflow orizzontale */
-      }
-      
-      .container {
-        margin: 0;
-        border-radius: 10px;
-        max-width: 100%;
-        overflow-x: hidden; /* Previene overflow del container */
-      }
-      
-      header {
-        padding: 25px 20px;
-        overflow-x: hidden; /* Previene overflow dell'header */
-      }
-      
-      h1 {
-        font-size: 2rem;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        flex-wrap: wrap;
-        gap: 10px;
-        word-wrap: break-word; /* Permette il wrap del testo */
-        overflow-wrap: break-word;
-      }
-      
-      .logo {
-        width: 40px;
-        height: 40px;
-        margin-right: 10px;
-        flex-shrink: 0; /* Previene la compressione del logo */
-        max-width: 100%;
-        box-sizing: border-box;
-        overflow: hidden;
-      }
-      
-      .subtitle {
-        font-size: 1rem;
-        word-wrap: break-word;
-        overflow-wrap: break-word;
-      }
-      
-      main {
-        padding: 20px 15px;
-        overflow-x: hidden; /* Previene overflow del main */
-      }
-      
-      .card {
-        padding: 20px;
-        border-radius: 12px;
-        overflow-x: hidden; /* Previene overflow delle card */
-        word-wrap: break-word;
-      }
-      
-      .card h2 {
-        font-size: 1.3rem;
-        margin-bottom: 20px;
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 10px;
-        word-wrap: break-word;
-        overflow-wrap: break-word;
-      }
-      
-      .product {
-        grid-template-columns: 1fr;
-        gap: 10px;
-        padding: 12px;
-        text-align: center;
-        overflow: hidden; /* Previene overflow dei prodotti */
-        word-wrap: break-word;
-        min-width: 0;
-        max-width: 100%;
-        box-sizing: border-box;
-      }
-      
-      .product-name {
-        margin-bottom: 8px;
-        word-wrap: break-word;
-        overflow-wrap: break-word;
-        hyphens: auto; /* Aggiunge trattini automatici */
-      }
-      
-      .product-price {
-        text-align: center;
-        margin-bottom: 8px;
-        word-wrap: break-word;
-      }
-      
-      .quantity-container {
-        max-width: 100px;
-        gap: 3px;
-      }
-
-      .quantity-btn {
-        width: 28px;
-        height: 28px;
-        font-size: 1rem;
-      }
-
-      .quantity-input {
-        min-width: 40px;
-        max-width: 50px;
-        height: 28px;
-        font-size: 0.8rem;
-      }
-
-      .participant-controls {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 8px;
-      }
-
-      .participant-label {
-        min-width: auto;
-        font-size: 0.9rem;
-      }
-
-      .class-select {
-        width: 100%;
-        min-width: auto;
-        font-size: 0.85rem;
-        padding: 10px;
-      }
-
-      .product input {
-        width: 100%;
-        max-width: 120px;
-        margin: 0 auto;
-        box-sizing: border-box; /* Include padding e border nella larghezza */
-      }
-      
-      .participants-section {
-        text-align: center;
-        overflow-x: hidden;
-      }
-      
-      #participants {
-        width: 150px;
-        font-size: 1.1rem;
-        max-width: 100%;
-        box-sizing: border-box;
-      }
-      
-      .participant-result {
-        padding: 15px;
-        margin: 15px 0;
-        overflow-x: hidden;
-        word-wrap: break-word;
-      }
-      
-      .participant-title {
-        font-size: 1.1rem;
-        margin-bottom: 12px;
-        word-wrap: break-word;
-      }
-      
-      .item-distribution {
-        grid-template-columns: 1fr;
-        gap: 8px;
-        text-align: center;
-        padding: 10px;
-        overflow-x: hidden;
-        word-wrap: break-word;
-      }
-      
-      .contacts-section {
-        padding: 20px 15px;
-        margin-top: 25px;
-        overflow-x: hidden;
-      }
-      
-      .contact-item {
-        display: block;
-        margin: 8px 0;
-        padding: 10px 12px;
-        font-size: 0.9rem;
-        text-align: center;
-        word-wrap: break-word;
-        overflow-wrap: break-word;
-      }
-      
-      .homepage-link {
-        position: relative;
-        top: auto;
-        right: auto;
-        display: inline-block;
-        margin-top: 15px;
-        font-size: 0.85rem;
-        padding: 10px 16px;
-        word-wrap: break-word;
-      }
-    }
-
-    @media (max-width: 480px) {
-      body {
-        padding: 5px;
-        overflow-x: hidden;
-      }
-      
-      header {
-        padding: 20px 15px;
-        overflow-x: hidden;
-      }
-      
-      h1 {
-        font-size: 1.7rem;
-        flex-direction: column;
-        text-align: center;
-        word-wrap: break-word;
-        overflow-wrap: break-word;
-      }
-      
-      .logo {
-        width: 35px;
-        height: 35px;
-        margin-right: 0;
-        margin-bottom: 8px;
-        flex-shrink: 0;
-        max-width: 100%;
-        box-sizing: border-box;
-        overflow: hidden;
-      }
-      
-      .subtitle {
-        font-size: 0.95rem;
-        word-wrap: break-word;
-        overflow-wrap: break-word;
-      }
-      
-      main {
-        padding: 15px 10px;
-        overflow-x: hidden;
-      }
-      
-      .card {
-        padding: 15px;
-        border-radius: 10px;
-        overflow-x: hidden;
-        word-wrap: break-word;
-      }
-      
-      .card h2 {
-        font-size: 1.2rem;
-        margin-bottom: 15px;
-        word-wrap: break-word;
-        overflow-wrap: break-word;
-      }
-      
-      .category-title {
-        font-size: 1.1rem;
-        margin-bottom: 12px;
-        word-wrap: break-word;
-        overflow-wrap: break-word;
-      }
-      
-      .category-section {
-        margin-bottom: 20px;
-        overflow: hidden;
-        max-width: 100%;
-        box-sizing: border-box;
-      }
-      
-      .product {
-        padding: 10px;
-        margin: 8px 0;
-        overflow: hidden;
-        word-wrap: break-word;
-        max-width: 100%;
-        box-sizing: border-box;
-      }
-      
-      .product-name {
-        font-size: 0.95rem;
-        word-wrap: break-word;
-        overflow-wrap: break-word;
-        hyphens: auto;
-      }
-      
-      .product-price {
-        font-size: 0.9rem;
-        word-wrap: break-word;
-      }
-      
-      .tier-badge {
-        font-size: 0.65rem;
-        padding: 2px 6px;
-        word-wrap: break-word;
-      }
-      
-      .quantity-container {
-        max-width: 90px;
-        gap: 2px;
-      }
-
-      .quantity-btn {
-        width: 26px;
-        height: 26px;
-        font-size: 0.9rem;
-      }
-
-      .quantity-input {
-        min-width: 35px;
-        max-width: 45px;
-        height: 26px;
-        font-size: 0.75rem;
-      }
-
-      .participant-controls {
-        padding: 8px;
-        gap: 6px;
-      }
-
-      .participant-label {
-        font-size: 0.85rem;
-      }
-
-      .class-select {
-        font-size: 0.8rem;
-        padding: 8px;
-      }
-
-      .product input {
-        padding: 10px;
-        font-size: 0.95rem;
-        max-width: 100px;
-        width: 100%;
-        box-sizing: border-box;
-      }
-      
-      #participants {
-        width: 120px;
-        font-size: 1rem;
-        padding: 10px;
-        max-width: 100%;
-        box-sizing: border-box;
-      }
-      
-      .participant-result {
-        padding: 12px;
-        margin: 12px 0;
-        overflow-x: hidden;
-        word-wrap: break-word;
-      }
-      
-      .participant-title {
-        font-size: 1rem;
-        word-wrap: break-word;
-      }
-      
-      .item-distribution {
-        padding: 8px;
-        font-size: 0.9rem;
-        overflow-x: hidden;
-        word-wrap: break-word;
-      }
-      
-      .total-cost {
-        padding: 10px;
-        font-size: 0.95rem;
-        word-wrap: break-word;
-        overflow: hidden;
-        max-width: 100%;
-        box-sizing: border-box;
-      }
-      
-      .contacts-section {
-        padding: 15px 10px;
-        overflow: hidden;
-        max-width: 100%;
-        box-sizing: border-box;
-      }
-      
-      .contact-item {
-        padding: 8px 10px;
-        font-size: 0.85rem;
-        word-wrap: break-word;
-        overflow-wrap: break-word;
-        overflow: hidden;
-        max-width: 100%;
-        box-sizing: border-box;
-      }
-      
-      .homepage-link {
-        font-size: 0.8rem;
-        padding: 8px 12px;
-        margin-top: 12px;
-        word-wrap: break-word;
-        overflow: hidden;
-        max-width: 100%;
-        box-sizing: border-box;
-      }
-    }
-
-    /* Media query per schermi molto piccoli */
-    @media (max-width: 360px) {
-      body {
-        padding: 2px;
-      }
-      
-      .container {
-        border-radius: 8px;
-      }
-      
-      header {
-        padding: 15px 10px;
-      }
-      
-      h1 {
-        font-size: 1.5rem;
-      }
-      
-      .logo {
-        width: 30px;
-        height: 30px;
-        max-width: 100%;
-        box-sizing: border-box;
-        overflow: hidden;
-        flex-shrink: 0;
-      }
-      
-      main {
-        padding: 10px 5px;
-      }
-      
-      .card {
-        padding: 10px;
-        border-radius: 8px;
-        overflow-x: hidden;
-      }
-      
-      .category-section {
-        margin-bottom: 15px;
-        overflow: hidden;
-        max-width: 100%;
-        box-sizing: border-box;
-      }
-      
-      .category-title {
-        font-size: 1rem;
-        margin-bottom: 10px;
-        word-wrap: break-word;
-        overflow-wrap: break-word;
-      }
-      
-      .product {
-        padding: 8px;
-        margin: 6px 0;
-        gap: 5px;
-        overflow: hidden;
-        max-width: 100%;
-        box-sizing: border-box;
-      }
-      
-      .product-name {
-        font-size: 0.9rem;
-      }
-      
-      .product-price {
-        font-size: 0.85rem;
-      }
-      
-      .tier-badge {
-        font-size: 0.6rem;
-        padding: 1px 4px;
-      }
-      
-      .quantity-container {
-        max-width: 80px;
-        gap: 2px;
-      }
-
-      .quantity-btn {
-        width: 24px;
-        height: 24px;
-        font-size: 0.8rem;
-      }
-
-      .quantity-input {
-        min-width: 30px;
-        max-width: 40px;
-        height: 24px;
-        font-size: 0.7rem;
-      }
-
-      .participant-controls {
-        padding: 6px;
-        gap: 4px;
-      }
-
-      .participant-label {
-        font-size: 0.8rem;
-      }
-
-      .class-select {
-        font-size: 0.75rem;
-        padding: 6px;
-      }
-
-      .product input {
-        padding: 8px;
-        font-size: 0.9rem;
-        max-width: 80px;
-      }
-      
-      #participants {
-        width: 100px;
-        font-size: 0.9rem;
-        padding: 8px;
-      }
-      
-      .participant-result {
-        padding: 8px;
-        margin: 8px 0;
-        overflow: hidden;
-        word-wrap: break-word;
-        max-width: 100%;
-        box-sizing: border-box;
-      }
-      
-      .item-distribution {
-        padding: 6px;
-        font-size: 0.85rem;
-        overflow: hidden;
-        word-wrap: break-word;
-        min-width: 0;
-        max-width: 100%;
-        box-sizing: border-box;
-      }
-      
-      .contacts-section {
-        padding: 10px 5px;
-        overflow: hidden;
-        max-width: 100%;
-        box-sizing: border-box;
-      }
-      
-      .contact-item {
-        padding: 6px 8px;
-        font-size: 0.8rem;
-        overflow: hidden;
-        max-width: 100%;
-        box-sizing: border-box;
-        word-wrap: break-word;
-      }
-      
-      .contact-item:hover {
-        transform: none;
-      }
-      
-      .contact-item:active {
-        transform: scale(0.95);
-        transition: transform 0.1s ease;
-      }
-    }
-
-    /* Ottimizzazioni Touch per Abaco */
-    @media (hover: none) and (pointer: coarse) {
-      .product {
-        min-height: 80px;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        overflow: hidden;
-        max-width: 100%;
-        box-sizing: border-box;
-      }
-      
-      .product:hover {
-        transform: none;
-      }
-      
-      .product:active {
-        transform: scale(0.98);
-        transition: transform 0.1s ease;
-      }
-      
-      .quantity-container {
-        max-width: 120px;
-        gap: 5px;
-      }
-
-      .quantity-btn {
-        width: 44px;
-        height: 44px;
-        font-size: 1.2rem;
-        min-height: 44px; /* Dimensione minima per touch */
-      }
-
-      .quantity-input {
-        min-width: 50px;
-        max-width: 60px;
-        height: 44px;
-        font-size: 1rem;
-        min-height: 44px; /* Dimensione minima per touch */
-      }
-
-      .participant-controls {
-        gap: 8px;
-        padding: 12px;
-      }
-
-      .participant-label {
-        font-size: 1rem;
-      }
-
-      .class-select {
-        min-height: 44px; /* Dimensione minima per touch */
-        font-size: 1rem; /* Previene zoom su iOS */
-        padding: 12px;
-      }
-
-      .product input {
-        min-height: 44px; /* Dimensione minima per touch */
-        font-size: 1rem; /* Previene zoom su iOS */
-        overflow: hidden;
-        max-width: 100%;
-        box-sizing: border-box;
-      }
-      
-      #participants {
-        min-height: 44px;
-        font-size: 1rem;
-        overflow: hidden;
-        max-width: 100%;
-        box-sizing: border-box;
-      }
-      
-      .contact-item:hover {
-        transform: none;
-      }
-      
-      .contact-item:active {
-        transform: scale(0.95);
-        transition: transform 0.1s ease;
-      }
-      
-      .contact-item {
-        overflow: hidden;
-        max-width: 100%;
-        box-sizing: border-box;
-        word-wrap: break-word;
-      }
-      
-      .contact-item:hover {
-        transform: none;
-      }
-      
-      .contact-item:active {
-        transform: scale(0.95);
-        transition: transform 0.1s ease;
-      }
-    }
-
-    .card {
-      background: rgba(45, 55, 72, 0.6);
-      border-radius: 15px;
-      padding: 30px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      transition: all 0.3s ease;
-      overflow: hidden;
-      max-width: 100%;
-      box-sizing: border-box;
-      width: 100%; /* Forza la larghezza al 100% */
-      position: relative; /* Contesto per elementi assoluti */
-    }
-
-    .card:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
-      border-color: rgba(99, 179, 237, 0.3);
-    }
-
-    .card h2 {
-      color: #ffffff;
-      font-size: 1.5rem;
-      margin-bottom: 25px;
-      font-weight: 600;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      overflow: hidden;
-      max-width: 100%;
-      box-sizing: border-box;
-      word-wrap: break-word;
-    }
-
-    .card h2::before {
-      content: '';
-      width: 4px;
-      height: 25px;
-      background: linear-gradient(135deg, #63b3ed, #4299e1);
-      border-radius: 2px;
-    }
-
-    .category-section {
-      margin-bottom: 30px;
-      overflow: hidden; /* Previene overflow delle sezioni */
-      word-wrap: break-word;
-      max-width: 100%; /* Limita la larghezza massima */
-      box-sizing: border-box; /* Include padding e border nella larghezza */
-      width: 100%; /* Forza la larghezza al 100% */
-      position: relative; /* Contesto per elementi assoluti */
-    }
-
-    .category-title {
-      font-size: 1.2rem;
-      font-weight: 600;
-      color: #63b3ed;
-      margin-bottom: 15px;
-      padding: 10px 0;
-      border-bottom: 1px solid rgba(99, 179, 237, 0.3);
-      word-wrap: break-word;
-      overflow-wrap: break-word;
-      overflow: hidden;
-      max-width: 100%;
-      box-sizing: border-box;
-    }
-
-    .product {
-      display: grid;
-      grid-template-columns: 1fr auto auto;
-      gap: 10px;
-      align-items: center;
-      margin: 12px 0;
-      padding: 15px;
-      background: rgba(99, 179, 237, 0.05);
-      border-radius: 10px;
-      transition: all 0.3s ease;
-      border: 1px solid rgba(99, 179, 237, 0.1);
-      overflow: hidden; /* Previene overflow dei prodotti */
-      word-wrap: break-word;
-      min-width: 0; /* Permette alla griglia di ridursi */
-      max-width: 100%; /* Limita la larghezza massima */
-      box-sizing: border-box; /* Include padding e border nella larghezza */
-      width: 100%; /* Forza la larghezza al 100% */
-    }
-
-    .product:hover {
-      background: rgba(99, 179, 237, 0.1);
-      transform: translateX(5px);
-      border-color: rgba(99, 179, 237, 0.3);
-    }
-
-    /* Disabilita transform su schermi piccoli per evitare overflow */
-    @media (max-width: 768px) {
-      .product:hover {
-        transform: none;
-      }
-    }
-
-    .product-name {
-      font-weight: 500;
-      color: #ffffff;
-      word-wrap: break-word;
-      overflow-wrap: break-word;
-      hyphens: auto;
-      min-width: 0; /* Permette al contenuto di ridursi */
-      max-width: 100%; /* Limita la larghezza massima */
-      overflow: hidden; /* Previene overflow del testo */
-    }
-
-    .product-price {
-      font-weight: 600;
-      color: #68d391;
-      text-align: right;
-      min-width: 0; /* Permette al contenuto di ridursi */
-      max-width: 100%; /* Limita la larghezza massima */
-      overflow: hidden; /* Previene overflow del prezzo */
-      white-space: nowrap; /* Evita che il prezzo vada a capo */
-    }
-
-    .tier-badge {
-      display: inline-block;
-      padding: 2px 8px;
-      border-radius: 12px;
-      font-size: 0.7rem;
-      font-weight: 600;
-      margin-left: 8px;
-      overflow: hidden;
-      max-width: 100%;
-      box-sizing: border-box;
-      white-space: nowrap;
-    }
-
-    .tier-novizio { background: #a0aec0; color: #2d3748; }
-    .tier-avanzato { background: #ed8936; color: white; }
-    .tier-esperto { background: #718096; color: white; }
-    .tier-custode { background: #d69e2e; color: white; }
-    .tier-maestro { background: #4299e1; color: white; }
-    .tier-tutti { background: linear-gradient(135deg, #667eea, #764ba2); color: white; }
-
-    .quantity-container {
-      display: flex;
-      align-items: center;
-      gap: 5px;
-      max-width: 120px;
-      width: 100%;
-    }
-
-    .quantity-btn {
-      width: 32px;
-      height: 32px;
-      border: 2px solid rgba(99, 179, 237, 0.3);
-      border-radius: 6px;
-      background: rgba(45, 55, 72, 0.8);
-      color: #63b3ed;
-      font-size: 1.2rem;
-      font-weight: bold;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-    }
-
-    .quantity-btn:hover {
-      background: rgba(99, 179, 237, 0.2);
-      border-color: rgba(99, 179, 237, 0.5);
-      transform: scale(1.05);
-    }
-
-    .quantity-btn:active {
-      transform: scale(0.95);
-    }
-
-    .quantity-input {
-      flex: 1;
-      min-width: 50px;
-      max-width: 60px;
-      height: 32px;
-      padding: 0 8px;
-      border: 2px solid rgba(99, 179, 237, 0.3);
-      border-radius: 6px;
-      font-size: 0.9rem;
-      text-align: center;
-      transition: all 0.3s ease;
-      background: rgba(45, 55, 72, 0.8);
-      color: #ffffff;
-      box-sizing: border-box;
-      /* Rimuove le freccette (spinner) dagli input numerici */
-      -moz-appearance: textfield;
-    }
-
-    .quantity-input::-webkit-outer-spin-button,
-    .quantity-input::-webkit-inner-spin-button {
-      -webkit-appearance: none;
-      margin: 0;
-    }
-
-    .participant-controls {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin: 10px 0;
-      padding: 10px;
-      background: rgba(99, 179, 237, 0.05);
-      border-radius: 8px;
-      border: 1px solid rgba(99, 179, 237, 0.1);
-    }
-
-    .participant-label {
-      font-weight: 600;
-      color: #63b3ed;
-      min-width: 100px;
-    }
-
-    .class-select {
-      padding: 8px 12px;
-      border: 2px solid rgba(99, 179, 237, 0.3);
-      border-radius: 6px;
-      background: rgba(45, 55, 72, 0.8);
-      color: #ffffff;
-      font-size: 0.9rem;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      min-width: 120px;
-    }
-
-    .class-select:focus {
-      outline: none;
-      border-color: #63b3ed;
-      box-shadow: 0 0 0 3px rgba(99, 179, 237, 0.2);
-    }
-
-    .class-select:hover {
-      border-color: rgba(99, 179, 237, 0.5);
-    }
-
-    .priority-info {
-      background: rgba(237, 137, 54, 0.1);
-      border: 1px solid rgba(237, 137, 54, 0.3);
-      border-radius: 8px;
-      padding: 15px;
-      margin: 20px 0;
-      color: #ed8936;
-      font-size: 0.9rem;
-    }
-
-    .priority-info h4 {
-      color: #ed8936;
-      margin-bottom: 10px;
-      font-size: 1rem;
-    }
-
-    .priority-list {
-      list-style: none;
-      padding: 0;
-    }
-
-    .priority-list li {
-      margin: 5px 0;
-      padding: 5px 10px;
-      background: rgba(237, 137, 54, 0.1);
-      border-radius: 4px;
-      border-left: 3px solid #ed8936;
-    }
-
-    .product input, #participants {
-      padding: 12px;
-      border: 2px solid rgba(99, 179, 237, 0.3);
-      border-radius: 8px;
-      font-size: 1rem;
-      text-align: center;
-      transition: all 0.3s ease;
-      background: rgba(45, 55, 72, 0.8);
-      color: #ffffff;
-      box-sizing: border-box; /* Include padding e border nella larghezza */
-      max-width: 100%;
-      overflow: hidden;
-      white-space: nowrap;
-    }
-
-    .product input:focus, #participants:focus {
-      outline: none;
-      border-color: #63b3ed;
-      box-shadow: 0 0 0 3px rgba(99, 179, 237, 0.2);
-      transform: scale(1.02);
-    }
-
-    .participants-section {
-      text-align: center;
-    }
-
-    .participants-label {
-      display: block;
-      font-weight: 600;
-      color: #ffffff;
-      margin-bottom: 15px;
-      font-size: 1.1rem;
-    }
-
-    #participants {
-      width: 120px;
-      font-size: 1.2rem;
-      font-weight: 600;
-    }
-
-    .results-card {
-      background: linear-gradient(135deg, rgba(72, 187, 120, 0.2), rgba(56, 178, 172, 0.2));
-      color: white;
-      border: 1px solid rgba(72, 187, 120, 0.3);
-      max-height: none;
-      overflow: visible;
-    }
-
-    .results-card h2 {
-      color: white;
-      margin-bottom: 20px;
-    }
-
-    .results-card h2::before {
-      background: rgba(72, 187, 120, 0.6);
-    }
-
-    .participant-result {
-      margin: 20px 0;
-      padding: 20px;
-      background: rgba(0, 0, 0, 0.2);
-      border-radius: 12px;
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      overflow: hidden; /* Previene overflow dei risultati */
-      word-wrap: break-word;
-      max-width: 100%;
-      box-sizing: border-box;
-    }
-
-    .participant-title {
-      font-size: 1.2rem;
-      font-weight: 600;
-      margin-bottom: 15px;
-      color: #63b3ed;
-      text-align: center;
-      overflow: hidden;
-      max-width: 100%;
-      box-sizing: border-box;
-      word-wrap: break-word;
-    }
-
-    .item-distribution {
-      display: grid;
-      grid-template-columns: 1fr auto;
-      gap: 10px;
-      margin: 8px 0;
-      padding: 8px 12px;
-      background: rgba(255, 255, 255, 0.05);
-      border-radius: 6px;
-      overflow: hidden; /* Previene overflow delle distribuzioni */
-      word-wrap: break-word;
-      min-width: 0; /* Permette alla griglia di ridursi */
-      max-width: 100%;
-      box-sizing: border-box;
-    }
-
-    .total-cost {
-      text-align: center;
-      margin-top: 15px;
-      padding: 12px;
-      background: rgba(72, 187, 120, 0.2);
-      border-radius: 8px;
-      font-weight: 600;
-      border: 1px solid rgba(72, 187, 120, 0.3);
-      overflow: hidden;
-      max-width: 100%;
-      box-sizing: border-box;
-      word-wrap: break-word;
-    }
-
-    .empty-state {
-      text-align: center;
-      color: #a0aec0;
-      font-style: italic;
-      padding: 40px;
-      overflow: hidden;
-      max-width: 100%;
-      box-sizing: border-box;
-      word-wrap: break-word;
-    }
-
-    .currency-br {
-      color: #68d391;
-      font-weight: 600;
-    }
-    
-    .currency-a {
-      color: #c0c0c0;
-      font-weight: 600;
-    }
-    
-    .currency-mixed {
-      color: #68d391;
-      font-weight: 600;
-    }
-
-    .logo {
-      width: 40px;
-      height: 40px;
-      margin-right: 15px;
-      vertical-align: middle;
-      max-width: 100%;
-      box-sizing: border-box;
-      overflow: hidden;
-      flex-shrink: 0;
-    }
-
-    .loading {
-      text-align: center;
-      color: #a0aec0;
-      padding: 40px;
-      font-style: italic;
-      overflow: hidden;
-      max-width: 100%;
-      box-sizing: border-box;
-      word-wrap: break-word;
-    }
-
-    .error {
-      text-align: center;
-      color: #f56565;
-      padding: 20px;
-      background: rgba(245, 101, 101, 0.1);
-      border-radius: 8px;
-      border: 1px solid rgba(245, 101, 101, 0.3);
-      overflow: hidden;
-      max-width: 100%;
-      box-sizing: border-box;
-      word-wrap: break-word;
-    }
-
-    .warning {
-      text-align: center;
-      color: #ed8936;
-      padding: 20px;
-      background: rgba(237, 137, 54, 0.1);
-      border-radius: 8px;
-      border: 1px solid rgba(237, 137, 54, 0.3);
-      overflow: hidden;
-      max-width: 100%;
-      box-sizing: border-box;
-      word-wrap: break-word;
-    }
-
-    .contacts-section {
-      background: rgba(30, 35, 55, 0.8);
-      border-top: 1px solid rgba(255, 255, 255, 0.1);
-      padding: 20px 40px;
-      text-align: center;
-      margin-top: 30px;
-      overflow: hidden;
-      max-width: 100%;
-      box-sizing: border-box;
-    }
- 
-     .contacts-title {
-       color: #63b3ed;
-       font-size: 1.1rem;
-       margin-bottom: 15px;
-       font-weight: 600;
-       overflow: hidden;
-       max-width: 100%;
-       box-sizing: border-box;
-       word-wrap: break-word;
-     }
- 
-     .contact-item {
-       display: inline-block;
-       margin: 0 15px 8px 0;
-       padding: 8px 16px;
-       background: rgba(99, 179, 237, 0.1);
-       border: 1px solid rgba(99, 179, 237, 0.3);
-       border-radius: 20px;
-       color: #ffffff;
-       text-decoration: none;
-       transition: all 0.3s ease;
-       font-weight: 500;
-       font-size: 0.9rem;
-       overflow: hidden;
-       max-width: 100%;
-       box-sizing: border-box;
-       word-wrap: break-word;
-     }
- 
-     .contact-item:hover {
-       background: rgba(99, 179, 237, 0.2);
-       border-color: rgba(99, 179, 237, 0.5);
-       transform: translateY(-2px);
-     }
- 
-     .contact-item strong {
-       color: #63b3ed;
-     }
- 
-    .fractional-display {
-      color: #fbb6ce;
-      font-size: 0.9em;
-      font-style: italic;
-      overflow: hidden;
-      max-width: 100%;
-      box-sizing: border-box;
-      word-wrap: break-word;
-    }
-
-    .homepage-link {
-      position: absolute;
-      top: 20px;
-      right: 20px;
-      color: #63b3ed;
-      text-decoration: none;
-      font-size: 0.9rem;
-      padding: 8px 12px;
-      border: 1px solid rgba(99, 179, 237, 0.3);
-      border-radius: 8px;
-      transition: all 0.3s ease;
-      cursor: pointer;
-      display: block;
-      width: auto;
-      height: auto;
-      z-index: 10;
-      background: transparent;
-      overflow: hidden;
-      max-width: 100%;
-      box-sizing: border-box;
-      word-wrap: break-word;
-      white-space: nowrap;
-    }
-
-    .homepage-link:hover {
-      background: rgba(99, 179, 237, 0.1);
-    }
-
-    .homepage-link:active {
-      transform: scale(0.95);
-    }
-
-   </style>
- </head>
- <body>
-   <div class="container">
-           <header>
-                 <h1><img src="../logo.png" alt="Abaco Logo" class="logo" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline';">⚒️ Abaco per Divisione Abisso</h1>
-        <p class="subtitle">Divisore intelligente per bottini di abisso</p>
-                 <a href="../" class="homepage-link">🏠 Homepage</a>
-      </header>
- 
-     <main>
-       <div class="grid">
-                   <div class="card">
-            <h2>Lista Materiali
-              <button id="reload-data" style="float: right; background: rgba(99, 179, 237, 0.2); border: 1px solid rgba(99, 179, 237, 0.5); color: #63b3ed; padding: 5px 10px; border-radius: 5px; cursor: pointer; font-size: 0.8rem;" onclick="reloadData()">🔄 Ricarica Dati</button>
-            </h2>
-            <div id="product-list">
-              <div class="loading">Caricamento materiali in corso...</div>
-            </div>
-          </div>
- 
-         <div>
-           <div class="card participants-section">
-             <h2>Partecipanti</h2>
-             <label class="participants-label">Numero di partecipanti:</label>
-             <input type="number" id="participants" min="1" value="1">
-             
-             <div id="participant-classes" style="margin-top: 20px;">
-               <!-- Le classi dei partecipanti verranno generate dinamicamente -->
-             </div>
-             
-             <div class="priority-info">
-               <h4>📋 Sistema di Priorità e Stelline</h4>
-               <ul class="priority-list">
-                 <li><strong>Bassa priorità:</strong> Guerrieri, Ombre</li>
-                 <li><strong>Priorità Stagno:</strong> Bardi (almeno uno)</li>
-                 <li><strong>Priorità Maghi/Cacciatori:</strong> Materiali specifici per classe</li>
-                 <li><strong>Bilanciamento stelline:</strong> I partecipanti a bassa priorità ricevono materiali equivalenti in stelline</li>
-                 <li><strong>⭐ 1 stellina:</strong> brim, carnemarcia, quarzo, therium, occhio</li>
-                 <li><strong>⭐⭐ 2 stelline:</strong> blaze powder, membrana, slime ball, prismarine shard</li>
-                 <li><strong>⭐⭐⭐ 3 stelline:</strong> lost soul, demon heart</li>
-               </ul>
-             </div>
-           </div>
- 
-           <div class="card results-card">
-             <h2>Distribuzione</h2>
-             <div id="distribution-results"></div>
-           </div>
-         </div>
-       </div>
-     </main>
- 
-           <div class="contacts-section">
-        <div class="contacts-title">📞 Contatti</div>
-        <div>
-          <span class="contact-item">
-            🎮 Discord: <strong>picciobeffa</strong>
-          </span>
-          <span class="contact-item">
-            📱 Telegram: <strong>@piccionenberg</strong>
-          </span>
-        </div>
-        <div style="margin-top: 20px; padding-top: 15px; border-top: 1px solid rgba(255, 255, 255, 0.1); display: flex; align-items: center; justify-content: center; gap: 10px; font-size: 0.9rem; color: #a0aec0;">
-                     <img src="../logo.png" alt="Sevcon Logo" style="width: 16px; height: 16px; border-radius: 3px;" onerror="this.style.display='none';">
-          © 2024 Sevcon by piccionenberg - Creato con ❤️ per la community gaming
-        </div>
-      </div>
-   </div>
- 
-   <script>
-     let defaultProducts = [];
-     let products = [];
-     const distributionResults = document.getElementById("distribution-results");
-     const participantsInput = document.getElementById("participants");
-     const participantClassesContainer = document.getElementById("participant-classes");
-     
-     // Sistema di priorità basato sul file fornito
-     const prioritySystem = {
-       // Bassa priorità
-       lowPriority: ['Guerriero', 'Ombra'],
-       
-       // Priorità Stagno
-       tinPriority: ['Bardo'],
-       
-       // Priorità per classe e tier
-       classPriority: {
-         'Mago': {
-           'Novizio': ['Brim'],
-           'Avanzato': ['Occhio di ragno'],
-           'Esperto': ['Membrana'],
-           'Custode': ['Prismarine Shard'],
-           'Maestro': ['Lost Soul']
-         },
-         'Cacciatore': {
-           'Avanzato': ['Ametista'],
-           'Esperto': ['Membrana'],
-           'Custode': ['Prismarine Shard']
-         },
-         'Raccoglitore': {
-           'Avanzato': ['Occhio di ragno'],
-           'Esperto': ['Membrana'],
-           'Custode': ['Prismarine Shard'],
-           'Maestro': ['Lost Soul']
-         }
-       }
-     };
-     
-     // Sistema di stelline per bilanciamento
-     const starSystem = {
-       // 1 stellina
-       oneStar: ['brim', 'carnemarcia', 'quarzo', 'therium', 'occhio'],
-       // 2 stelline  
-       twoStars: ['blaze powder', 'membrana', 'slime ball', 'prismarine shard'],
-       // 3 stelline
-       threeStars: ['lost soul', 'demon heart']
-     };
-     
-     // Classi disponibili
-     const availableClasses = ['Guerriero', 'Mago', 'Cacciatore', 'Bardo', 'Raccoglitore', 'Ombra'];
-     
-     // Array per memorizzare le classi dei partecipanti
-     let participantClasses = [];
-
-     // Funzione per aggiornare i controlli delle classi
-     function updateParticipantClasses() {
-       const participants = parseInt(participantsInput.value) || 1;
-       participantClassesContainer.innerHTML = '';
-       
-       // Inizializza l'array se necessario
-       while (participantClasses.length < participants) {
-         participantClasses.push('Guerriero'); // Default
-       }
-       
-       // Tronca l'array se ci sono troppi partecipanti
-       participantClasses = participantClasses.slice(0, participants);
-       
-       for (let i = 0; i < participants; i++) {
-         const controlDiv = document.createElement('div');
-         controlDiv.className = 'participant-controls';
-         
-         const label = document.createElement('div');
-         label.className = 'participant-label';
-         label.textContent = `Partecipante ${i + 1}:`;
-         
-         const select = document.createElement('select');
-         select.className = 'class-select';
-         select.id = `participant-${i}-class`;
-         
-         availableClasses.forEach(className => {
-           const option = document.createElement('option');
-           option.value = className;
-           option.textContent = className;
-           if (className === participantClasses[i]) {
-             option.selected = true;
-           }
-           select.appendChild(option);
-         });
-         
-         select.addEventListener('change', () => {
-           participantClasses[i] = select.value;
-           updateDistribution();
-         });
-         
-         controlDiv.appendChild(label);
-         controlDiv.appendChild(select);
-         participantClassesContainer.appendChild(controlDiv);
-       }
-     }
-
-     // Funzione per calcolare la priorità di un materiale per un partecipante
-     function calculatePriority(itemName, participantClass, itemTier) {
-       let priority = 0;
-       
-       // Priorità bassa per Guerrieri e Ombre
-       if (prioritySystem.lowPriority.includes(participantClass)) {
-         priority = 1;
-       }
-       
-       // Priorità Stagno per Bardi
-       if (prioritySystem.tinPriority.includes(participantClass) && 
-           itemName.toLowerCase().includes('stagno')) {
-         priority = 3;
-       }
-       
-       // Priorità per classe e tier specifici
-       if (prioritySystem.classPriority[participantClass] && 
-           prioritySystem.classPriority[participantClass][itemTier]) {
-         const priorityItems = prioritySystem.classPriority[participantClass][itemTier];
-         if (priorityItems.some(priorityItem => 
-             itemName.toLowerCase().includes(priorityItem.toLowerCase()))) {
-           priority = 4;
-         }
-       }
-       
-       // Priorità media per altri materiali
-       if (priority === 0) {
-         priority = 2;
-       }
-       
-       return priority;
-     }
-
-     // Funzione per ottenere il numero di stelline di un materiale
-     function getItemStars(itemName) {
-       const name = itemName.toLowerCase();
-       
-       if (starSystem.oneStar.some(star => name.includes(star))) {
-         return 1;
-       } else if (starSystem.twoStars.some(star => name.includes(star))) {
-         return 2;
-       } else if (starSystem.threeStars.some(star => name.includes(star))) {
-         return 3;
-       }
-       
-       return 1; // Default a 1 stellina per materiali non specificati
-     }
-
-     // Funzione per trovare materiali equivalenti in stelline
-     function findEquivalentItems(targetStars, availableItems, excludeItems = []) {
-       const equivalents = [];
-       
-       // Cerca materiali con lo stesso numero di stelline
-       availableItems.forEach(item => {
-         if (excludeItems.includes(item.name)) return;
-         
-         const itemStars = getItemStars(item.name);
-         if (itemStars === targetStars && item.qty > 0) {
-           equivalents.push({
-             name: item.name,
-             qty: item.qty,
-             price: item.price,
-             stars: itemStars
-           });
-         }
-       });
-       
-       return equivalents;
-     }
-
-     // Funzione per calcolare il valore in stelline di un set di oggetti
-     function calculateStarValue(items) {
-       return items.reduce((total, item) => {
-         const stars = getItemStars(item.name);
-         return total + (item.qty * stars);
-       }, 0);
-     }
-
-     // Carica i prodotti dal file JSON
-     async function loadProducts() {
-       console.log('=== CARICAMENTO DA FILE JSON ===');
-       
-       const productList = document.getElementById("product-list");
-       if (!productList) {
-         console.error('Elemento product-list non trovato!');
-         return;
-       }
-       
-       // Mostra messaggio di caricamento
-       productList.innerHTML = `
-         <div class="loading">
-           ⏳ Caricamento materiali dal database...<br>
-           <small>Connessione al file JSON</small>
-         </div>
-       `;
-       
-       try {
-         console.log('Tentativo di caricamento JSON...');
-         console.log('URL corrente:', window.location.href);
-         console.log('Protocollo:', window.location.protocol);
-         
-         // Se siamo su file://, mostra un messaggio di aiuto
-         if (window.location.protocol === 'file:') {
-           console.warn('Protocollo file:// rilevato - problemi CORS possibili');
-           productList.innerHTML = `
-             <div class="warning">
-               ⚠️ Problema di caricamento rilevato<br>
-               <br>
-               <strong>Soluzione:</strong><br>
-               1. Usa un server web locale (es. Live Server in VS Code)<br>
-               2. Oppure carica la pagina da un server web<br>
-               <br>
-               <strong>Per testare subito:</strong><br>
-               Apri la console (F12) e digita:<br>
-               <code>loadProductsFromFallback()</code>
-               <br><br>
-               <button onclick="loadProductsFromFallback()" style="padding: 10px; background: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer;">
-                 Carica Dati di Test
-               </button>
-             </div>
-           `;
-           return;
-         }
-         
-         // Prova a caricare il JSON
-         const response = await fetch('./oggetti_abaco.json');
-         
-         if (!response.ok) {
-           throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-         }
-         
-         const data = await response.json();
-         console.log('JSON caricato con successo:', data.length, 'prodotti');
-         
-         defaultProducts = data;
-         products = data.map(p => ({ ...p, qty: 0 }));
-         
-         renderMain();
-         
-         console.log('Caricamento completato con successo');
-         
-       } catch (error) {
-         console.error('Errore nel caricamento JSON:', error);
-         
-         productList.innerHTML = `
-           <div class="error">
-             ❌ Errore nel caricamento del file JSON<br>
-             <br>
-             <strong>Errore:</strong> ${error.message}<br>
-             <br>
-             <strong>Soluzioni:</strong><br>
-             1. Usa un server web locale<br>
-             2. Verifica che il file oggetti_abaco.json esista<br>
-             <br>
-             <button onclick="loadProductsFromFallback()" style="padding: 10px; background: #FF9800; color: white; border: none; border-radius: 5px; cursor: pointer;">
-               Carica Dati di Test
-             </button>
-           </div>
-         `;
-       }
-     }
-     
-     // Funzione di fallback per caricare dati di test
-     function loadProductsFromFallback() {
-       console.log('Caricamento dati di fallback...');
-       
-       const productList = document.getElementById("product-list");
-       
-       // Dati di fallback
-       defaultProducts = [
-         { name: "Stagno grezzo", price: 12, category: "Cristalli", subcategory: "Metalli", tier: "Novizio" },
-         { name: "Rame grezzo", price: 20, category: "Cristalli", subcategory: "Metalli", tier: "Avanzato" },
-         { name: "Ferro grezzo", price: 27, category: "Cristalli", subcategory: "Metalli", tier: "Esperto" },
-         { name: "Oro grezzo", price: 50, category: "Cristalli", subcategory: "Metalli", tier: "Custode" },
-         { name: "Diamante grezzo", price: 500, category: "Cristalli", subcategory: "Metalli", tier: "Maestro" },
-         { name: "Argento grezzo", price: 500, category: "Cristalli", subcategory: "Metalli", tier: "Maestro" },
-         { name: "Carbone", price: 2, category: "Cristalli", subcategory: "Carburanti", tier: "Novizio" },
-         { name: "Antracite", price: 4, category: "Cristalli", subcategory: "Carburanti", tier: "Esperto" },
-         { name: "Fire Stone", price: 5, category: "Cristalli", subcategory: "Carburanti", tier: "Maestro" },
-         { name: "Lapis", price: 1, category: "Cristalli", subcategory: "Misto", tier: "Novizio" },
-         { name: "Redstone", price: 1, category: "Cristalli", subcategory: "Misto", tier: "Novizio" },
-         { name: "Ametista", price: 1, category: "Cristalli", subcategory: "Misto", tier: "Avanzato" },
-         { name: "Withering Dust", price: 2, category: "Cristalli", subcategory: "Misto", tier: "Custode" },
-         { name: "Core Fragment", price: 1, category: "Aberrazioni", tier: "Tutti" },
-         { name: "Revival star", price: 2, category: "Aberrazioni", tier: "Tutti" },
-         { name: "Brim Powder", price: 1, category: "Aberrazioni", tier: "Novizio" },
-         { name: "Carne Marcia", price: 1, category: "Aberrazioni", tier: "Novizio" },
-         { name: "Occhio di Ragno", price: 1, category: "Aberrazioni", tier: "Avanzato" },
-         { name: "Quarzo", price: 1, category: "Aberrazioni", tier: "Avanzato" },
-         { name: "Therium", price: 1, category: "Aberrazioni", tier: "Avanzato" },
-         { name: "Blaze Powder", price: 2, category: "Aberrazioni", tier: "Esperto" },
-         { name: "Membrana", price: 2, category: "Aberrazioni", tier: "Esperto" },
-         { name: "Prismarine Shard", price: 2, category: "Aberrazioni", tier: "Custode" },
-         { name: "Slime Ball", price: 2, category: "Aberrazioni", tier: "Custode" },
-         { name: "Lost Soul", price: 5, category: "Aberrazioni", tier: "Maestro" },
-         { name: "Demon Heart", price: 5, category: "Aberrazioni", tier: "Maestro" }
-       ];
-       
-       products = defaultProducts.map(p => ({ ...p, qty: 0 }));
-       
-       try {
-         renderMain();
-         console.log('Dati di fallback caricati con successo');
-       } catch (error) {
-         console.error('Errore nel rendering dei dati di fallback:', error);
-         productList.innerHTML = `
-           <div class="error">
-             ❌ Errore critico nel rendering<br>
-             <small>${error.message}</small>
-           </div>
-         `;
-       }
-     }
- 
-     function getTierClass(tier) {
-       return `tier-${tier.toLowerCase()}`;
-     }
- 
-     // Funzione per formattare la valuta (conversione automatica br -> a)
-     function formatCurrency(value) {
-       if (value >= 100) {
-         const argenti = Math.floor(value / 100);
-         const bronzini = value % 100;
-         
-         if (bronzini === 0) {
-           return `${argenti}a`;
-         } else {
-           const bronziniDisplay = (bronzini % 1 === 0) ? bronzini.toString() : bronzini.toFixed(1);
-           return `${argenti}a ${bronziniDisplay}br`;
-         }
-       } else {
-         const display = (value % 1 === 0) ? value.toString() : value.toFixed(1);
-         return `${display}br`;
-       }
-     }
- 
-     // Funzione per applicare la classe CSS corretta in base al valore
-     function getCurrencyClass(value) {
-       if (value >= 100) {
-         return 'currency-mixed';
-       } else {
-         return 'currency-br';
-       }
-     }
- 
-     function renderMain() {
-       const productList = document.getElementById("product-list");
-       productList.innerHTML = "";
- 
-       const categories = [...new Set(products.map(p => p.category))];
-       
-       categories.forEach(category => {
-         const categoryDiv = document.createElement("div");
-         categoryDiv.className = "category-section";
-         
-         const categoryTitle = document.createElement("h3");
-         categoryTitle.className = "category-title";
-         categoryTitle.textContent = `Materiali dai ${category}`;
-         categoryDiv.appendChild(categoryTitle);
- 
-         if (category === "Cristalli") {
-           // Per i cristalli, raggruppa per sottocategorie
-           const subcategories = [...new Set(products.filter(p => p.category === category).map(p => p.subcategory))];
-           
-           subcategories.forEach(subcategory => {
-             const subcategoryDiv = document.createElement("div");
-             subcategoryDiv.style.marginLeft = "20px";
-             subcategoryDiv.style.marginBottom = "20px";
-             subcategoryDiv.style.overflow = "hidden";
-             subcategoryDiv.style.maxWidth = "100%";
-             subcategoryDiv.style.boxSizing = "border-box";
-             
-             const subcategoryTitle = document.createElement("h4");
-             subcategoryTitle.style.color = "#a0aec0";
-             subcategoryTitle.style.fontSize = "1rem";
-             subcategoryTitle.style.marginBottom = "10px";
-             subcategoryTitle.style.fontWeight = "500";
-             subcategoryTitle.style.overflow = "hidden";
-             subcategoryTitle.style.wordWrap = "break-word";
-             subcategoryTitle.style.maxWidth = "100%";
-             subcategoryTitle.textContent = subcategory;
-             subcategoryDiv.appendChild(subcategoryTitle);
-             
-             const subcategoryProducts = products.filter(p => p.category === category && p.subcategory === subcategory);
-             
-             subcategoryProducts.forEach((p) => {
-               const globalIndex = products.indexOf(p);
-               const div = createProductElement(p, globalIndex);
-               subcategoryDiv.appendChild(div);
-             });
-             
-             categoryDiv.appendChild(subcategoryDiv);
-           });
-         } else {
-           // Per altre categorie, mostra direttamente i prodotti
-           const categoryProducts = products.filter(p => p.category === category);
-           
-           categoryProducts.forEach((p) => {
-             const globalIndex = products.indexOf(p);
-             const div = createProductElement(p, globalIndex);
-             categoryDiv.appendChild(div);
-           });
-         }
-         
-         productList.appendChild(categoryDiv);
-       });
- 
-       updateDistribution();
-     }
- 
-     function createProductElement(p, globalIndex) {
-       const div = document.createElement("div");
-       div.className = "product";
-
-       const nameContainer = document.createElement("div");
-       const name = document.createElement("span");
-       name.className = "product-name";
-       name.textContent = p.name;
-       
-       const tierBadge = document.createElement("span");
-       tierBadge.className = `tier-badge ${getTierClass(p.tier)}`;
-       tierBadge.textContent = p.tier;
-       
-       nameContainer.appendChild(name);
-       nameContainer.appendChild(tierBadge);
-
-       const price = document.createElement("span");
-       price.className = `product-price ${getCurrencyClass(p.price)}`;
-       price.textContent = formatCurrency(p.price);
-
-       // Container per i controlli di quantità
-       const quantityContainer = document.createElement("div");
-       quantityContainer.className = "quantity-container";
-
-       // Pulsante meno
-       const minusBtn = document.createElement("button");
-       minusBtn.className = "quantity-btn";
-       minusBtn.textContent = "−";
-       minusBtn.type = "button";
-       minusBtn.addEventListener("click", () => {
-         const currentValue = parseInt(qty.value) || 0;
-         if (currentValue > 0) {
-           qty.value = currentValue - 1;
-           products[globalIndex].qty = currentValue - 1;
-           updateDistribution();
-         }
-       });
-
-       // Input quantità
-       const qty = document.createElement("input");
-       qty.type = "number";
-       qty.min = "0";
-       qty.className = "quantity-input";
-       qty.value = p.qty > 0 ? p.qty : "";
-       qty.placeholder = "0";
-
-       qty.addEventListener("input", () => {
-         products[globalIndex].qty = parseInt(qty.value) || 0;
-         updateDistribution();
-       });
-
-       // Pulsante più
-       const plusBtn = document.createElement("button");
-       plusBtn.className = "quantity-btn";
-       plusBtn.textContent = "+";
-       plusBtn.type = "button";
-       plusBtn.addEventListener("click", () => {
-         const currentValue = parseInt(qty.value) || 0;
-         qty.value = currentValue + 1;
-         products[globalIndex].qty = currentValue + 1;
-         updateDistribution();
-       });
-
-       // Assembla il container
-       quantityContainer.appendChild(minusBtn);
-       quantityContainer.appendChild(qty);
-       quantityContainer.appendChild(plusBtn);
-
-       div.appendChild(nameContainer);
-       div.appendChild(price);
-       div.appendChild(quantityContainer);
-       
-       return div;
-     }
- 
-     function updateDistribution() {
-       const participants = parseInt(participantsInput.value) || 1;
-       const activeItems = products.filter(p => p.qty > 0);
-       
-       if (activeItems.length === 0) {
-         distributionResults.innerHTML = '<div class="empty-state">Seleziona alcuni materiali per vedere la distribuzione</div>';
-         return;
-       }
-
-       distributionResults.innerHTML = "";
-       
-       // Array per tenere traccia dei valori di ogni partecipante
-       const participantValues = new Array(participants).fill(0);
-       const participantItems = new Array(participants).fill().map(() => []);
-       const participantStarValues = new Array(participants).fill(0);
-       
-       // FASE 1: Distribuzione base equa
-       activeItems.forEach(item => {
-         const itemsPerParticipant = Math.floor(item.qty / participants);
-         
-         if (itemsPerParticipant > 0) {
-           for (let i = 0; i < participants; i++) {
-             participantItems[i].push({
-               name: item.name,
-               qty: itemsPerParticipant,
-               price: item.price,
-               stars: getItemStars(item.name),
-               isBase: true
-             });
-             participantValues[i] += itemsPerParticipant * item.price;
-             participantStarValues[i] += itemsPerParticipant * getItemStars(item.name);
-           }
-         }
-       });
-       
-       // FASE 2: Distribuzione dell'esubero con sistema di stelline
-       activeItems.forEach(item => {
-         const itemsPerParticipant = Math.floor(item.qty / participants);
-         const totalDistributed = itemsPerParticipant * participants;
-         const remaining = item.qty - totalDistributed;
-         
-         if (remaining > 0) {
-           const itemStars = getItemStars(item.name);
-           
-           // Calcola priorità per ogni partecipante per questo item
-           const participantPriorities = [];
-           for (let i = 0; i < participants; i++) {
-             const priority = calculatePriority(item.name, participantClasses[i] || 'Guerriero', item.tier);
-             participantPriorities.push({
-               index: i,
-               priority: priority,
-               currentValue: participantValues[i],
-               currentStarValue: participantStarValues[i]
-             });
-           }
-           
-           // Ordina per priorità (più alta prima) e poi per valore stelline (più basso prima)
-           participantPriorities.sort((a, b) => {
-             if (a.priority !== b.priority) {
-               return b.priority - a.priority; // Priorità più alta prima
-             }
-             return a.currentStarValue - b.currentStarValue; // Valore stelline più basso prima
-           });
-           
-           // Distribuisci l'esubero seguendo l'ordine di priorità
-           let remainingToDistribute = remaining;
-           for (const participant of participantPriorities) {
-             if (remainingToDistribute <= 0) break;
-             
-             const qtyToGive = Math.min(1, remainingToDistribute);
-             participantItems[participant.index].push({
-               name: item.name,
-               qty: qtyToGive,
-               price: item.price,
-               stars: itemStars,
-               isEsubero: true,
-               priority: participant.priority
-             });
-             participantValues[participant.index] += qtyToGive * item.price;
-             participantStarValues[participant.index] += qtyToGive * itemStars;
-             remainingToDistribute -= qtyToGive;
-           }
-         }
-       });
-       
-       // FASE 3: Bilanciamento con stelline equivalenti
-       // Trova partecipanti con priorità bassa che hanno ricevuto materiali ad alta priorità
-       const lowPriorityParticipants = [];
-       const highPriorityParticipants = [];
-       
-       for (let i = 0; i < participants; i++) {
-         const participantClass = participantClasses[i] || 'Guerriero';
-         if (prioritySystem.lowPriority.includes(participantClass)) {
-           lowPriorityParticipants.push(i);
-         } else {
-           highPriorityParticipants.push(i);
-         }
-       }
-       
-       // Calcola il valore stelline medio dei partecipanti ad alta priorità
-       if (highPriorityParticipants.length > 0) {
-         const avgHighPriorityStarValue = highPriorityParticipants.reduce((sum, idx) => 
-           sum + participantStarValues[idx], 0) / highPriorityParticipants.length;
-         
-         // Bilanciamento per partecipanti a bassa priorità
-         lowPriorityParticipants.forEach(participantIdx => {
-           const currentStarValue = participantStarValues[participantIdx];
-           const deficit = avgHighPriorityStarValue - currentStarValue;
-           
-           if (deficit > 0) {
-             // Trova materiali equivalenti per bilanciare
-             const availableItems = activeItems.filter(item => item.qty > 0);
-             const participantItemsNames = participantItems[participantIdx].map(item => item.name);
-             
-             // Cerca materiali con 1, 2, 3 stelline per bilanciare
-             for (let targetStars = 1; targetStars <= 3 && deficit > 0; targetStars++) {
-               const equivalents = findEquivalentItems(targetStars, availableItems, participantItemsNames);
-               
-               if (equivalents.length > 0) {
-                 // Prendi il primo materiale equivalente disponibile
-                 const equivalent = equivalents[0];
-                 const qtyNeeded = Math.min(Math.ceil(deficit / targetStars), equivalent.qty);
-                 
-                 if (qtyNeeded > 0) {
-                   participantItems[participantIdx].push({
-                     name: equivalent.name,
-                     qty: qtyNeeded,
-                     price: equivalent.price,
-                     stars: targetStars,
-                     isCompensation: true,
-                     reason: `Bilanciamento stelline (${targetStars}⭐)`
-                   });
-                   participantValues[participantIdx] += qtyNeeded * equivalent.price;
-                   participantStarValues[participantIdx] += qtyNeeded * targetStars;
-                   
-                   // Aggiorna la quantità disponibile
-                   const itemIndex = activeItems.findIndex(item => item.name === equivalent.name);
-                   if (itemIndex !== -1) {
-                     activeItems[itemIndex].qty -= qtyNeeded;
-                   }
-                 }
-               }
-             }
-           }
-         });
-       }
-       
-       // Mostra messaggio informativo sul sistema di priorità e stelline
-       const infoDiv = document.createElement("div");
-       infoDiv.style.textAlign = "center";
-       infoDiv.style.marginTop = "20px";
-       infoDiv.style.padding = "15px";
-       infoDiv.style.background = "rgba(99, 179, 237, 0.1)";
-       infoDiv.style.borderRadius = "8px";
-       infoDiv.style.border = "1px solid rgba(99, 179, 237, 0.3)";
-       infoDiv.style.color = "#63b3ed";
-       infoDiv.style.fontSize = "0.9rem";
-       infoDiv.innerHTML = `
-         🎯 <strong>Distribuzione con priorità e stelline:</strong><br>
-         • Materiali distribuiti per priorità di classe<br>
-         • Bilanciamento automatico con stelline equivalenti<br>
-         • ⭐ 1 stellina: brim, carnemarcia, quarzo, therium, occhio<br>
-         • ⭐⭐ 2 stelline: blaze powder, membrana, slime ball, prismarine shard<br>
-         • ⭐⭐⭐ 3 stelline: lost soul, demon heart
-       `;
-       
-       distributionResults.appendChild(infoDiv);
-       
-               // Mostra cosa prende ogni partecipante (parte normale, non esubero)
-        const baseDistributionDiv = document.createElement("div");
-        baseDistributionDiv.style.marginBottom = "30px";
-        baseDistributionDiv.style.padding = "20px";
-        baseDistributionDiv.style.background = "rgba(72, 187, 120, 0.1)";
-        baseDistributionDiv.style.borderRadius = "12px";
-        baseDistributionDiv.style.border = "1px solid rgba(72, 187, 120, 0.3)";
-        
-        const baseTitle = document.createElement("h3");
-        baseTitle.style.color = "#68d391";
-        baseTitle.style.fontSize = "1.2rem";
-        baseTitle.style.marginBottom = "15px";
-        baseTitle.style.textAlign = "center";
-        baseTitle.textContent = "🎯 Ogni partecipante prende:";
-        baseDistributionDiv.appendChild(baseTitle);
-        
-        // Raggruppa gli oggetti normali (non esubero) per nome
-        const baseItems = {};
-        for (let i = 0; i < participants; i++) {
-          participantItems[i].forEach(item => {
-            if (!item.isEsubero) {
-              if (!baseItems[item.name]) {
-                baseItems[item.name] = {
-                  name: item.name,
-                  qty: item.qty,
-                  price: item.price
-                };
-              }
-            }
-          });
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Abaco - Calcolatore Materiali</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
-        
-        // Mostra gli oggetti base distribuiti
-        Object.values(baseItems).forEach(item => {
-          const itemDiv = document.createElement("div");
-          itemDiv.style.display = "flex";
-          itemDiv.style.justifyContent = "space-between";
-          itemDiv.style.alignItems = "center";
-          itemDiv.style.padding = "8px 12px";
-          itemDiv.style.margin = "5px 0";
-          itemDiv.style.background = "rgba(255, 255, 255, 0.05)";
-          itemDiv.style.borderRadius = "6px";
-          
-          const itemName = document.createElement("span");
-          itemName.textContent = `${item.name} x${item.qty}`;
-          itemName.style.color = "#ffffff";
-          
-          const itemCost = document.createElement("span");
-          const cost = item.qty * item.price;
-          itemCost.className = getCurrencyClass(cost);
-          itemCost.textContent = formatCurrency(cost);
-          
-          itemDiv.appendChild(itemName);
-          itemDiv.appendChild(itemCost);
-          baseDistributionDiv.appendChild(itemDiv);
-        });
-        
-        distributionResults.appendChild(baseDistributionDiv);
-        
-        // Mostra i risultati per ogni partecipante (solo esubero e totali)
-        for (let i = 0; i < participants; i++) {
-          const participantDiv = document.createElement("div");
-          participantDiv.className = "participant-result";
-          
-          const title = document.createElement("div");
-          title.className = "participant-title";
-          const participantClass = participantClasses[i] || 'Guerriero';
-          const totalStars = participantItems[i].reduce((sum, item) => sum + (item.stars * item.qty), 0);
-          title.innerHTML = `Partecipante ${i + 1} (${participantClass}) - ⭐ ${totalStars} stelline totali`;
-          participantDiv.appendChild(title);
-          
-          // Mostra oggetti dell'esubero e compensazioni
-          const specialItems = participantItems[i].filter(item => item.isEsubero || item.isCompensation);
-          
-          if (specialItems.length > 0) {
-            // Raggruppa gli oggetti per nome e tipo
-            const groupedItems = {};
-            specialItems.forEach(item => {
-              const key = `${item.name}_${item.isCompensation ? 'comp' : 'esubero'}`;
-              if (!groupedItems[key]) {
-                groupedItems[key] = {
-                  name: item.name,
-                  qty: 0,
-                  price: item.price,
-                  stars: item.stars,
-                  priority: item.priority,
-                  isCompensation: item.isCompensation,
-                  reason: item.reason
-                };
-              }
-              groupedItems[key].qty += item.qty;
+
+        html, body {
+            overflow-x: hidden;
+            max-width: 100vw;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            color: white;
+        }
+
+        .logo {
+            max-width: 200px;
+            height: auto;
+            margin-bottom: 20px;
+        }
+
+        .title {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .section {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            color: #333;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .participants-section {
+            margin-bottom: 20px;
+        }
+
+        .participant-controls {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+
+        .participant-label {
+            font-weight: bold;
+            color: #333;
+            min-width: 100px;
+        }
+
+        .class-select {
+            padding: 8px 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            background: white;
+            min-width: 120px;
+        }
+
+        .class-select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .priority-info {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 15px;
+        }
+
+        .priority-info h4 {
+            color: #495057;
+            margin-bottom: 10px;
+        }
+
+        .priority-list {
+            font-size: 0.9rem;
+            color: #6c757d;
+        }
+
+        .priority-list ul {
+            margin-left: 20px;
+        }
+
+        .priority-list li {
+            margin-bottom: 5px;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .category-section {
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+
+        .category-title {
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+            color: #333;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            color: white;
+            padding: 10px 15px;
+            border-radius: 8px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .subcategoryDiv {
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+
+        .subcategoryTitle {
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+            color: #555;
+            font-weight: bold;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .product {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px;
+            margin-bottom: 8px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border: 1px solid #e9ecef;
+            overflow: hidden;
+        }
+
+        .product-info {
+            flex: 1;
+            min-width: 0;
+            overflow: hidden;
+        }
+
+        .product-name {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 4px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .product-price {
+            color: #666;
+            font-size: 0.9rem;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .tier-badge {
+            display: inline-block;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            font-weight: bold;
+            margin-left: 5px;
+        }
+
+        .tier-1 { background: #d4edda; color: #155724; }
+        .tier-2 { background: #fff3cd; color: #856404; }
+        .tier-3 { background: #f8d7da; color: #721c24; }
+
+        .quantity-container {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            flex-shrink: 0;
+        }
+
+        .quantity-btn {
+            width: 30px;
+            height: 30px;
+            border: 2px solid #667eea;
+            background: white;
+            color: #667eea;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 16px;
+            transition: all 0.2s ease;
+        }
+
+        .quantity-btn:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        .quantity-btn:active {
+            transform: scale(0.95);
+        }
+
+        .quantity-input {
+            width: 60px;
+            padding: 5px;
+            text-align: center;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+            -moz-appearance: textfield;
+        }
+
+        .quantity-input::-webkit-outer-spin-button,
+        .quantity-input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        .quantity-input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .results-section {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .participant-result {
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+            overflow: hidden;
+        }
+
+        .participant-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 10px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .item-distribution {
+            margin-bottom: 8px;
+            padding: 8px;
+            background: white;
+            border-radius: 6px;
+            border: 1px solid #e9ecef;
+            overflow: hidden;
+        }
+
+        .item-name {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 4px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .item-details {
+            font-size: 0.9rem;
+            color: #666;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .total-cost {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #667eea;
+            text-align: center;
+            margin-top: 20px;
+            padding: 15px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            color: white;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .empty-state {
+            text-align: center;
+            color: #666;
+            font-style: italic;
+            padding: 40px 20px;
+            overflow: hidden;
+        }
+
+        .loading {
+            text-align: center;
+            color: #667eea;
+            font-size: 1.1rem;
+            padding: 40px 20px;
+            overflow: hidden;
+        }
+
+        .error {
+            text-align: center;
+            color: #dc3545;
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+
+        .warning {
+            text-align: center;
+            color: #856404;
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+
+        .server-button {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-top: 10px;
+            transition: background 0.2s ease;
+        }
+
+        .server-button:hover {
+            background: #218838;
+        }
+
+        .contacts-section {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            margin-top: 30px;
+            overflow: hidden;
+        }
+
+        .contacts-title {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            color: #333;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .contact-item {
+            margin-bottom: 15px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .contact-item h4 {
+            color: #333;
+            margin-bottom: 8px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .contact-item p {
+            color: #666;
+            margin-bottom: 5px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .homepage-link {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 12px 24px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            color: white;
+            text-decoration: none;
+            border-radius: 25px;
+            font-weight: bold;
+            transition: transform 0.2s ease;
+            overflow: hidden;
+        }
+
+        .homepage-link:hover {
+            transform: translateY(-2px);
+        }
+
+        .fractional-display {
+            font-size: 0.8rem;
+            color: #666;
+            margin-top: 5px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            .main-content {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .container {
+                padding: 15px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .title {
+                font-size: 2rem;
+            }
+            
+            .section {
+                padding: 20px;
+            }
+            
+            .participant-controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .participant-label {
+                min-width: auto;
+            }
+            
+            .class-select {
+                min-width: auto;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .title {
+                font-size: 1.8rem;
+            }
+            
+            .section {
+                padding: 15px;
+            }
+            
+            .product {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 10px;
+            }
+            
+            .product-info {
+                text-align: center;
+            }
+            
+            .quantity-container {
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 360px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .section {
+                padding: 12px;
+            }
+            
+            .quantity-btn {
+                width: 25px;
+                height: 25px;
+                font-size: 14px;
+            }
+            
+            .quantity-input {
+                width: 50px;
+                font-size: 12px;
+            }
+        }
+
+        /* Touch device optimizations */
+        @media (hover: none) and (pointer: coarse) {
+            .quantity-btn {
+                width: 35px;
+                height: 35px;
+                font-size: 18px;
+            }
+            
+            .quantity-input {
+                width: 70px;
+                font-size: 16px;
+                padding: 8px;
+            }
+            
+            .class-select {
+                padding: 12px;
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <img src="../logo.png" alt="Logo" class="logo">
+            <h1 class="title">Abaco</h1>
+            <p class="subtitle">Calcolatore Materiali per Divisione Equa</p>
+        </div>
+
+        <div class="main-content">
+            <div class="section">
+                <h2 class="section-title">Configurazione</h2>
+                
+                <div class="participants-section">
+                    <div class="input-group">
+                        <label for="participants">Numero di Partecipanti:</label>
+                        <input type="number" id="participants" min="1" max="10" value="4">
+                    </div>
+                    
+                    <div id="participant-classes"></div>
+                    
+                    <div class="priority-info">
+                        <h4>Sistema di Priorità per Stelle</h4>
+                        <div class="priority-list">
+                            <p><strong>Classi disponibili:</strong></p>
+                            <ul>
+                                <li><strong>Mago:</strong> Priorità alta su materiali magici</li>
+                                <li><strong>Guerriero:</strong> Priorità alta su armi e armature</li>
+                                <li><strong>Ladro:</strong> Priorità alta su oggetti di precisione</li>
+                                <li><strong>Chierico:</strong> Priorità alta su oggetti sacri</li>
+                                <li><strong>Ranger:</strong> Priorità alta su oggetti naturali</li>
+                                <li><strong>Bardo:</strong> Priorità media su tutti gli oggetti</li>
+                            </ul>
+                            <p><strong>Sistema Stelle:</strong> Ogni materiale ha un valore in stelle. Se un partecipante riceve materiali di alto valore stellare, gli altri riceveranno l'equivalente in stelle.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2 class="section-title">Materiali</h2>
+                <div id="products-container">
+                    <div class="loading">Caricamento materiali...</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="results-section">
+            <h2 class="section-title">Risultati Divisione</h2>
+            <div id="results-container">
+                <div class="empty-state">Inserisci le quantità dei materiali per vedere la divisione</div>
+            </div>
+        </div>
+
+        <div class="contacts-section">
+            <h2 class="contacts-title">Contatti</h2>
+            <div class="contact-item">
+                <h4>Discord</h4>
+                <p>sevc0n#1234</p>
+            </div>
+            <div class="contact-item">
+                <h4>Email</h4>
+                <p>sevc0n@example.com</p>
+            </div>
+            <a href="../index.html" class="homepage-link">← Torna alla Homepage</a>
+        </div>
+    </div>
+
+    <script>
+        // Sistema di priorità e stelle
+        const prioritySystem = {
+            'Mago': {
+                'Magico': 3,
+                'Arma': 1,
+                'Armatura': 1,
+                'Oggetto': 2,
+                'Prezioso': 2
+            },
+            'Guerriero': {
+                'Magico': 1,
+                'Arma': 3,
+                'Armatura': 3,
+                'Oggetto': 1,
+                'Prezioso': 2
+            },
+            'Ladro': {
+                'Magico': 1,
+                'Arma': 2,
+                'Armatura': 1,
+                'Oggetto': 3,
+                'Prezioso': 3
+            },
+            'Chierico': {
+                'Magico': 2,
+                'Arma': 1,
+                'Armatura': 2,
+                'Oggetto': 2,
+                'Prezioso': 3
+            },
+            'Ranger': {
+                'Magico': 1,
+                'Arma': 2,
+                'Armatura': 2,
+                'Oggetto': 2,
+                'Prezioso': 2
+            },
+            'Bardo': {
+                'Magico': 2,
+                'Arma': 2,
+                'Armatura': 2,
+                'Oggetto': 2,
+                'Prezioso': 2
+            }
+        };
+
+        const starSystem = {
+            'Tier 1': 1,
+            'Tier 2': 2,
+            'Tier 3': 3
+        };
+
+        const availableClasses = ['Mago', 'Guerriero', 'Ladro', 'Chierico', 'Ranger', 'Bardo'];
+        let participantClasses = [];
+        let products = [];
+
+        // Carica i prodotti dal JSON
+        async function loadProducts() {
+            try {
+                console.log('Tentativo di caricamento JSON...');
+                const response = await fetch('./oggetti_abaco.json');
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const data = await response.json();
+                console.log('JSON caricato con successo:', data);
+                
+                products = data;
+                renderProducts();
+                updateParticipantClasses();
+                
+            } catch (error) {
+                console.error('Errore nel caricamento JSON:', error);
+                
+                // Controlla se è un problema CORS
+                if (window.location.protocol === 'file:') {
+                    showCorsWarning();
+                } else {
+                    showError('Errore nel caricamento dei materiali: ' + error.message);
+                }
+            }
+        }
+
+        function showCorsWarning() {
+            const container = document.getElementById('products-container');
+            container.innerHTML = `
+                <div class="warning">
+                    <h3>⚠️ Problema di Caricamento</h3>
+                    <p>Il file JSON non può essere caricato direttamente dal browser per motivi di sicurezza.</p>
+                    <p><strong>Soluzioni:</strong></p>
+                    <ul style="text-align: left; margin: 10px 0;">
+                        <li>Usa un server locale (es. Live Server in VS Code)</li>
+                        <li>Carica il file su un server web</li>
+                        <li>Oppure clicca il pulsante qui sotto per usare i dati di test</li>
+                    </ul>
+                    <button class="server-button" onclick="loadProductsFromFallback()">
+                        Usa Dati di Test
+                    </button>
+                </div>
+            `;
+        }
+
+        function showError(message) {
+            const container = document.getElementById('products-container');
+            container.innerHTML = `
+                <div class="error">
+                    <h3>❌ Errore</h3>
+                    <p>${message}</p>
+                    <button class="server-button" onclick="loadProductsFromFallback()">
+                        Usa Dati di Test
+                    </button>
+                </div>
+            `;
+        }
+
+        function loadProductsFromFallback() {
+            console.log('Caricamento dati di fallback...');
+            products = [
+                {
+                    "nome": "Membrana di Drago",
+                    "prezzo": 5000,
+                    "categoria": "Magico",
+                    "sottocategoria": "Componenti",
+                    "tier": "Tier 3"
+                },
+                {
+                    "nome": "Spada del Drago",
+                    "prezzo": 3000,
+                    "categoria": "Arma",
+                    "sottocategoria": "Spade",
+                    "tier": "Tier 2"
+                },
+                {
+                    "nome": "Armatura di Drago",
+                    "prezzo": 4000,
+                    "categoria": "Armatura",
+                    "sottocategoria": "Armature",
+                    "tier": "Tier 2"
+                },
+                {
+                    "nome": "Pozione di Guarigione",
+                    "prezzo": 50,
+                    "categoria": "Magico",
+                    "sottocategoria": "Pozioni",
+                    "tier": "Tier 1"
+                },
+                {
+                    "nome": "Daga Affilata",
+                    "prezzo": 200,
+                    "categoria": "Arma",
+                    "sottocategoria": "Daghe",
+                    "tier": "Tier 1"
+                },
+                {
+                    "nome": "Scudo di Legno",
+                    "prezzo": 100,
+                    "categoria": "Armatura",
+                    "sottocategoria": "Scudi",
+                    "tier": "Tier 1"
+                },
+                {
+                    "nome": "Anello Magico",
+                    "prezzo": 1000,
+                    "categoria": "Oggetto",
+                    "sottocategoria": "Anelli",
+                    "tier": "Tier 2"
+                },
+                {
+                    "nome": "Gemma Preziosa",
+                    "prezzo": 800,
+                    "categoria": "Prezioso",
+                    "sottocategoria": "Gemme",
+                    "tier": "Tier 2"
+                }
+            ];
+            
+            renderProducts();
+            updateParticipantClasses();
+            
+            const container = document.getElementById('products-container');
+            container.innerHTML = '<div class="loading">Dati di test caricati. Ricarica la pagina per provare il caricamento JSON.</div>';
+            setTimeout(() => {
+                renderProducts();
+            }, 1000);
+        }
+
+        function renderProducts() {
+            const container = document.getElementById('products-container');
+            
+            if (!products || products.length === 0) {
+                container.innerHTML = '<div class="empty-state">Nessun materiale disponibile</div>';
+                return;
+            }
+
+            // Raggruppa per categoria e sottocategoria
+            const grouped = products.reduce((acc, product) => {
+                if (!acc[product.categoria]) {
+                    acc[product.categoria] = {};
+                }
+                if (!acc[product.categoria][product.sottocategoria]) {
+                    acc[product.categoria][product.sottocategoria] = [];
+                }
+                acc[product.categoria][product.sottocategoria].push(product);
+                return acc;
+            }, {});
+
+            let html = '';
+            for (const [categoria, sottocategorie] of Object.entries(grouped)) {
+                html += `<div class="category-section">
+                    <h3 class="category-title">${categoria}</h3>`;
+                
+                for (const [sottocategoria, items] of Object.entries(sottocategorie)) {
+                    html += `<div class="subcategoryDiv">
+                        <h4 class="subcategoryTitle">${sottocategoria}</h4>`;
+                    
+                    for (const item of items) {
+                        html += createProductElement(item);
+                    }
+                    
+                    html += '</div>';
+                }
+                
+                html += '</div>';
+            }
+
+            container.innerHTML = html;
+        }
+
+        function createProductElement(product) {
+            const tierClass = product.tier.toLowerCase().replace(' ', '-');
+            return `
+                <div class="product" data-name="${product.nome}">
+                    <div class="product-info">
+                        <div class="product-name">
+                            ${product.nome}
+                            <span class="tier-badge ${tierClass}">${product.tier}</span>
+                        </div>
+                        <div class="product-price">${formatCurrency(product.prezzo)}</div>
+                    </div>
+                    <div class="quantity-container">
+                        <button class="quantity-btn minus-btn" data-name="${product.nome}">-</button>
+                        <input type="number" class="quantity-input" data-name="${product.nome}" min="0" value="0">
+                        <button class="quantity-btn plus-btn" data-name="${product.nome}">+</button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function updateParticipantClasses() {
+            const numParticipants = parseInt(document.getElementById('participants').value);
+            const container = document.getElementById('participant-classes');
+            
+            // Inizializza array se necessario
+            if (participantClasses.length !== numParticipants) {
+                participantClasses = new Array(numParticipants).fill('Mago');
+            }
+            
+            let html = '';
+            for (let i = 0; i < numParticipants; i++) {
+                html += `
+                    <div class="participant-controls">
+                        <label class="participant-label">Partecipante ${i + 1}:</label>
+                        <select class="class-select" data-index="${i}">
+                            ${availableClasses.map(cls => 
+                                `<option value="${cls}" ${participantClasses[i] === cls ? 'selected' : ''}>${cls}</option>`
+                            ).join('')}
+                        </select>
+                    </div>
+                `;
+            }
+            
+            container.innerHTML = html;
+            
+            // Aggiungi event listeners
+            container.querySelectorAll('.class-select').forEach(select => {
+                select.addEventListener('change', (e) => {
+                    const index = parseInt(e.target.dataset.index);
+                    participantClasses[index] = e.target.value;
+                    updateDistribution();
+                });
+            });
+        }
+
+        function calculatePriority(item, participantClass) {
+            const basePriority = prioritySystem[participantClass]?.[item.categoria] || 1;
+            const tierMultiplier = starSystem[item.tier] || 1;
+            return basePriority * tierMultiplier;
+        }
+
+        function getItemStars(item) {
+            return starSystem[item.tier] || 1;
+        }
+
+        function findEquivalentItems(targetStars, availableItems) {
+            const equivalents = [];
+            let currentStars = 0;
+            
+            // Ordina per priorità (più stelle = più priorità)
+            const sortedItems = availableItems.sort((a, b) => getItemStars(b) - getItemStars(a));
+            
+            for (const item of sortedItems) {
+                if (currentStars + getItemStars(item) <= targetStars) {
+                    equivalents.push(item);
+                    currentStars += getItemStars(item);
+                }
+            }
+            
+            return equivalents;
+        }
+
+        function calculateStarValue(items) {
+            return items.reduce((total, item) => total + getItemStars(item), 0);
+        }
+
+        function updateDistribution() {
+            const numParticipants = parseInt(document.getElementById('participants').value);
+            const container = document.getElementById('results-container');
+            
+            if (numParticipants <= 0) {
+                container.innerHTML = '<div class="empty-state">Inserisci un numero valido di partecipanti</div>';
+                return;
+            }
+
+            // Raccogli tutti gli oggetti con quantità > 0
+            const selectedItems = [];
+            document.querySelectorAll('.quantity-input').forEach(input => {
+                const quantity = parseInt(input.value) || 0;
+                if (quantity > 0) {
+                    const productName = input.dataset.name;
+                    const product = products.find(p => p.nome === productName);
+                    if (product) {
+                        for (let i = 0; i < quantity; i++) {
+                            selectedItems.push({...product});
+                        }
+                    }
+                }
+            });
+
+            if (selectedItems.length === 0) {
+                container.innerHTML = '<div class="empty-state">Inserisci le quantità dei materiali per vedere la divisione</div>';
+                return;
+            }
+
+            // Calcola la distribuzione
+            const distribution = calculateDistribution(selectedItems, numParticipants);
+            renderDistribution(distribution);
+        }
+
+        function calculateDistribution(items, numParticipants) {
+            const participants = [];
+            for (let i = 0; i < numParticipants; i++) {
+                participants.push({
+                    index: i,
+                    class: participantClasses[i] || 'Mago',
+                    items: [],
+                    totalValue: 0,
+                    starValue: 0
+                });
+            }
+
+            // Fase 1: Distribuzione base (1 oggetto per partecipante)
+            const baseItems = [...items];
+            let itemIndex = 0;
+            
+            for (let round = 0; round < Math.floor(baseItems.length / numParticipants); round++) {
+                for (let p = 0; p < numParticipants; p++) {
+                    if (itemIndex < baseItems.length) {
+                        const item = baseItems[itemIndex++];
+                        participants[p].items.push(item);
+                        participants[p].totalValue += item.prezzo;
+                        participants[p].starValue += getItemStars(item);
+                    }
+                }
+            }
+
+            // Fase 2: Distribuzione per priorità degli oggetti rimanenti
+            const remainingItems = baseItems.slice(itemIndex);
+            if (remainingItems.length > 0) {
+                // Ordina i partecipanti per priorità media
+                const sortedParticipants = participants.sort((a, b) => {
+                    const aAvgPriority = a.items.length > 0 ? 
+                        a.items.reduce((sum, item) => sum + calculatePriority(item, a.class), 0) / a.items.length : 0;
+                    const bAvgPriority = b.items.length > 0 ? 
+                        b.items.reduce((sum, item) => sum + calculatePriority(item, b.class), 0) / b.items.length : 0;
+                    return bAvgPriority - aAvgPriority;
+                });
+
+                for (const item of remainingItems) {
+                    // Trova il partecipante con la priorità più alta per questo oggetto
+                    let bestParticipant = sortedParticipants[0];
+                    let bestPriority = calculatePriority(item, bestParticipant.class);
+                    
+                    for (const participant of sortedParticipants) {
+                        const priority = calculatePriority(item, participant.class);
+                        if (priority > bestPriority) {
+                            bestPriority = priority;
+                            bestParticipant = participant;
+                        }
+                    }
+                    
+                    bestParticipant.items.push(item);
+                    bestParticipant.totalValue += item.prezzo;
+                    bestParticipant.starValue += getItemStars(item);
+                }
+            }
+
+            // Fase 3: Bilanciamento per stelle
+            const avgStarValue = participants.reduce((sum, p) => sum + p.starValue, 0) / participants.length;
+            const highStarParticipants = participants.filter(p => p.starValue > avgStarValue * 1.2);
+            const lowStarParticipants = participants.filter(p => p.starValue < avgStarValue * 0.8);
+
+            for (const highStar of highStarParticipants) {
+                const excessStars = highStar.starValue - avgStarValue;
+                const itemsToCompensate = highStar.items.filter(item => getItemStars(item) > 1);
+                
+                for (const lowStar of lowStarParticipants) {
+                    if (lowStar.starValue < avgStarValue * 0.8) {
+                        const neededStars = Math.ceil(avgStarValue - lowStar.starValue);
+                        const compensation = findEquivalentItems(neededStars, itemsToCompensate);
+                        
+                        for (const item of compensation) {
+                            const itemIndex = highStar.items.indexOf(item);
+                            if (itemIndex > -1) {
+                                highStar.items.splice(itemIndex, 1);
+                                highStar.totalValue -= item.prezzo;
+                                highStar.starValue -= getItemStars(item);
+                                
+                                lowStar.items.push(item);
+                                lowStar.totalValue += item.prezzo;
+                                lowStar.starValue += getItemStars(item);
+                            }
+                        }
+                    }
+                }
+            }
+
+            return participants;
+        }
+
+        function renderDistribution(participants) {
+            const container = document.getElementById('results-container');
+            
+            let html = '';
+            for (const participant of participants) {
+                html += `
+                    <div class="participant-result">
+                        <div class="participant-title">
+                            Partecipante ${participant.index + 1} (${participant.class})
+                            <span style="float: right; font-size: 0.9rem; color: #666;">
+                                Stelle: ${participant.starValue}
+                            </span>
+                        </div>
+                `;
+                
+                if (participant.items.length === 0) {
+                    html += '<div class="empty-state">Nessun oggetto assegnato</div>';
+                } else {
+                    for (const item of participant.items) {
+                        html += `
+                            <div class="item-distribution">
+                                <div class="item-name">${item.nome}</div>
+                                <div class="item-details">
+                                    ${formatCurrency(item.prezzo)} • ${item.categoria} • ${item.tier}
+                                </div>
+                            </div>
+                        `;
+                    }
+                }
+                
+                html += `
+                        <div class="total-cost">
+                            Totale: ${formatCurrency(participant.totalValue)}
+                        </div>
+                    </div>
+                `;
+            }
+            
+            container.innerHTML = html;
+        }
+
+        function formatCurrency(amount) {
+            return new Intl.NumberFormat('it-IT', {
+                style: 'currency',
+                currency: 'EUR'
+            }).format(amount);
+        }
+
+        // Event listeners
+        document.addEventListener('DOMContentLoaded', () => {
+            loadProducts();
+            
+            document.getElementById('participants').addEventListener('input', () => {
+                updateParticipantClasses();
+                updateDistribution();
             });
             
-            // Mostra gli oggetti raggruppati
-            Object.values(groupedItems).forEach(item => {
-              const itemDiv = document.createElement("div");
-              itemDiv.className = "item-distribution";
-              
-              // Colore basato sul tipo e priorità
-              if (item.isCompensation) {
-                itemDiv.style.background = "rgba(168, 85, 247, 0.2)";
-                itemDiv.style.border = "1px solid rgba(168, 85, 247, 0.3)";
-              } else if (item.priority === 4) {
-                itemDiv.style.background = "rgba(72, 187, 120, 0.2)";
-                itemDiv.style.border = "1px solid rgba(72, 187, 120, 0.3)";
-              } else if (item.priority === 3) {
-                itemDiv.style.background = "rgba(99, 179, 237, 0.2)";
-                itemDiv.style.border = "1px solid rgba(99, 179, 237, 0.3)";
-              } else {
-                itemDiv.style.background = "rgba(237, 137, 54, 0.2)";
-                itemDiv.style.border = "1px solid rgba(237, 137, 54, 0.3)";
-              }
-              
-              const itemName = document.createElement("span");
-              let icon = "📦";
-              if (item.isCompensation) {
-                icon = "⚖️";
-              } else if (item.priority === 4) {
-                icon = "⭐";
-              } else if (item.priority === 3) {
-                icon = "🎯";
-              }
-              
-              const starDisplay = "⭐".repeat(item.stars);
-              itemName.innerHTML = `${icon} ${item.name} x${item.qty} ${starDisplay}`;
-              
-              const itemCost = document.createElement("span");
-              const cost = item.qty * item.price;
-              itemCost.className = getCurrencyClass(cost);
-              itemCost.textContent = formatCurrency(cost);
-              
-              itemDiv.appendChild(itemName);
-              itemDiv.appendChild(itemCost);
-              participantDiv.appendChild(itemDiv);
-              
-              // Mostra motivo per compensazioni
-              if (item.isCompensation && item.reason) {
-                const reasonDiv = document.createElement("div");
-                reasonDiv.style.fontSize = "0.8rem";
-                reasonDiv.style.color = "#a0aec0";
-                reasonDiv.style.fontStyle = "italic";
-                reasonDiv.style.marginTop = "2px";
-                reasonDiv.textContent = `(${item.reason})`;
-                itemDiv.appendChild(reasonDiv);
-              }
+            // Event delegation per i bottoni e input
+            document.addEventListener('click', (e) => {
+                if (e.target.classList.contains('minus-btn')) {
+                    const input = e.target.nextElementSibling;
+                    const currentValue = parseInt(input.value) || 0;
+                    if (currentValue > 0) {
+                        input.value = currentValue - 1;
+                        updateDistribution();
+                    }
+                } else if (e.target.classList.contains('plus-btn')) {
+                    const input = e.target.previousElementSibling;
+                    const currentValue = parseInt(input.value) || 0;
+                    input.value = currentValue + 1;
+                    updateDistribution();
+                }
             });
-          } else {
-            // Se non ha oggetti speciali, mostra un messaggio
-            const noSpecialDiv = document.createElement("div");
-            noSpecialDiv.style.textAlign = "center";
-            noSpecialDiv.style.padding = "15px";
-            noSpecialDiv.style.color = "#a0aec0";
-            noSpecialDiv.style.fontStyle = "italic";
-            noSpecialDiv.textContent = "Nessun oggetto speciale (solo distribuzione base)";
-            participantDiv.appendChild(noSpecialDiv);
-          }
-          
-          // Mostra il totale (incluso esubero e compensazioni)
-          const totalDiv = document.createElement("div");
-          totalDiv.className = "total-cost";
-          const formattedTotal = formatCurrency(participantValues[i]);
-          const totalStars = participantItems[i].reduce((sum, item) => sum + (item.stars * item.qty), 0);
-          totalDiv.innerHTML = `
-            Totale: <span class="${getCurrencyClass(participantValues[i])}">${formattedTotal}</span><br>
-            <small>⭐ ${totalStars} stelline totali</small>
-          `;
-          participantDiv.appendChild(totalDiv);
-          
-          distributionResults.appendChild(participantDiv);
-        }
-       
-               // Non serve più mostrare una sezione esubero separata
-        // Tutti gli oggetti sono stati distribuiti tra i partecipanti
-     }
- 
-         // Funzione per ricaricare i dati manualmente
-    async function reloadData() {
-      const reloadButton = document.getElementById('reload-data');
-      const originalText = reloadButton.innerHTML;
-      
-      // Mostra che sta caricando
-      reloadButton.innerHTML = '⏳ Caricando...';
-      reloadButton.disabled = true;
-      
-      try {
-        await loadProducts();
-        reloadButton.innerHTML = '✅ Ricaricato!';
-        
-        // Torna al testo originale dopo 2 secondi
-        setTimeout(() => {
-          reloadButton.innerHTML = originalText;
-          reloadButton.disabled = false;
-        }, 2000);
-      } catch (error) {
-        reloadButton.innerHTML = '❌ Errore';
-        console.error('Errore nel ricaricamento:', error);
-        
-        // Torna al testo originale dopo 3 secondi
-        setTimeout(() => {
-          reloadButton.innerHTML = originalText;
-          reloadButton.disabled = false;
-        }, 3000);
-      }
-    }
-
-    // Event listeners
-    participantsInput.addEventListener("input", () => {
-      updateParticipantClasses();
-      updateDistribution();
-    });
-
-    // Inizializzazione
-    loadProducts();
-    updateParticipantClasses();
-   </script>
- </body>
+            
+            document.addEventListener('input', (e) => {
+                if (e.target.classList.contains('quantity-input')) {
+                    updateDistribution();
+                }
+            });
+        });
+    </script>
+</body>
 </html>
