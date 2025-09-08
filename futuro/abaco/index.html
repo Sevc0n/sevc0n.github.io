@@ -704,18 +704,18 @@
              <div id="participant-classes"></div>
              
              <div class="priority-info">
-               <h4>Sistema di Priorità per Stelle</h4>
+               <h4>Sistema di Priorità per Riparazione Equipaggiamento</h4>
                <div class="priority-list">
                  <p><strong>Classi disponibili:</strong></p>
                  <ul>
-                   <li><strong>Mago:</strong> Priorità alta su materiali magici</li>
-                   <li><strong>Guerriero:</strong> Priorità alta su armi e armature</li>
-                   <li><strong>Ladro:</strong> Priorità alta su oggetti di precisione</li>
-                   <li><strong>Chierico:</strong> Priorità alta su oggetti sacri</li>
-                   <li><strong>Ranger:</strong> Priorità alta su oggetti naturali</li>
-                   <li><strong>Bardo:</strong> Priorità media su tutti gli oggetti</li>
+                   <li><strong>Guerriero/Ombra:</strong> Bassa priorità (prendono l'equivalente)</li>
+                   <li><strong>Bardo:</strong> Priorità su Stagno</li>
+                   <li><strong>Mago:</strong> Priorità su Brim, Occhio di ragno, Membrana, Prismarine Shard, Lost Soul</li>
+                   <li><strong>Cacciatore:</strong> Priorità su Ametista, Membrana, Prismarine Shard</li>
+                   <li><strong>Raccoglitore:</strong> Priorità su Occhio di ragno, Membrana, Prismarine Shard, Lost Soul</li>
                  </ul>
-                 <p><strong>Sistema Stelle:</strong> Ogni materiale ha un valore in stelle. Se un partecipante riceve materiali di alto valore stellare, gli altri riceveranno l'equivalente in stelle.</p>
+                 <p><strong>Sistema Stelle per Pozioni:</strong> Ogni reagente ha un valore in stelle per le pozioni di cura. Il sistema bilancia le stelle tra tutti i partecipanti.</p>
+                 <p><strong>Stelle:</strong> 1★ (Brim, Carnemarcia, Quarzo, Therium, Occhio) | 2★ (Blaze Powder, Membrana, Slime Ball, Prismarine Shard) | 3★ (Lost Soul, Demon Heart)</p>
                </div>
              </div>
            </div>
@@ -746,62 +746,117 @@
    </div>
  
    <script>
-     // Sistema di priorità e stelle
+     // Sistema di priorità per riparazione equipaggiamento e stelline per pozioni
      const prioritySystem = {
-       'Mago': {
-         'Magico': 3,
-         'Arma': 1,
-         'Armatura': 1,
-         'Oggetto': 2,
-         'Prezioso': 2
-       },
        'Guerriero': {
-         'Magico': 1,
-         'Arma': 3,
-         'Armatura': 3,
-         'Oggetto': 1,
-         'Prezioso': 2
+         'Brim': 1,
+         'Carnemarcia': 1,
+         'Quarzo': 1,
+         'Therium': 1,
+         'Occhio di ragno': 1,
+         'Ametista': 1,
+         'Blaze Powder': 1,
+         'Membrana': 1,
+         'Slime Ball': 1,
+         'Prismarine Shard': 1,
+         'Lost Soul': 1,
+         'Demon Heart': 1,
+         'Stagno': 1
        },
-       'Ladro': {
-         'Magico': 1,
-         'Arma': 2,
-         'Armatura': 1,
-         'Oggetto': 3,
-         'Prezioso': 3
+       'Ombra': {
+         'Brim': 1,
+         'Carnemarcia': 1,
+         'Quarzo': 1,
+         'Therium': 1,
+         'Occhio di ragno': 1,
+         'Ametista': 1,
+         'Blaze Powder': 1,
+         'Membrana': 1,
+         'Slime Ball': 1,
+         'Prismarine Shard': 1,
+         'Lost Soul': 1,
+         'Demon Heart': 1,
+         'Stagno': 1
        },
-       'Chierico': {
-         'Magico': 2,
-         'Arma': 1,
-         'Armatura': 2,
-         'Oggetto': 2,
-         'Prezioso': 3
-       },
-       'Ranger': {
-         'Magico': 1,
-         'Arma': 2,
-         'Armatura': 2,
-         'Oggetto': 2,
-         'Prezioso': 2
+       'Mago': {
+         'Brim': 3, // Novizio
+         'Carnemarcia': 1,
+         'Quarzo': 1,
+         'Therium': 1,
+         'Occhio di ragno': 3, // Avanzato
+         'Ametista': 1,
+         'Blaze Powder': 1,
+         'Membrana': 3, // Esperto
+         'Slime Ball': 1,
+         'Prismarine Shard': 3, // Custode
+         'Lost Soul': 3, // Maestro
+         'Demon Heart': 1,
+         'Stagno': 1
        },
        'Bardo': {
-         'Magico': 2,
-         'Arma': 2,
-         'Armatura': 2,
-         'Oggetto': 2,
-         'Prezioso': 2
+         'Brim': 1,
+         'Carnemarcia': 1,
+         'Quarzo': 1,
+         'Therium': 1,
+         'Occhio di ragno': 1,
+         'Ametista': 1,
+         'Blaze Powder': 1,
+         'Membrana': 1,
+         'Slime Ball': 1,
+         'Prismarine Shard': 1,
+         'Lost Soul': 1,
+         'Demon Heart': 1,
+         'Stagno': 3 // Priorità Stagno
+       },
+       'Cacciatore': {
+         'Brim': 1,
+         'Carnemarcia': 1,
+         'Quarzo': 1,
+         'Therium': 1,
+         'Occhio di ragno': 1,
+         'Ametista': 3, // Avanzato
+         'Blaze Powder': 1,
+         'Membrana': 3, // Esperto
+         'Slime Ball': 1,
+         'Prismarine Shard': 3, // Custode
+         'Lost Soul': 1,
+         'Demon Heart': 1,
+         'Stagno': 1
+       },
+       'Raccoglitore': {
+         'Brim': 1,
+         'Carnemarcia': 1,
+         'Quarzo': 1,
+         'Therium': 1,
+         'Occhio di ragno': 3, // Avanzato
+         'Ametista': 1,
+         'Blaze Powder': 1,
+         'Membrana': 3, // Esperto
+         'Slime Ball': 1,
+         'Prismarine Shard': 3, // Custode
+         'Lost Soul': 3, // Maestro
+         'Demon Heart': 1,
+         'Stagno': 1
        }
      };
 
+     // Sistema stelline per pozioni di cura
      const starSystem = {
-       'Novizio': 1,
-       'Avanzato': 2,
-       'Esperto': 2,
-       'Custode': 3,
-       'Maestro': 3,
-       'Tutti': 3
+       'Brim': 1,
+       'Carnemarcia': 1,
+       'Quarzo': 1,
+       'Therium': 1,
+       'Occhio di ragno': 1,
+       'Ametista': 1,
+       'Blaze Powder': 2,
+       'Membrana': 2,
+       'Slime Ball': 2,
+       'Prismarine Shard': 2,
+       'Lost Soul': 3,
+       'Demon Heart': 3
      };
 
-     const availableClasses = ['Mago', 'Guerriero', 'Ladro', 'Chierico', 'Ranger', 'Bardo'];
+     const availableClasses = ['Guerriero', 'Ombra', 'Mago', 'Bardo', 'Cacciatore', 'Raccoglitore'];
      let participantClasses = [];
      let defaultProducts = [];
      let products = [];
@@ -886,17 +941,22 @@
        console.log('Caricamento dati di fallback...');
        const productList = document.getElementById("product-list");
        
-       // Dati di fallback
-          defaultProducts = [
-            { name: "Stagno grezzo", price: 12, category: "Cristalli", subcategory: "Metalli", tier: "Novizio" },
-            { name: "Rame grezzo", price: 20, category: "Cristalli", subcategory: "Metalli", tier: "Avanzato" },
-            { name: "Ferro grezzo", price: 27, category: "Cristalli", subcategory: "Metalli", tier: "Esperto" },
-            { name: "Oro grezzo", price: 50, category: "Cristalli", subcategory: "Metalli", tier: "Custode" },
-         { name: "Diamante grezzo", price: 500, category: "Cristalli", subcategory: "Metalli", tier: "Maestro" },
-         { name: "Membrana di Drago", price: 5000, category: "Magico", subcategory: "Componenti", tier: "Tutti" },
-         { name: "Spada del Drago", price: 3000, category: "Arma", subcategory: "Spade", tier: "Tutti" },
-         { name: "Armatura di Drago", price: 4000, category: "Armatura", subcategory: "Armature", tier: "Tutti" }
-          ];
+       // Dati di fallback con materiali per pozioni
+       defaultProducts = [
+         { name: "Brim", price: 50, category: "Reagenti", subcategory: "Novizio", tier: "Novizio" },
+         { name: "Carnemarcia", price: 75, category: "Reagenti", subcategory: "Novizio", tier: "Novizio" },
+         { name: "Quarzo", price: 100, category: "Reagenti", subcategory: "Novizio", tier: "Novizio" },
+         { name: "Therium", price: 125, category: "Reagenti", subcategory: "Novizio", tier: "Novizio" },
+         { name: "Occhio di ragno", price: 200, category: "Reagenti", subcategory: "Avanzato", tier: "Avanzato" },
+         { name: "Ametista", price: 250, category: "Reagenti", subcategory: "Avanzato", tier: "Avanzato" },
+         { name: "Blaze Powder", price: 300, category: "Reagenti", subcategory: "Esperto", tier: "Esperto" },
+         { name: "Membrana", price: 400, category: "Reagenti", subcategory: "Esperto", tier: "Esperto" },
+         { name: "Slime Ball", price: 500, category: "Reagenti", subcategory: "Esperto", tier: "Esperto" },
+         { name: "Prismarine Shard", price: 600, category: "Reagenti", subcategory: "Custode", tier: "Custode" },
+         { name: "Lost Soul", price: 800, category: "Reagenti", subcategory: "Maestro", tier: "Maestro" },
+         { name: "Demon Heart", price: 1000, category: "Reagenti", subcategory: "Maestro", tier: "Maestro" },
+         { name: "Stagno", price: 30, category: "Metalli", subcategory: "Base", tier: "Base" }
+       ];
           
           products = [...defaultProducts.map(p => ({ ...p, qty: 0 }))];
           renderMain();
@@ -926,7 +986,7 @@
        
        // Inizializza array se necessario
        if (participantClasses.length !== numParticipants) {
-         participantClasses = new Array(numParticipants).fill('Mago');
+         participantClasses = new Array(numParticipants).fill('Guerriero');
        }
        
        let html = '';
@@ -956,13 +1016,13 @@
      }
 
      function calculatePriority(item, participantClass) {
-       const basePriority = prioritySystem[participantClass]?.[item.category] || 1;
-       const tierMultiplier = starSystem[item.tier] || 1;
-       return basePriority * tierMultiplier;
+       // Usa il nome dell'oggetto per trovare la priorità
+       return prioritySystem[participantClass]?.[item.name] || 1;
      }
 
      function getItemStars(item) {
-       return starSystem[item.tier] || 1;
+       // Usa il nome dell'oggetto per trovare le stelle per pozioni
+       return starSystem[item.name] || 1;
      }
 
      function findEquivalentItems(targetStars, availableItems) {
@@ -1178,7 +1238,7 @@
        for (let i = 0; i < numParticipants; i++) {
          participants.push({
            index: i,
-           class: participantClasses[i] || 'Mago',
+           class: participantClasses[i] || 'Guerriero',
            items: [],
            totalValue: 0,
            starValue: 0
