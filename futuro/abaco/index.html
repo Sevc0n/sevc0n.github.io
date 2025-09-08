@@ -1436,50 +1436,48 @@
        console.log('renderDistribution called with:', participants);
        const container = document.getElementById('distribution-results');
        
+       // Raggruppa per classe
+       const classGroups = {};
+       participants.forEach(participant => {
+         if (!classGroups[participant.class]) {
+           classGroups[participant.class] = [];
+         }
+         classGroups[participant.class].push(participant);
+       });
+       
        let html = '';
-       for (const participant of participants) {
+       for (const [className, classParticipants] of Object.entries(classGroups)) {
+         // Conta gli oggetti per tipo per questa classe
+         const itemCounts = {};
+         let totalValue = 0;
+         let totalStars = 0;
+         
+         classParticipants.forEach(participant => {
+           participant.items.forEach(item => {
+             if (!itemCounts[item.name]) {
+               itemCounts[item.name] = 0;
+             }
+             itemCounts[item.name]++;
+           });
+           totalValue += participant.totalValue;
+           totalStars += participant.starValue;
+         });
+         
          html += `
            <div class="participant-result">
              <div class="participant-title">
-               Partecipante ${participant.index + 1} (${participant.class} - ${participant.tier})
-               <span style="float: right; font-size: 0.9rem; color: #a0aec0;">
-                 Stelle: ${participant.starValue}
-               </span>
+               ${className}${classParticipants.length > 1 ? ` (${classParticipants.length} partecipanti)` : ''}
+               ${totalStars > 0 ? `<span style="float: right; font-size: 0.9rem; color: #a0aec0;">⭐ ${totalStars}</span>` : ''}
              </div>
-         `;
-         
-         if (participant.items.length === 0) {
-           html += '<div class="empty-state">Nessun oggetto assegnato</div>';
-         } else {
-           // Raggruppa gli oggetti per nome
-           const groupedItems = {};
-           participant.items.forEach(item => {
-             if (!groupedItems[item.name]) {
-               groupedItems[item.name] = {
-                  name: item.name,
-                  qty: 0,
-                 price: item.price,
-                 tier: item.tier
-               };
-             }
-             groupedItems[item.name].qty++;
-           });
-           
-           Object.values(groupedItems).forEach(item => {
-             html += `
-               <div class="item-distribution">
-                 <div class="item-name">${item.name} x${item.qty}</div>
-                 <div class="item-details">
-                   ${formatCurrency(item.price * item.qty)} • ${item.tier}
+             <div class="item-distribution">
+               ${Object.entries(itemCounts).map(([itemName, count]) => `
+                 <div class="item-row">
+                   <span class="item-name">${itemName} x${count}</span>
                  </div>
-               </div>
-             `;
-           });
-         }
-         
-         html += `
+               `).join('')}
+             </div>
              <div class="total-cost">
-               Totale: ${formatCurrency(participant.totalValue)}
+               Totale: ${formatCurrency(totalValue)}
              </div>
            </div>
          `;
