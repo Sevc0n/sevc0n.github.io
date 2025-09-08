@@ -1,1170 +1,1073 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Abaco - Calcolatore Materiali</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        html, body {
-            overflow-x: hidden;
-            max-width: 100vw;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-
-        .header {
-            text-align: center;
-            margin-bottom: 30px;
-            color: white;
-        }
-
-        .logo {
-            max-width: 200px;
-            height: auto;
-            margin-bottom: 20px;
-        }
-
-        .title {
-            font-size: 2.5rem;
-            margin-bottom: 10px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-        }
-
-        .subtitle {
-            font-size: 1.2rem;
-            opacity: 0.9;
-        }
-
-        .main-content {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 30px;
-            margin-bottom: 30px;
-        }
-
-        .section {
-            background: white;
-            border-radius: 15px;
-            padding: 25px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-        }
-
-        .section-title {
-            font-size: 1.5rem;
-            margin-bottom: 20px;
-            color: #333;
-            border-bottom: 3px solid #667eea;
-            padding-bottom: 10px;
-        }
-
-        .participants-section {
-            margin-bottom: 20px;
-        }
-
-        .participant-controls {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            margin-bottom: 15px;
-            flex-wrap: wrap;
-        }
-
-        .participant-label {
-            font-weight: bold;
-            color: #333;
-            min-width: 100px;
-        }
-
-        .class-select {
-            padding: 8px 12px;
-            border: 2px solid #ddd;
-            border-radius: 8px;
-            font-size: 14px;
-            background: white;
-            min-width: 120px;
-        }
-
-        .class-select:focus {
-            outline: none;
-            border-color: #667eea;
-        }
-
-        .priority-info {
-            background: #f8f9fa;
-            border: 1px solid #e9ecef;
-            border-radius: 8px;
-            padding: 15px;
-            margin-top: 15px;
-        }
-
-        .priority-info h4 {
-            color: #495057;
-            margin-bottom: 10px;
-        }
-
-        .priority-list {
-            font-size: 0.9rem;
-            color: #6c757d;
-        }
-
-        .priority-list ul {
-            margin-left: 20px;
-        }
-
-        .priority-list li {
-            margin-bottom: 5px;
-        }
-
-        .input-group {
-            margin-bottom: 15px;
-        }
-
-        .input-group label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-            color: #333;
-        }
-
-        .input-group input {
-            width: 100%;
-            padding: 10px;
-            border: 2px solid #ddd;
-            border-radius: 8px;
-            font-size: 16px;
-        }
-
-        .input-group input:focus {
-            outline: none;
-            border-color: #667eea;
-        }
-
-        .category-section {
-            margin-bottom: 30px;
-            overflow: hidden;
-        }
-
-        .category-title {
-            font-size: 1.3rem;
-            margin-bottom: 15px;
-            color: #333;
-            background: linear-gradient(90deg, #667eea, #764ba2);
-            color: white;
-            padding: 10px 15px;
-            border-radius: 8px;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-
-        .subcategoryDiv {
-            margin-bottom: 20px;
-            overflow: hidden;
-        }
-
-        .subcategoryTitle {
-            font-size: 1.1rem;
-            margin-bottom: 10px;
-            color: #555;
-            font-weight: bold;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-
-        .product {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 12px;
-            margin-bottom: 8px;
-            background: #f8f9fa;
-            border-radius: 8px;
-            border: 1px solid #e9ecef;
-            overflow: hidden;
-        }
-
-        .product-info {
-            flex: 1;
-            min-width: 0;
-            overflow: hidden;
-        }
-
-        .product-name {
-            font-weight: bold;
-            color: #333;
-            margin-bottom: 4px;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-
-        .product-price {
-            color: #666;
-            font-size: 0.9rem;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-
-        .tier-badge {
-            display: inline-block;
-            padding: 2px 6px;
-            border-radius: 4px;
-            font-size: 0.7rem;
-            font-weight: bold;
-            margin-left: 5px;
-        }
-
-        .tier-1 { background: #d4edda; color: #155724; }
-        .tier-2 { background: #fff3cd; color: #856404; }
-        .tier-3 { background: #f8d7da; color: #721c24; }
-
-        .quantity-container {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            flex-shrink: 0;
-        }
-
-        .quantity-btn {
-            width: 30px;
-            height: 30px;
-            border: 2px solid #667eea;
-            background: white;
-            color: #667eea;
-            border-radius: 50%;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            font-size: 16px;
-            transition: all 0.2s ease;
-        }
-
-        .quantity-btn:hover {
-            background: #667eea;
-            color: white;
-        }
-
-        .quantity-btn:active {
-            transform: scale(0.95);
-        }
-
-        .quantity-input {
-            width: 60px;
-            padding: 5px;
-            text-align: center;
-            border: 2px solid #ddd;
-            border-radius: 6px;
-            font-size: 14px;
-            -moz-appearance: textfield;
-        }
-
-        .quantity-input::-webkit-outer-spin-button,
-        .quantity-input::-webkit-inner-spin-button {
-            -webkit-appearance: none;
-            margin: 0;
-        }
-
-        .quantity-input:focus {
-            outline: none;
-            border-color: #667eea;
-        }
-
-        .results-section {
-            background: white;
-            border-radius: 15px;
-            padding: 25px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-        }
-
-        .participant-result {
-            margin-bottom: 20px;
-            padding: 15px;
-            background: #f8f9fa;
-            border-radius: 10px;
-            border-left: 4px solid #667eea;
-            overflow: hidden;
-        }
-
-        .participant-title {
-            font-size: 1.2rem;
-            font-weight: bold;
-            color: #333;
-            margin-bottom: 10px;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-
-        .item-distribution {
-            margin-bottom: 8px;
-            padding: 8px;
-            background: white;
-            border-radius: 6px;
-            border: 1px solid #e9ecef;
-            overflow: hidden;
-        }
-
-        .item-name {
-            font-weight: bold;
-            color: #333;
-            margin-bottom: 4px;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-
-        .item-details {
-            font-size: 0.9rem;
-            color: #666;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-
-        .total-cost {
-            font-size: 1.3rem;
-            font-weight: bold;
-            color: #667eea;
-            text-align: center;
-            margin-top: 20px;
-            padding: 15px;
-            background: linear-gradient(90deg, #667eea, #764ba2);
-            color: white;
-            border-radius: 10px;
-            overflow: hidden;
-        }
-
-        .empty-state {
-            text-align: center;
-            color: #666;
-            font-style: italic;
-            padding: 40px 20px;
-            overflow: hidden;
-        }
-
-        .loading {
-            text-align: center;
-            color: #667eea;
-            font-size: 1.1rem;
-            padding: 40px 20px;
-            overflow: hidden;
-        }
-
-        .error {
-            text-align: center;
-            color: #dc3545;
-            background: #f8d7da;
-            border: 1px solid #f5c6cb;
-            border-radius: 8px;
-            padding: 20px;
-            margin: 20px 0;
-            overflow: hidden;
-        }
-
-        .warning {
-            text-align: center;
-            color: #856404;
-            background: #fff3cd;
-            border: 1px solid #ffeaa7;
-            border-radius: 8px;
-            padding: 20px;
-            margin: 20px 0;
-            overflow: hidden;
-        }
-
-        .server-button {
-            background: #28a745;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 14px;
-            margin-top: 10px;
-            transition: background 0.2s ease;
-        }
-
-        .server-button:hover {
-            background: #218838;
-        }
-
-        .contacts-section {
-            background: white;
-            border-radius: 15px;
-            padding: 25px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-            margin-top: 30px;
-            overflow: hidden;
-        }
-
-        .contacts-title {
-            font-size: 1.5rem;
-            margin-bottom: 20px;
-            color: #333;
-            border-bottom: 3px solid #667eea;
-            padding-bottom: 10px;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-
-        .contact-item {
-            margin-bottom: 15px;
-            padding: 15px;
-            background: #f8f9fa;
-            border-radius: 8px;
-            overflow: hidden;
-        }
-
-        .contact-item h4 {
-            color: #333;
-            margin-bottom: 8px;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-
-        .contact-item p {
-            color: #666;
-            margin-bottom: 5px;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-
-        .homepage-link {
-            display: inline-block;
-            margin-top: 20px;
-            padding: 12px 24px;
-            background: linear-gradient(90deg, #667eea, #764ba2);
-            color: white;
-            text-decoration: none;
-            border-radius: 25px;
-            font-weight: bold;
-            transition: transform 0.2s ease;
-            overflow: hidden;
-        }
-
-        .homepage-link:hover {
-            transform: translateY(-2px);
-        }
-
-        .fractional-display {
-            font-size: 0.8rem;
-            color: #666;
-            margin-top: 5px;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-
-        /* Responsive Design */
-        @media (max-width: 1024px) {
-            .main-content {
-                grid-template-columns: 1fr;
-                gap: 20px;
-            }
-            
-            .container {
-                padding: 15px;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .title {
-                font-size: 2rem;
-            }
-            
-            .section {
-                padding: 20px;
-            }
-            
-            .participant-controls {
-                flex-direction: column;
-                align-items: stretch;
-            }
-            
-            .participant-label {
-                min-width: auto;
-            }
-            
-            .class-select {
-                min-width: auto;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .title {
-                font-size: 1.8rem;
-            }
-            
-            .section {
-                padding: 15px;
-            }
-            
-            .product {
-                flex-direction: column;
-                align-items: stretch;
-                gap: 10px;
-            }
-            
-            .product-info {
-                text-align: center;
-            }
-            
-            .quantity-container {
-                justify-content: center;
-            }
-        }
-
-        @media (max-width: 360px) {
-            .container {
-                padding: 10px;
-            }
-            
-            .section {
-                padding: 12px;
-            }
-            
-            .quantity-btn {
-                width: 25px;
-                height: 25px;
-                font-size: 14px;
-            }
-            
-            .quantity-input {
-                width: 50px;
-                font-size: 12px;
-            }
-        }
-
-        /* Touch device optimizations */
-        @media (hover: none) and (pointer: coarse) {
-            .quantity-btn {
-                width: 35px;
-                height: 35px;
-                font-size: 18px;
-            }
-            
-            .quantity-input {
-                width: 70px;
-                font-size: 16px;
-                padding: 8px;
-            }
-            
-            .class-select {
-                padding: 12px;
-                font-size: 16px;
-            }
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <div class="header">
-            <img src="../logo.png" alt="Logo" class="logo">
-            <h1 class="title">Abaco</h1>
-            <p class="subtitle">Calcolatore Materiali per Divisione Equa</p>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Abaco Divisore - By piccionenberg</title>
+  <link rel="icon" type="image/png" href="../logo.png">
+  <link rel="shortcut icon" type="image/png" href="../logo.png">
+  <link rel="apple-touch-icon" href="../logo.png">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      overflow-x: hidden;
+      max-width: 100vw;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+      min-height: 100vh;
+      padding: 20px;
+      color: #ffffff;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      background: rgba(20, 25, 45, 0.95);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+      overflow: hidden;
+      animation: slideIn 0.6s ease-out;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    header {
+      background: linear-gradient(135deg, #2d3748, #4a5568);
+      color: white;
+      padding: 30px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    header::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, rgba(255, 255, 255, 0.05) 0%, transparent 70%);
+      animation: pulse 4s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 0.3; }
+      50% { transform: scale(1.1); opacity: 0.6; }
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin-bottom: 10px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .subtitle {
+      font-size: 1.1rem;
+      opacity: 0.8;
+      position: relative;
+      z-index: 1;
+    }
+
+    main {
+      padding: 40px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 30px;
+      margin-bottom: 30px;
+    }
+
+    @media (max-width: 1024px) {
+      .grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+      }
+    }
+
+    .card {
+      background: rgba(45, 55, 72, 0.6);
+      border-radius: 15px;
+      padding: 30px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      transition: all 0.3s ease;
+      overflow: hidden;
+    }
+
+    .card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
+      border-color: rgba(99, 179, 237, 0.3);
+    }
+
+    .card h2 {
+      color: #ffffff;
+      font-size: 1.5rem;
+      margin-bottom: 25px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .card h2::before {
+      content: '';
+      width: 4px;
+      height: 25px;
+      background: linear-gradient(135deg, #63b3ed, #4299e1);
+      border-radius: 2px;
+    }
+
+    .category-section {
+      margin-bottom: 30px;
+      overflow: hidden;
+    }
+
+    .category-title {
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: #63b3ed;
+      margin-bottom: 15px;
+      padding: 10px 0;
+      border-bottom: 1px solid rgba(99, 179, 237, 0.3);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .subcategoryDiv {
+      margin-bottom: 20px;
+      overflow: hidden;
+    }
+
+    .subcategoryTitle {
+      font-size: 1rem;
+      color: #a0aec0;
+      margin-bottom: 10px;
+      font-weight: 500;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .product {
+      display: grid;
+      grid-template-columns: 2fr 120px 80px;
+      gap: 15px;
+      align-items: center;
+      margin: 12px 0;
+      padding: 15px;
+      background: rgba(99, 179, 237, 0.05);
+      border-radius: 10px;
+      transition: all 0.3s ease;
+      border: 1px solid rgba(99, 179, 237, 0.1);
+      overflow: hidden;
+    }
+
+    .product:hover {
+      background: rgba(99, 179, 237, 0.1);
+      transform: translateX(5px);
+      border-color: rgba(99, 179, 237, 0.3);
+    }
+
+    .product-name {
+      font-weight: 500;
+      color: #ffffff;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .product-price {
+      font-weight: 600;
+      color: #68d391;
+      text-align: right;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .tier-badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      margin-left: 8px;
+    }
+
+    .tier-novizio { background: #a0aec0; color: #2d3748; }
+    .tier-avanzato { background: #ed8936; color: white; }
+    .tier-esperto { background: #718096; color: white; }
+    .tier-custode { background: #d69e2e; color: white; }
+    .tier-maestro { background: #4299e1; color: white; }
+    .tier-tutti { background: linear-gradient(135deg, #667eea, #764ba2); color: white; }
+
+    .product input, #participants {
+      padding: 12px;
+      border: 2px solid rgba(99, 179, 237, 0.3);
+      border-radius: 8px;
+      font-size: 1rem;
+      text-align: center;
+      transition: all 0.3s ease;
+      background: rgba(45, 55, 72, 0.8);
+      color: #ffffff;
+      -moz-appearance: textfield;
+      overflow: hidden;
+    }
+
+    .product input::-webkit-outer-spin-button,
+    .product input::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+
+    .product input:focus, #participants:focus {
+      outline: none;
+      border-color: #63b3ed;
+      box-shadow: 0 0 0 3px rgba(99, 179, 237, 0.2);
+      transform: scale(1.02);
+    }
+
+    .participants-section {
+      text-align: center;
+    }
+
+    .participants-label {
+      display: block;
+      font-weight: 600;
+      color: #ffffff;
+      margin-bottom: 15px;
+      font-size: 1.1rem;
+    }
+
+    #participants {
+      width: 120px;
+      font-size: 1.2rem;
+      font-weight: 600;
+    }
+
+    .results-card {
+      background: linear-gradient(135deg, rgba(72, 187, 120, 0.2), rgba(56, 178, 172, 0.2));
+      color: white;
+      border: 1px solid rgba(72, 187, 120, 0.3);
+      max-height: none;
+      overflow: visible;
+    }
+
+    .results-card h2 {
+      color: white;
+      margin-bottom: 20px;
+    }
+
+    .results-card h2::before {
+      background: rgba(72, 187, 120, 0.6);
+    }
+
+    .participant-result {
+      margin: 20px 0;
+      padding: 20px;
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      overflow: hidden;
+    }
+
+    .participant-title {
+      font-size: 1.2rem;
+      font-weight: 600;
+      margin-bottom: 15px;
+      color: #63b3ed;
+      text-align: center;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .item-distribution {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 10px;
+      margin: 8px 0;
+      padding: 8px 12px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 6px;
+      overflow: hidden;
+    }
+
+    .total-cost {
+      text-align: center;
+      margin-top: 15px;
+      padding: 12px;
+      background: rgba(72, 187, 120, 0.2);
+      border-radius: 8px;
+      font-weight: 600;
+      border: 1px solid rgba(72, 187, 120, 0.3);
+      overflow: hidden;
+    }
+
+    .empty-state {
+      text-align: center;
+      color: #a0aec0;
+      font-style: italic;
+      padding: 40px;
+      overflow: hidden;
+    }
+
+    .currency-br {
+      color: #68d391;
+      font-weight: 600;
+    }
+    
+    .currency-a {
+      color: #c0c0c0;
+      font-weight: 600;
+    }
+    
+    .currency-mixed {
+      color: #68d391;
+      font-weight: 600;
+    }
+
+    .logo {
+      width: 40px;
+      height: 40px;
+      margin-right: 15px;
+      vertical-align: middle;
+    }
+
+    .loading {
+      text-align: center;
+      color: #a0aec0;
+      padding: 40px;
+      font-style: italic;
+      overflow: hidden;
+    }
+
+    .error {
+      text-align: center;
+      color: #f56565;
+      padding: 20px;
+      background: rgba(245, 101, 101, 0.1);
+      border-radius: 8px;
+      border: 1px solid rgba(245, 101, 101, 0.3);
+      overflow: hidden;
+    }
+
+    .warning {
+      text-align: center;
+      color: #ed8936;
+      padding: 20px;
+      background: rgba(237, 137, 54, 0.1);
+      border-radius: 8px;
+      border: 1px solid rgba(237, 137, 54, 0.3);
+      overflow: hidden;
+    }
+
+    .contacts-section {
+      background: rgba(30, 35, 55, 0.8);
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 20px 40px;
+      text-align: center;
+      margin-top: 30px;
+      overflow: hidden;
+    }
+ 
+     .contacts-title {
+       color: #63b3ed;
+       font-size: 1.1rem;
+       margin-bottom: 15px;
+       font-weight: 600;
+     }
+ 
+     .contact-item {
+       display: inline-block;
+       margin: 0 15px 8px 0;
+       padding: 8px 16px;
+       background: rgba(99, 179, 237, 0.1);
+       border: 1px solid rgba(99, 179, 237, 0.3);
+       border-radius: 20px;
+       color: #ffffff;
+       text-decoration: none;
+       transition: all 0.3s ease;
+       font-weight: 500;
+       font-size: 0.9rem;
+       overflow: hidden;
+     }
+ 
+     .contact-item:hover {
+       background: rgba(99, 179, 237, 0.2);
+       border-color: rgba(99, 179, 237, 0.5);
+       transform: translateY(-2px);
+     }
+ 
+     .contact-item strong {
+       color: #63b3ed;
+     }
+
+    .fractional-display {
+      color: #fbb6ce;
+      font-size: 0.9em;
+      font-style: italic;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      .product {
+        grid-template-columns: 1fr;
+        gap: 10px;
+        text-align: center;
+      }
+      
+      .product input {
+        width: 100%;
+        max-width: 80px;
+        margin: 0 auto;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .container {
+        margin: 10px;
+        border-radius: 15px;
+      }
+      
+      header {
+        padding: 20px;
+      }
+      
+      h1 {
+        font-size: 2rem;
+      }
+      
+      main {
+        padding: 20px;
+      }
+      
+      .card {
+        padding: 20px;
+      }
+    }
+
+    @media (max-width: 360px) {
+      body {
+        padding: 10px;
+      }
+      
+      .container {
+        margin: 0;
+        border-radius: 10px;
+      }
+      
+      header {
+        padding: 15px;
+      }
+      
+      h1 {
+        font-size: 1.8rem;
+      }
+      
+      main {
+        padding: 15px;
+      }
+      
+      .card {
+        padding: 15px;
+      }
+    }
+
+   </style>
+ </head>
+ <body>
+   <div class="container">
+           <header>
+                 <h1><img src="../logo.png" alt="Abaco Logo" class="logo" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline';">⚒️ Abaco per Divisione Abisso</h1>
+        <p class="subtitle">Divisore intelligente per bottini di abisso</p>
+                 <a href="../" style="position: absolute; top: 20px; right: 20px; color: #63b3ed; text-decoration: none; font-size: 0.9rem; padding: 8px 12px; border: 1px solid rgba(99, 179, 237, 0.3); border-radius: 8px; transition: all 0.3s ease; cursor: pointer; display: block; width: auto; height: auto; z-index: 10;" onmouseover="this.style.background='rgba(99, 179, 237, 0.1)'" onmouseout="this.style.background='transparent'">🏠 Homepage</a>
+      </header>
+ 
+     <main>
+       <div class="grid">
+                   <div class="card">
+            <h2>Lista Materiali
+              <button id="reload-data" style="float: right; background: rgba(99, 179, 237, 0.2); border: 1px solid rgba(99, 179, 237, 0.5); color: #63b3ed; padding: 5px 10px; border-radius: 5px; cursor: pointer; font-size: 0.8rem;" onclick="reloadData()">🔄 Ricarica Dati</button>
+            </h2>
+            <div id="product-list">
+              <div class="loading">Caricamento materiali in corso...</div>
+            </div>
+          </div>
+ 
+         <div>
+           <div class="card participants-section">
+             <h2>Partecipanti</h2>
+             <label class="participants-label">Numero di partecipanti:</label>
+             <input type="number" id="participants" min="1" value="1">
+           </div>
+ 
+           <div class="card results-card">
+             <h2>Distribuzione</h2>
+             <div id="distribution-results"></div>
+           </div>
+         </div>
+       </div>
+     </main>
+ 
+           <div class="contacts-section">
+        <div class="contacts-title">📞 Contatti</div>
+        <div>
+          <span class="contact-item">
+            🎮 Discord: <strong>picciobeffa</strong>
+          </span>
+          <span class="contact-item">
+            📱 Telegram: <strong>@piccionenberg</strong>
+          </span>
         </div>
-
-        <div class="main-content">
-            <div class="section">
-                <h2 class="section-title">Configurazione</h2>
-                
-                <div class="participants-section">
-                    <div class="input-group">
-                        <label for="participants">Numero di Partecipanti:</label>
-                        <input type="number" id="participants" min="1" max="10" value="4">
-                    </div>
-                    
-                    <div id="participant-classes"></div>
-                    
-                    <div class="priority-info">
-                        <h4>Sistema di Priorità per Stelle</h4>
-                        <div class="priority-list">
-                            <p><strong>Classi disponibili:</strong></p>
-                            <ul>
-                                <li><strong>Mago:</strong> Priorità alta su materiali magici</li>
-                                <li><strong>Guerriero:</strong> Priorità alta su armi e armature</li>
-                                <li><strong>Ladro:</strong> Priorità alta su oggetti di precisione</li>
-                                <li><strong>Chierico:</strong> Priorità alta su oggetti sacri</li>
-                                <li><strong>Ranger:</strong> Priorità alta su oggetti naturali</li>
-                                <li><strong>Bardo:</strong> Priorità media su tutti gli oggetti</li>
-                            </ul>
-                            <p><strong>Sistema Stelle:</strong> Ogni materiale ha un valore in stelle. Se un partecipante riceve materiali di alto valore stellare, gli altri riceveranno l'equivalente in stelle.</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="section">
-                <h2 class="section-title">Materiali</h2>
-                <div id="products-container">
-                    <div class="loading">Caricamento materiali...</div>
-                </div>
-            </div>
+        <div style="margin-top: 20px; padding-top: 15px; border-top: 1px solid rgba(255, 255, 255, 0.1); display: flex; align-items: center; justify-content: center; gap: 10px; font-size: 0.9rem; color: #a0aec0;">
+                     <img src="../logo.png" alt="Sevcon Logo" style="width: 16px; height: 16px; border-radius: 3px;" onerror="this.style.display='none';">
+          © 2024 Sevcon by piccionenberg - Creato con ❤️ per la community gaming
         </div>
+      </div>
+   </div>
+ 
+   <script>
+     let defaultProducts = [];
+     let products = [];
+     const distributionResults = document.getElementById("distribution-results");
+     const participantsInput = document.getElementById("participants");
 
-        <div class="results-section">
-            <h2 class="section-title">Risultati Divisione</h2>
-            <div id="results-container">
-                <div class="empty-state">Inserisci le quantità dei materiali per vedere la divisione</div>
-            </div>
-        </div>
+     // Carica i prodotti dal file JSON
+     async function loadProducts() {
+       const productList = document.getElementById("product-list");
+       let jsonLoaded = false;
+       
+       // Mostra sempre il messaggio di caricamento iniziale
+       productList.innerHTML = `
+         <div class="loading">
+           ⏳ Caricamento dati in corso...<br>
+           <small>Connessione al database materiali</small>
+         </div>
+       `;
+       
+       try {
+         console.log('=== DEBUG CARICAMENTO JSON ===');
+         console.log('Tentativo di caricamento JSON da:', window.location.href);
+         
+         // Controlla se è un problema CORS
+         if (window.location.protocol === 'file:') {
+           console.log('Rilevato protocollo file:// - problema CORS');
+           throw new Error('CORS_BLOCKED');
+         }
+         
+         // Prova a caricare il JSON
+         const response = await fetch('./oggetti_abaco.json');
+         
+         if (!response.ok) {
+           throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+         }
+         
+         const data = await response.json();
+         console.log('JSON caricato con successo:', data);
+         
+         defaultProducts = data;
+         products = [...defaultProducts.map(p => ({ ...p, qty: 0 }))];
+         renderMain();
+         jsonLoaded = true;
+         
+       } catch (error) {
+         console.error('Errore nel caricamento JSON:', error);
+         
+         if (error.message === 'CORS_BLOCKED') {
+           // Mostra messaggio CORS con soluzioni
+           productList.innerHTML = `
+             <div class="warning">
+               <h3>⚠️ Problema di Caricamento</h3>
+               <p>Il file JSON non può essere caricato direttamente dal browser per motivi di sicurezza.</p>
+               <p><strong>Soluzioni:</strong></p>
+               <ul style="text-align: left; margin: 10px 0;">
+                 <li>Usa un server locale (es. Live Server in VS Code)</li>
+                 <li>Carica il file su un server web</li>
+                 <li>Oppure clicca il pulsante qui sotto per usare i dati di test</li>
+               </ul>
+               <button onclick="loadProductsFromFallback()" style="background: #28a745; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-size: 14px; margin-top: 10px;">
+                 Usa Dati di Test
+               </button>
+             </div>
+           `;
+         } else {
+           // Mostra errore generico
+           productList.innerHTML = `
+             <div class="error">
+               <h3>❌ Errore di Caricamento</h3>
+               <p>Impossibile caricare i dati dei materiali: ${error.message}</p>
+               <button onclick="loadProductsFromFallback()" style="background: #28a745; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-size: 14px; margin-top: 10px;">
+                 Usa Dati di Test
+               </button>
+             </div>
+           `;
+         }
+       }
+     }
 
-        <div class="contacts-section">
-            <h2 class="contacts-title">Contatti</h2>
-            <div class="contact-item">
-                <h4>Discord</h4>
-                <p>sevc0n#1234</p>
-            </div>
-            <div class="contact-item">
-                <h4>Email</h4>
-                <p>sevc0n@example.com</p>
-            </div>
-            <a href="../index.html" class="homepage-link">← Torna alla Homepage</a>
-        </div>
-    </div>
+     function loadProductsFromFallback() {
+       console.log('Caricamento dati di fallback...');
+       const productList = document.getElementById("product-list");
+       
+       // Dati di fallback
+       defaultProducts = [
+         { name: "Stagno grezzo", price: 12, category: "Cristalli", subcategory: "Metalli", tier: "Novizio" },
+         { name: "Rame grezzo", price: 20, category: "Cristalli", subcategory: "Metalli", tier: "Avanzato" },
+         { name: "Ferro grezzo", price: 27, category: "Cristalli", subcategory: "Metalli", tier: "Esperto" },
+         { name: "Oro grezzo", price: 50, category: "Cristalli", subcategory: "Metalli", tier: "Custode" },
+         { name: "Diamante grezzo", price: 500, category: "Cristalli", subcategory: "Metalli", tier: "Maestro" },
+         { name: "Membrana di Drago", price: 5000, category: "Magico", subcategory: "Componenti", tier: "Tutti" },
+         { name: "Spada del Drago", price: 3000, category: "Arma", subcategory: "Spade", tier: "Tutti" },
+         { name: "Armatura di Drago", price: 4000, category: "Armatura", subcategory: "Armature", tier: "Tutti" }
+       ];
+       
+       products = [...defaultProducts.map(p => ({ ...p, qty: 0 }))];
+       renderMain();
+       
+       // Mostra messaggio di successo
+       setTimeout(() => {
+         productList.innerHTML = `
+           <div class="loading">
+             ✅ Dati di test caricati con successo!<br>
+             <small>Ricarica la pagina per provare il caricamento JSON</small>
+           </div>
+         `;
+         setTimeout(() => {
+           renderMain();
+         }, 2000);
+       }, 1000);
+     }
 
-    <script>
-        // Sistema di priorità e stelle
-        const prioritySystem = {
-            'Mago': {
-                'Magico': 3,
-                'Arma': 1,
-                'Armatura': 1,
-                'Oggetto': 2,
-                'Prezioso': 2
-            },
-            'Guerriero': {
-                'Magico': 1,
-                'Arma': 3,
-                'Armatura': 3,
-                'Oggetto': 1,
-                'Prezioso': 2
-            },
-            'Ladro': {
-                'Magico': 1,
-                'Arma': 2,
-                'Armatura': 1,
-                'Oggetto': 3,
-                'Prezioso': 3
-            },
-            'Chierico': {
-                'Magico': 2,
-                'Arma': 1,
-                'Armatura': 2,
-                'Oggetto': 2,
-                'Prezioso': 3
-            },
-            'Ranger': {
-                'Magico': 1,
-                'Arma': 2,
-                'Armatura': 2,
-                'Oggetto': 2,
-                'Prezioso': 2
-            },
-            'Bardo': {
-                'Magico': 2,
-                'Arma': 2,
-                'Armatura': 2,
-                'Oggetto': 2,
-                'Prezioso': 2
-            }
-        };
+     function getTierClass(tier) {
+       return `tier-${tier.toLowerCase()}`;
+     }
 
-        const starSystem = {
-            'Tier 1': 1,
-            'Tier 2': 2,
-            'Tier 3': 3
-        };
+     // Funzione per formattare la valuta (conversione automatica br -> a)
+     function formatCurrency(value) {
+       if (value >= 100) {
+         const argenti = Math.floor(value / 100);
+         const bronzini = value % 100;
+         
+         if (bronzini === 0) {
+           return `${argenti}a`;
+         } else {
+           const bronziniDisplay = (bronzini % 1 === 0) ? bronzini.toString() : bronzini.toFixed(1);
+           return `${argenti}a ${bronziniDisplay}br`;
+         }
+       } else {
+         const display = (value % 1 === 0) ? value.toString() : value.toFixed(1);
+         return `${display}br`;
+       }
+     }
 
-        const availableClasses = ['Mago', 'Guerriero', 'Ladro', 'Chierico', 'Ranger', 'Bardo'];
-        let participantClasses = [];
-        let products = [];
+     // Funzione per applicare la classe CSS corretta in base al valore
+     function getCurrencyClass(value) {
+       if (value >= 100) {
+         return 'currency-mixed';
+       } else {
+         return 'currency-br';
+       }
+     }
 
-        // Carica i prodotti dal JSON
-        async function loadProducts() {
-            try {
-                console.log('Tentativo di caricamento JSON...');
-                const response = await fetch('./oggetti_abaco.json');
-                
-                if (!response.ok) {
-                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+     function renderMain() {
+       const productList = document.getElementById("product-list");
+       productList.innerHTML = "";
+
+       const categories = [...new Set(products.map(p => p.category))];
+       
+       categories.forEach(category => {
+         const categoryDiv = document.createElement("div");
+         categoryDiv.className = "category-section";
+         
+         const categoryTitle = document.createElement("h3");
+         categoryTitle.className = "category-title";
+         categoryTitle.textContent = `Materiali dai ${category}`;
+         categoryDiv.appendChild(categoryTitle);
+
+         if (category === "Cristalli") {
+           // Per i cristalli, raggruppa per sottocategorie
+           const subcategories = [...new Set(products.filter(p => p.category === category).map(p => p.subcategory))];
+           
+           subcategories.forEach(subcategory => {
+             const subcategoryDiv = document.createElement("div");
+             subcategoryDiv.className = "subcategoryDiv";
+             subcategoryDiv.style.marginLeft = "20px";
+             subcategoryDiv.style.marginBottom = "20px";
+             
+             const subcategoryTitle = document.createElement("h4");
+             subcategoryTitle.className = "subcategoryTitle";
+             subcategoryTitle.textContent = subcategory;
+             subcategoryDiv.appendChild(subcategoryTitle);
+             
+             const subcategoryProducts = products.filter(p => p.category === category && p.subcategory === subcategory);
+             
+             subcategoryProducts.forEach((p) => {
+               const globalIndex = products.indexOf(p);
+               const div = createProductElement(p, globalIndex);
+               subcategoryDiv.appendChild(div);
+             });
+             
+             categoryDiv.appendChild(subcategoryDiv);
+           });
+         } else {
+           // Per altre categorie, mostra direttamente i prodotti
+           const categoryProducts = products.filter(p => p.category === category);
+           
+           categoryProducts.forEach((p) => {
+             const globalIndex = products.indexOf(p);
+             const div = createProductElement(p, globalIndex);
+             categoryDiv.appendChild(div);
+           });
+         }
+         
+         productList.appendChild(categoryDiv);
+       });
+
+       updateDistribution();
+     }
+
+     function createProductElement(p, globalIndex) {
+       const div = document.createElement("div");
+       div.className = "product";
+
+       const nameContainer = document.createElement("div");
+       const name = document.createElement("span");
+       name.className = "product-name";
+       name.textContent = p.name;
+       
+       const tierBadge = document.createElement("span");
+       tierBadge.className = `tier-badge ${getTierClass(p.tier)}`;
+       tierBadge.textContent = p.tier;
+       
+       nameContainer.appendChild(name);
+       nameContainer.appendChild(tierBadge);
+
+       const price = document.createElement("span");
+       price.className = `product-price ${getCurrencyClass(p.price)}`;
+       price.textContent = formatCurrency(p.price);
+
+               const qty = document.createElement("input");
+        qty.type = "number";
+        qty.min = "0";
+        qty.value = p.qty > 0 ? p.qty : "";
+        qty.placeholder = "N°";
+
+       qty.addEventListener("input", () => {
+         products[globalIndex].qty = parseInt(qty.value) || 0;
+         updateDistribution();
+       });
+
+       div.appendChild(nameContainer);
+       div.appendChild(price);
+       div.appendChild(qty);
+       
+       return div;
+     }
+
+     function updateDistribution() {
+       const participants = parseInt(participantsInput.value) || 1;
+       const activeItems = products.filter(p => p.qty > 0);
+       
+       if (activeItems.length === 0) {
+         distributionResults.innerHTML = '<div class="empty-state">Seleziona alcuni materiali per vedere la distribuzione</div>';
+         return;
+       }
+
+       distributionResults.innerHTML = "";
+       
+       // Array per tenere traccia dei valori di ogni partecipante
+       const participantValues = new Array(participants).fill(0);
+       const participantItems = new Array(participants).fill().map(() => []);
+       
+       // Distribuzione base: divide equamente gli oggetti interi
+       activeItems.forEach(item => {
+         const itemsPerParticipant = Math.floor(item.qty / participants);
+         const totalDistributed = itemsPerParticipant * participants;
+         
+         if (itemsPerParticipant > 0) {
+           for (let i = 0; i < participants; i++) {
+             participantItems[i].push({
+               name: item.name,
+               qty: itemsPerParticipant,
+               price: item.price
+             });
+             participantValues[i] += itemsPerParticipant * item.price;
+           }
+         }
+       });
+       
+       // Calcola l'esubero (oggetti rimanenti)
+       const esuberoItems = [];
+       activeItems.forEach(item => {
+         const itemsPerParticipant = Math.floor(item.qty / participants);
+         const totalDistributed = itemsPerParticipant * participants;
+         const remaining = item.qty - totalDistributed;
+         
+         if (remaining > 0) {
+           esuberoItems.push({
+             name: item.name,
+             qty: remaining,
+             price: item.price
+           });
+         }
+       });
+       
+               // Se c'è esubero, lo distribuisce in modo bilanciato tra i partecipanti
+        if (esuberoItems.length > 0) {
+          const totalEsuberoValue = esuberoItems.reduce((total, item) => total + (item.qty * item.price), 0);
+          
+          // Ordina gli oggetti dell'esubero per valore (dal più alto al più basso)
+          esuberoItems.sort((a, b) => b.price - a.price);
+          
+          // Distribuisce gli oggetti in modo bilanciato
+          esuberoItems.forEach(item => {
+            let remainingQty = item.qty;
+            
+            // Distribuisce gli oggetti uno per uno, sempre al partecipante con valore più basso
+            while (remainingQty > 0) {
+              const qtyToGive = Math.min(1, remainingQty);
+              
+              // Trova il partecipante con il valore più basso
+              let minValueIndex = 0;
+              let minValue = participantValues[0];
+              
+              for (let i = 1; i < participants; i++) {
+                if (participantValues[i] < minValue) {
+                  minValue = participantValues[i];
+                  minValueIndex = i;
                 }
-                
-                const data = await response.json();
-                console.log('JSON caricato con successo:', data);
-                
-                products = data;
-                renderProducts();
-                updateParticipantClasses();
-                
-            } catch (error) {
-                console.error('Errore nel caricamento JSON:', error);
-                
-                // Controlla se è un problema CORS
-                if (window.location.protocol === 'file:') {
-                    showCorsWarning();
-                } else {
-                    showError('Errore nel caricamento dei materiali: ' + error.message);
-                }
+              }
+              
+              // Aggiunge l'oggetto al partecipante con valore più basso
+              participantItems[minValueIndex].push({
+                name: item.name,
+                qty: qtyToGive,
+                price: item.price,
+                isEsubero: true // Marca come oggetto dell'esubero
+              });
+              
+              // Aggiorna il valore del partecipante
+              participantValues[minValueIndex] += qtyToGive * item.price;
+              
+              remainingQty -= qtyToGive;
             }
+          });
+          
+          // Mostra messaggio informativo
+          const infoDiv = document.createElement("div");
+          infoDiv.style.textAlign = "center";
+          infoDiv.style.marginTop = "20px";
+          infoDiv.style.padding = "15px";
+          infoDiv.style.background = "rgba(99, 179, 237, 0.1)";
+          infoDiv.style.borderRadius = "8px";
+          infoDiv.style.border = "1px solid rgba(99, 179, 237, 0.3)";
+          infoDiv.style.color = "#63b3ed";
+          infoDiv.style.fontSize = "0.9rem";
+          infoDiv.innerHTML = `📦 <strong>Esubero distribuito:</strong> ${formatCurrency(totalEsuberoValue)} distribuito in modo bilanciato tra i partecipanti`;
+          
+          distributionResults.appendChild(infoDiv);
         }
-
-        function showCorsWarning() {
-            const container = document.getElementById('products-container');
-            container.innerHTML = `
-                <div class="warning">
-                    <h3>⚠️ Problema di Caricamento</h3>
-                    <p>Il file JSON non può essere caricato direttamente dal browser per motivi di sicurezza.</p>
-                    <p><strong>Soluzioni:</strong></p>
-                    <ul style="text-align: left; margin: 10px 0;">
-                        <li>Usa un server locale (es. Live Server in VS Code)</li>
-                        <li>Carica il file su un server web</li>
-                        <li>Oppure clicca il pulsante qui sotto per usare i dati di test</li>
-                    </ul>
-                    <button class="server-button" onclick="loadProductsFromFallback()">
-                        Usa Dati di Test
-                    </button>
-                </div>
-            `;
-        }
-
-        function showError(message) {
-            const container = document.getElementById('products-container');
-            container.innerHTML = `
-                <div class="error">
-                    <h3>❌ Errore</h3>
-                    <p>${message}</p>
-                    <button class="server-button" onclick="loadProductsFromFallback()">
-                        Usa Dati di Test
-                    </button>
-                </div>
-            `;
-        }
-
-        function loadProductsFromFallback() {
-            console.log('Caricamento dati di fallback...');
-            products = [
-                {
-                    "nome": "Membrana di Drago",
-                    "prezzo": 5000,
-                    "categoria": "Magico",
-                    "sottocategoria": "Componenti",
-                    "tier": "Tier 3"
-                },
-                {
-                    "nome": "Spada del Drago",
-                    "prezzo": 3000,
-                    "categoria": "Arma",
-                    "sottocategoria": "Spade",
-                    "tier": "Tier 2"
-                },
-                {
-                    "nome": "Armatura di Drago",
-                    "prezzo": 4000,
-                    "categoria": "Armatura",
-                    "sottocategoria": "Armature",
-                    "tier": "Tier 2"
-                },
-                {
-                    "nome": "Pozione di Guarigione",
-                    "prezzo": 50,
-                    "categoria": "Magico",
-                    "sottocategoria": "Pozioni",
-                    "tier": "Tier 1"
-                },
-                {
-                    "nome": "Daga Affilata",
-                    "prezzo": 200,
-                    "categoria": "Arma",
-                    "sottocategoria": "Daghe",
-                    "tier": "Tier 1"
-                },
-                {
-                    "nome": "Scudo di Legno",
-                    "prezzo": 100,
-                    "categoria": "Armatura",
-                    "sottocategoria": "Scudi",
-                    "tier": "Tier 1"
-                },
-                {
-                    "nome": "Anello Magico",
-                    "prezzo": 1000,
-                    "categoria": "Oggetto",
-                    "sottocategoria": "Anelli",
-                    "tier": "Tier 2"
-                },
-                {
-                    "nome": "Gemma Preziosa",
-                    "prezzo": 800,
-                    "categoria": "Prezioso",
-                    "sottocategoria": "Gemme",
-                    "tier": "Tier 2"
-                }
-            ];
-            
-            renderProducts();
-            updateParticipantClasses();
-            
-            const container = document.getElementById('products-container');
-            container.innerHTML = '<div class="loading">Dati di test caricati. Ricarica la pagina per provare il caricamento JSON.</div>';
-            setTimeout(() => {
-                renderProducts();
-            }, 1000);
-        }
-
-        function renderProducts() {
-            const container = document.getElementById('products-container');
-            
-            if (!products || products.length === 0) {
-                container.innerHTML = '<div class="empty-state">Nessun materiale disponibile</div>';
-                return;
+       
+               // Mostra cosa prende ogni partecipante (parte normale, non esubero)
+        const baseDistributionDiv = document.createElement("div");
+        baseDistributionDiv.style.marginBottom = "30px";
+        baseDistributionDiv.style.padding = "20px";
+        baseDistributionDiv.style.background = "rgba(72, 187, 120, 0.1)";
+        baseDistributionDiv.style.borderRadius = "12px";
+        baseDistributionDiv.style.border = "1px solid rgba(72, 187, 120, 0.3)";
+        
+        const baseTitle = document.createElement("h3");
+        baseTitle.style.color = "#68d391";
+        baseTitle.style.fontSize = "1.2rem";
+        baseTitle.style.marginBottom = "15px";
+        baseTitle.style.textAlign = "center";
+        baseTitle.textContent = "🎯 Ogni partecipante prende:";
+        baseDistributionDiv.appendChild(baseTitle);
+        
+        // Raggruppa gli oggetti normali (non esubero) per nome
+        const baseItems = {};
+        for (let i = 0; i < participants; i++) {
+          participantItems[i].forEach(item => {
+            if (!item.isEsubero) {
+              if (!baseItems[item.name]) {
+                baseItems[item.name] = {
+                  name: item.name,
+                  qty: item.qty,
+                  price: item.price
+                };
+              }
             }
-
-            // Raggruppa per categoria e sottocategoria
-            const grouped = products.reduce((acc, product) => {
-                if (!acc[product.categoria]) {
-                    acc[product.categoria] = {};
-                }
-                if (!acc[product.categoria][product.sottocategoria]) {
-                    acc[product.categoria][product.sottocategoria] = [];
-                }
-                acc[product.categoria][product.sottocategoria].push(product);
-                return acc;
-            }, {});
-
-            let html = '';
-            for (const [categoria, sottocategorie] of Object.entries(grouped)) {
-                html += `<div class="category-section">
-                    <h3 class="category-title">${categoria}</h3>`;
-                
-                for (const [sottocategoria, items] of Object.entries(sottocategorie)) {
-                    html += `<div class="subcategoryDiv">
-                        <h4 class="subcategoryTitle">${sottocategoria}</h4>`;
-                    
-                    for (const item of items) {
-                        html += createProductElement(item);
-                    }
-                    
-                    html += '</div>';
-                }
-                
-                html += '</div>';
-            }
-
-            container.innerHTML = html;
+          });
         }
-
-        function createProductElement(product) {
-            const tierClass = product.tier.toLowerCase().replace(' ', '-');
-            return `
-                <div class="product" data-name="${product.nome}">
-                    <div class="product-info">
-                        <div class="product-name">
-                            ${product.nome}
-                            <span class="tier-badge ${tierClass}">${product.tier}</span>
-                        </div>
-                        <div class="product-price">${formatCurrency(product.prezzo)}</div>
-                    </div>
-                    <div class="quantity-container">
-                        <button class="quantity-btn minus-btn" data-name="${product.nome}">-</button>
-                        <input type="number" class="quantity-input" data-name="${product.nome}" min="0" value="0">
-                        <button class="quantity-btn plus-btn" data-name="${product.nome}">+</button>
-                    </div>
-                </div>
-            `;
-        }
-
-        function updateParticipantClasses() {
-            const numParticipants = parseInt(document.getElementById('participants').value);
-            const container = document.getElementById('participant-classes');
-            
-            // Inizializza array se necessario
-            if (participantClasses.length !== numParticipants) {
-                participantClasses = new Array(numParticipants).fill('Mago');
-            }
-            
-            let html = '';
-            for (let i = 0; i < numParticipants; i++) {
-                html += `
-                    <div class="participant-controls">
-                        <label class="participant-label">Partecipante ${i + 1}:</label>
-                        <select class="class-select" data-index="${i}">
-                            ${availableClasses.map(cls => 
-                                `<option value="${cls}" ${participantClasses[i] === cls ? 'selected' : ''}>${cls}</option>`
-                            ).join('')}
-                        </select>
-                    </div>
-                `;
-            }
-            
-            container.innerHTML = html;
-            
-            // Aggiungi event listeners
-            container.querySelectorAll('.class-select').forEach(select => {
-                select.addEventListener('change', (e) => {
-                    const index = parseInt(e.target.dataset.index);
-                    participantClasses[index] = e.target.value;
-                    updateDistribution();
-                });
-            });
-        }
-
-        function calculatePriority(item, participantClass) {
-            const basePriority = prioritySystem[participantClass]?.[item.categoria] || 1;
-            const tierMultiplier = starSystem[item.tier] || 1;
-            return basePriority * tierMultiplier;
-        }
-
-        function getItemStars(item) {
-            return starSystem[item.tier] || 1;
-        }
-
-        function findEquivalentItems(targetStars, availableItems) {
-            const equivalents = [];
-            let currentStars = 0;
-            
-            // Ordina per priorità (più stelle = più priorità)
-            const sortedItems = availableItems.sort((a, b) => getItemStars(b) - getItemStars(a));
-            
-            for (const item of sortedItems) {
-                if (currentStars + getItemStars(item) <= targetStars) {
-                    equivalents.push(item);
-                    currentStars += getItemStars(item);
-                }
-            }
-            
-            return equivalents;
-        }
-
-        function calculateStarValue(items) {
-            return items.reduce((total, item) => total + getItemStars(item), 0);
-        }
-
-        function updateDistribution() {
-            const numParticipants = parseInt(document.getElementById('participants').value);
-            const container = document.getElementById('results-container');
-            
-            if (numParticipants <= 0) {
-                container.innerHTML = '<div class="empty-state">Inserisci un numero valido di partecipanti</div>';
-                return;
-            }
-
-            // Raccogli tutti gli oggetti con quantità > 0
-            const selectedItems = [];
-            document.querySelectorAll('.quantity-input').forEach(input => {
-                const quantity = parseInt(input.value) || 0;
-                if (quantity > 0) {
-                    const productName = input.dataset.name;
-                    const product = products.find(p => p.nome === productName);
-                    if (product) {
-                        for (let i = 0; i < quantity; i++) {
-                            selectedItems.push({...product});
-                        }
-                    }
-                }
-            });
-
-            if (selectedItems.length === 0) {
-                container.innerHTML = '<div class="empty-state">Inserisci le quantità dei materiali per vedere la divisione</div>';
-                return;
-            }
-
-            // Calcola la distribuzione
-            const distribution = calculateDistribution(selectedItems, numParticipants);
-            renderDistribution(distribution);
-        }
-
-        function calculateDistribution(items, numParticipants) {
-            const participants = [];
-            for (let i = 0; i < numParticipants; i++) {
-                participants.push({
-                    index: i,
-                    class: participantClasses[i] || 'Mago',
-                    items: [],
-                    totalValue: 0,
-                    starValue: 0
-                });
-            }
-
-            // Fase 1: Distribuzione base (1 oggetto per partecipante)
-            const baseItems = [...items];
-            let itemIndex = 0;
-            
-            for (let round = 0; round < Math.floor(baseItems.length / numParticipants); round++) {
-                for (let p = 0; p < numParticipants; p++) {
-                    if (itemIndex < baseItems.length) {
-                        const item = baseItems[itemIndex++];
-                        participants[p].items.push(item);
-                        participants[p].totalValue += item.prezzo;
-                        participants[p].starValue += getItemStars(item);
-                    }
-                }
-            }
-
-            // Fase 2: Distribuzione per priorità degli oggetti rimanenti
-            const remainingItems = baseItems.slice(itemIndex);
-            if (remainingItems.length > 0) {
-                // Ordina i partecipanti per priorità media
-                const sortedParticipants = participants.sort((a, b) => {
-                    const aAvgPriority = a.items.length > 0 ? 
-                        a.items.reduce((sum, item) => sum + calculatePriority(item, a.class), 0) / a.items.length : 0;
-                    const bAvgPriority = b.items.length > 0 ? 
-                        b.items.reduce((sum, item) => sum + calculatePriority(item, b.class), 0) / b.items.length : 0;
-                    return bAvgPriority - aAvgPriority;
-                });
-
-                for (const item of remainingItems) {
-                    // Trova il partecipante con la priorità più alta per questo oggetto
-                    let bestParticipant = sortedParticipants[0];
-                    let bestPriority = calculatePriority(item, bestParticipant.class);
-                    
-                    for (const participant of sortedParticipants) {
-                        const priority = calculatePriority(item, participant.class);
-                        if (priority > bestPriority) {
-                            bestPriority = priority;
-                            bestParticipant = participant;
-                        }
-                    }
-                    
-                    bestParticipant.items.push(item);
-                    bestParticipant.totalValue += item.prezzo;
-                    bestParticipant.starValue += getItemStars(item);
-                }
-            }
-
-            // Fase 3: Bilanciamento per stelle
-            const avgStarValue = participants.reduce((sum, p) => sum + p.starValue, 0) / participants.length;
-            const highStarParticipants = participants.filter(p => p.starValue > avgStarValue * 1.2);
-            const lowStarParticipants = participants.filter(p => p.starValue < avgStarValue * 0.8);
-
-            for (const highStar of highStarParticipants) {
-                const excessStars = highStar.starValue - avgStarValue;
-                const itemsToCompensate = highStar.items.filter(item => getItemStars(item) > 1);
-                
-                for (const lowStar of lowStarParticipants) {
-                    if (lowStar.starValue < avgStarValue * 0.8) {
-                        const neededStars = Math.ceil(avgStarValue - lowStar.starValue);
-                        const compensation = findEquivalentItems(neededStars, itemsToCompensate);
-                        
-                        for (const item of compensation) {
-                            const itemIndex = highStar.items.indexOf(item);
-                            if (itemIndex > -1) {
-                                highStar.items.splice(itemIndex, 1);
-                                highStar.totalValue -= item.prezzo;
-                                highStar.starValue -= getItemStars(item);
-                                
-                                lowStar.items.push(item);
-                                lowStar.totalValue += item.prezzo;
-                                lowStar.starValue += getItemStars(item);
-                            }
-                        }
-                    }
-                }
-            }
-
-            return participants;
-        }
-
-        function renderDistribution(participants) {
-            const container = document.getElementById('results-container');
-            
-            let html = '';
-            for (const participant of participants) {
-                html += `
-                    <div class="participant-result">
-                        <div class="participant-title">
-                            Partecipante ${participant.index + 1} (${participant.class})
-                            <span style="float: right; font-size: 0.9rem; color: #666;">
-                                Stelle: ${participant.starValue}
-                            </span>
-                        </div>
-                `;
-                
-                if (participant.items.length === 0) {
-                    html += '<div class="empty-state">Nessun oggetto assegnato</div>';
-                } else {
-                    for (const item of participant.items) {
-                        html += `
-                            <div class="item-distribution">
-                                <div class="item-name">${item.nome}</div>
-                                <div class="item-details">
-                                    ${formatCurrency(item.prezzo)} • ${item.categoria} • ${item.tier}
-                                </div>
-                            </div>
-                        `;
-                    }
-                }
-                
-                html += `
-                        <div class="total-cost">
-                            Totale: ${formatCurrency(participant.totalValue)}
-                        </div>
-                    </div>
-                `;
-            }
-            
-            container.innerHTML = html;
-        }
-
-        function formatCurrency(amount) {
-            return new Intl.NumberFormat('it-IT', {
-                style: 'currency',
-                currency: 'EUR'
-            }).format(amount);
-        }
-
-        // Event listeners
-        document.addEventListener('DOMContentLoaded', () => {
-            loadProducts();
-            
-            document.getElementById('participants').addEventListener('input', () => {
-                updateParticipantClasses();
-                updateDistribution();
-            });
-            
-            // Event delegation per i bottoni e input
-            document.addEventListener('click', (e) => {
-                if (e.target.classList.contains('minus-btn')) {
-                    const input = e.target.nextElementSibling;
-                    const currentValue = parseInt(input.value) || 0;
-                    if (currentValue > 0) {
-                        input.value = currentValue - 1;
-                        updateDistribution();
-                    }
-                } else if (e.target.classList.contains('plus-btn')) {
-                    const input = e.target.previousElementSibling;
-                    const currentValue = parseInt(input.value) || 0;
-                    input.value = currentValue + 1;
-                    updateDistribution();
-                }
-            });
-            
-            document.addEventListener('input', (e) => {
-                if (e.target.classList.contains('quantity-input')) {
-                    updateDistribution();
-                }
-            });
+        
+        // Mostra gli oggetti base distribuiti
+        Object.values(baseItems).forEach(item => {
+          const itemDiv = document.createElement("div");
+          itemDiv.style.display = "flex";
+          itemDiv.style.justifyContent = "space-between";
+          itemDiv.style.alignItems = "center";
+          itemDiv.style.padding = "8px 12px";
+          itemDiv.style.margin = "5px 0";
+          itemDiv.style.background = "rgba(255, 255, 255, 0.05)";
+          itemDiv.style.borderRadius = "6px";
+          
+          const itemName = document.createElement("span");
+          itemName.textContent = `${item.name} x${item.qty}`;
+          itemName.style.color = "#ffffff";
+          
+          const itemCost = document.createElement("span");
+          const cost = item.qty * item.price;
+          itemCost.className = getCurrencyClass(cost);
+          itemCost.textContent = formatCurrency(cost);
+          
+          itemDiv.appendChild(itemName);
+          itemDiv.appendChild(itemCost);
+          baseDistributionDiv.appendChild(itemDiv);
         });
-    </script>
-</body>
-</html>
+        
+        distributionResults.appendChild(baseDistributionDiv);
+        
+        // Mostra i risultati per ogni partecipante (solo esubero e totali)
+        for (let i = 0; i < participants; i++) {
+          const participantDiv = document.createElement("div");
+          participantDiv.className = "participant-result";
+          
+          const title = document.createElement("div");
+          title.className = "participant-title";
+          title.textContent = `Partecipante ${i + 1}`;
+          participantDiv.appendChild(title);
+          
+          // Mostra solo gli oggetti dell'esubero per questo partecipante
+          const esuberoItems = participantItems[i].filter(item => item.isEsubero);
+          
+          if (esuberoItems.length > 0) {
+            // Raggruppa gli oggetti dell'esubero per nome
+            const groupedEsuberoItems = {};
+            esuberoItems.forEach(item => {
+              if (!groupedEsuberoItems[item.name]) {
+                groupedEsuberoItems[item.name] = {
+                  name: item.name,
+                  qty: 0,
+                  price: item.price
+                };
+              }
+              groupedEsuberoItems[item.name].qty += item.qty;
+            });
+            
+            // Mostra gli oggetti dell'esubero raggruppati
+            Object.values(groupedEsuberoItems).forEach(item => {
+              const itemDiv = document.createElement("div");
+              itemDiv.className = "item-distribution";
+              itemDiv.style.background = "rgba(237, 137, 54, 0.2)";
+              itemDiv.style.borderColor = "rgba(237, 137, 54, 0.3)";
+              itemDiv.style.border = "1px solid rgba(237, 137, 54, 0.3)";
+              
+              const itemName = document.createElement("span");
+              itemName.innerHTML = `📦 ${item.name} x${item.qty}`;
+              
+              const itemCost = document.createElement("span");
+              const cost = item.qty * item.price;
+              itemCost.className = getCurrencyClass(cost);
+              itemCost.textContent = formatCurrency(cost);
+              
+              itemDiv.appendChild(itemName);
+              itemDiv.appendChild(itemCost);
+              participantDiv.appendChild(itemDiv);
+            });
+          } else {
+            // Se non ha oggetti dell'esubero, mostra un messaggio
+            const noEsuberoDiv = document.createElement("div");
+            noEsuberoDiv.style.textAlign = "center";
+            noEsuberoDiv.style.padding = "15px";
+            noEsuberoDiv.style.color = "#a0aec0";
+            noEsuberoDiv.style.fontStyle = "italic";
+            noEsuberoDiv.textContent = "Nessun oggetto dell'esubero";
+            participantDiv.appendChild(noEsuberoDiv);
+          }
+          
+          // Mostra il totale (incluso esubero)
+          const totalDiv = document.createElement("div");
+          totalDiv.className = "total-cost";
+          const formattedTotal = formatCurrency(participantValues[i]);
+          totalDiv.innerHTML = `Totale: <span class="${getCurrencyClass(participantValues[i])}">${formattedTotal}</span>`;
+          participantDiv.appendChild(totalDiv);
+          
+          distributionResults.appendChild(participantDiv);
+        }
+       
+               // Non serve più mostrare una sezione esubero separata
+        // Tutti gli oggetti sono stati distribuiti tra i partecipanti
+     }
+
+         // Funzione per ricaricare i dati manualmente
+    async function reloadData() {
+      const reloadButton = document.getElementById('reload-data');
+      const originalText = reloadButton.innerHTML;
+      
+      // Mostra che sta caricando
+      reloadButton.innerHTML = '⏳ Caricando...';
+      reloadButton.disabled = true;
+      
+      try {
+        await loadProducts();
+        reloadButton.innerHTML = '✅ Ricaricato!';
+        
+        // Torna al testo originale dopo 2 secondi
+        setTimeout(() => {
+          reloadButton.innerHTML = originalText;
+          reloadButton.disabled = false;
+        }, 2000);
+      } catch (error) {
+        reloadButton.innerHTML = '❌ Errore';
+        console.error('Errore nel ricaricamento:', error);
+        
+        // Torna al testo originale dopo 3 secondi
+        setTimeout(() => {
+          reloadButton.innerHTML = originalText;
+          reloadButton.disabled = false;
+        }, 3000);
+      }
+    }
+
+    // Event listeners
+    participantsInput.addEventListener("input", updateDistribution);
+
+    // Inizializzazione
+    loadProducts();
+   </script>
+ </body>
+ </html>
