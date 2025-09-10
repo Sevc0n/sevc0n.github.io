@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Codici Test - Sevcon Tools</title>
+  <link rel="icon" type="image/png" href="logo.png">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+      min-height: 100vh;
+      padding: 20px;
+      color: #ffffff;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      background: rgba(20, 25, 45, 0.95);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      animation: slideIn 0.6s ease-out;
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    header {
+      background: linear-gradient(135deg, #2d3748, #4a5568);
+      color: white;
+      padding: 30px;
+      text-align: center;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    h1 {
+      font-size: 2.2rem;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+
+    .subtitle {
+      font-size: 1.1rem;
+      opacity: 0.8;
+    }
+
+    main {
+      padding: 40px;
+    }
+
+    .warning {
+      background: rgba(237, 137, 54, 0.1);
+      border: 1px solid rgba(237, 137, 54, 0.3);
+      border-radius: 15px;
+      padding: 20px;
+      margin-bottom: 30px;
+      text-align: center;
+    }
+
+    .warning h3 {
+      color: #ed8936;
+      margin-bottom: 10px;
+    }
+
+    .warning p {
+      color: #a0aec0;
+      font-size: 0.9rem;
+    }
+
+    .codes-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+
+    .code-card {
+      background: rgba(45, 55, 72, 0.6);
+      border-radius: 12px;
+      padding: 20px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+
+    .code-card:hover {
+      background: rgba(45, 55, 72, 0.8);
+      border-color: rgba(99, 179, 237, 0.3);
+      transform: translateY(-2px);
+    }
+
+    .code-title {
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: #63b3ed;
+      margin-bottom: 8px;
+    }
+
+    .code-value {
+      font-family: 'Courier New', monospace;
+      font-size: 1.4rem;
+      font-weight: bold;
+      color: #68d391;
+      background: rgba(0, 0, 0, 0.3);
+      padding: 8px 12px;
+      border-radius: 6px;
+      text-align: center;
+      margin: 10px 0;
+      letter-spacing: 2px;
+    }
+
+    .code-description {
+      color: #a0aec0;
+      font-size: 0.9rem;
+      line-height: 1.4;
+    }
+
+    .back-link {
+      display: inline-block;
+      padding: 12px 24px;
+      background: rgba(99, 179, 237, 0.1);
+      border: 1px solid rgba(99, 179, 237, 0.3);
+      color: #63b3ed;
+      text-decoration: none;
+      border-radius: 8px;
+      transition: all 0.3s ease;
+      font-weight: 500;
+    }
+
+    .back-link:hover {
+      background: rgba(99, 179, 237, 0.2);
+      transform: translateY(-2px);
+    }
+
+    .copy-feedback {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: rgba(72, 187, 120, 0.9);
+      color: white;
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-weight: 600;
+      z-index: 1000;
+      opacity: 0;
+      transform: translateY(-20px);
+      transition: all 0.3s ease;
+    }
+
+    .copy-feedback.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    @media (max-width: 768px) {
+      .codes-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .container {
+        margin: 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>🔐 Codici di Accesso Test</h1>
+      <p class="subtitle">Zona riservata per sviluppatori</p>
+    </header>
+
+    <main>
+      <div class="warning">
+        <h3>⚠️ Accesso Riservato</h3>
+        <p>Questa pagina contiene i codici di accesso alle zone di test. Non condividere queste informazioni.</p>
+      </div>
+
+      <div class="codes-grid">
+        <div class="code-card" onclick="copyCode('ABACO1')">
+          <div class="code-title">⚒️ Abaco Test</div>
+          <div class="code-value">ABACO1</div>
+          <div class="code-description">Versione di test dell'Abaco Divisore con tutte le funzionalità aggiornate</div>
+        </div>
+
+        <div class="code-card" onclick="copyCode('TOOL1')">
+          <div class="code-title">⚡ Tool Test 1</div>
+          <div class="code-value">TOOL1</div>
+          <div class="code-description">Zona di test per nuove funzionalità e miglioramenti</div>
+        </div>
+
+        <div class="code-card" onclick="copyCode('TOOL2')">
+          <div class="code-title">🌟 Tool Test 2</div>
+          <div class="code-value">TOOL2</div>
+          <div class="code-description">Zona di test per funzionalità sperimentali e innovative</div>
+        </div>
+
+        <div class="code-card" onclick="copyCode('DEMO1')">
+          <div class="code-title">🎭 Demo Feature</div>
+          <div class="code-value">DEMO1</div>
+          <div class="code-description">Zona di test per funzionalità demo e presentazioni</div>
+        </div>
+
+        <div class="code-card" onclick="copyCode('BETA1')">
+          <div class="code-title">🚀 Beta Test</div>
+          <div class="code-value">BETA1</div>
+          <div class="code-description">Zona di test per funzionalità beta e versioni instabili</div>
+        </div>
+      </div>
+
+      <div style="text-align: center;">
+        <a href="accesso-test.html" class="back-link">🔙 Torna all'Accesso</a>
+        <a href="index.html" class="back-link" style="margin-left: 15px;">🏠 Homepage</a>
+      </div>
+    </main>
+  </div>
+
+  <div class="copy-feedback" id="copyFeedback">
+    ✅ Codice copiato!
+  </div>
+
+  <script>
+    function copyCode(code) {
+      // Copia il codice negli appunti
+      navigator.clipboard.writeText(code).then(() => {
+        // Mostra feedback
+        const feedback = document.getElementById('copyFeedback');
+        feedback.classList.add('show');
+        
+        // Suono di conferma
+        playClickSound();
+        
+        // Nascondi feedback dopo 2 secondi
+        setTimeout(() => {
+          feedback.classList.remove('show');
+        }, 2000);
+      }).catch(err => {
+        console.error('Errore nella copia:', err);
+        // Fallback per browser che non supportano clipboard API
+        const textArea = document.createElement('textarea');
+        textArea.value = code;
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textArea);
+        
+        // Mostra feedback anche in caso di fallback
+        const feedback = document.getElementById('copyFeedback');
+        feedback.classList.add('show');
+        playClickSound();
+        
+        setTimeout(() => {
+          feedback.classList.remove('show');
+        }, 2000);
+      });
+    }
+
+    function playClickSound() {
+      // Crea un suono di click usando Web Audio API
+      const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+      const oscillator = audioContext.createOscillator();
+      const gainNode = audioContext.createGain();
+      
+      oscillator.connect(gainNode);
+      gainNode.connect(audioContext.destination);
+      
+      oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
+      oscillator.frequency.exponentialRampToValueAtTime(400, audioContext.currentTime + 0.1);
+      
+      gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+      gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
+      
+      oscillator.start(audioContext.currentTime);
+      oscillator.stop(audioContext.currentTime + 0.1);
+    }
+
+    // Debug info
+    console.log('🔐 Pagina codici di accesso caricata');
+  </script>
+</body>
+</html>

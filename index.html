@@ -379,7 +379,7 @@
 
     <div class="footer">
       <p style="display: flex; align-items: center; justify-content: center; gap: 10px;">
-        <img src="logo.png" alt="Sevcon Logo" style="width: 20px; height: 20px; border-radius: 4px;" onerror="this.style.display='none';">
+        <img src="logo.png" alt="Sevcon Logo" id="copyrightLogo" style="width: 20px; height: 20px; border-radius: 4px; cursor: pointer; transition: all 0.3s ease;" onerror="this.style.display='none';" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
         © 2025 Sevcon by piccionenberg - Creato con ❤️ e per noia
       </p>
       <div style="text-align: center; margin-top: 15px;">
@@ -394,15 +394,49 @@
   </div>
 
   <script>
-    // Sistema di accesso nascosto
+    // Sistema di accesso nascosto con doppia sequenza
     let logoClickCount = 0;
+    let copyrightClickCount = 0;
     let clickTimeout;
+    let copyrightTimeout;
     const REQUIRED_CLICKS = 5;
     const CLICK_TIMEOUT = 3000; // 3 secondi per completare la sequenza
 
+    function playClickSound() {
+      // Crea un suono di click usando Web Audio API
+      try {
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        const oscillator = audioContext.createOscillator();
+        const gainNode = audioContext.createGain();
+        
+        oscillator.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+        
+        oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
+        oscillator.frequency.exponentialRampToValueAtTime(400, audioContext.currentTime + 0.1);
+        
+        gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
+        
+        oscillator.start(audioContext.currentTime);
+        oscillator.stop(audioContext.currentTime + 0.1);
+      } catch (error) {
+        console.log('Audio non supportato');
+      }
+    }
+
+    function resetCounters() {
+      logoClickCount = 0;
+      copyrightClickCount = 0;
+      if (clickTimeout) clearTimeout(clickTimeout);
+      if (copyrightTimeout) clearTimeout(copyrightTimeout);
+    }
+
     document.addEventListener('DOMContentLoaded', function() {
       const logo = document.getElementById('logoClick');
+      const copyrightLogo = document.getElementById('copyrightLogo');
       
+      // Click sul logo principale
       if (logo) {
         logo.addEventListener('click', function() {
           logoClickCount++;
@@ -422,25 +456,92 @@
           }, 100);
           
           // Debug info
-          console.log(`🔍 Click sul logo: ${logoClickCount}/${REQUIRED_CLICKS}`);
+          console.log(`🔍 Click sul logo principale: ${logoClickCount}/${REQUIRED_CLICKS}`);
           
           if (logoClickCount >= REQUIRED_CLICKS) {
-            // Sequenza completata!
-            console.log('🎉 Sequenza di click completata! Accesso all\'area test...');
-            
-            // Effetto speciale
-            this.style.animation = 'pulse 0.5s ease-in-out 3';
-            
-            // Reindirizzamento alla pagina di accesso
-            setTimeout(() => {
-              window.location.href = 'accesso-test.html';
-            }, 1500);
+            if (copyrightClickCount >= REQUIRED_CLICKS) {
+              // Doppia sequenza completata!
+              console.log('🎉 Sequenza completa! Accesso ai codici...');
+              
+              // Effetto speciale
+              this.style.animation = 'pulse 0.5s ease-in-out 3';
+              
+              // Suono di conferma
+              playClickSound();
+              
+              // Reindirizzamento alla pagina dei codici
+              setTimeout(() => {
+                window.location.href = 'codici-test.html';
+              }, 1500);
+            } else {
+              // Solo sequenza logo principale completata!
+              console.log('🎉 Sequenza di click completata! Accesso all\'area test...');
+              
+              // Effetto speciale
+              this.style.animation = 'pulse 0.5s ease-in-out 3';
+              
+              // Suono di conferma
+              playClickSound();
+              
+              // Reindirizzamento alla pagina di accesso
+              setTimeout(() => {
+                window.location.href = 'accesso-test.html';
+              }, 1500);
+            }
             
           } else {
             // Imposta timeout per reset
             clickTimeout = setTimeout(() => {
               console.log('⏰ Timeout: sequenza di click resettata');
               logoClickCount = 0;
+            }, CLICK_TIMEOUT);
+          }
+        });
+      }
+
+      // Click sul logo del copyright
+      if (copyrightLogo) {
+        copyrightLogo.addEventListener('click', function() {
+          copyrightClickCount++;
+          
+          // Reset timeout se esiste
+          if (copyrightTimeout) {
+            clearTimeout(copyrightTimeout);
+          }
+          
+          // Feedback visivo per il click
+          this.style.transform = 'scale(0.9)';
+          setTimeout(() => {
+            this.style.transform = 'scale(1.1)';
+            setTimeout(() => {
+              this.style.transform = 'scale(1)';
+            }, 100);
+          }, 100);
+          
+          // Debug info
+          console.log(`🔍 Click sul logo copyright: ${copyrightClickCount}/${REQUIRED_CLICKS}`);
+          
+          if (copyrightClickCount >= REQUIRED_CLICKS) {
+            // Prima sequenza completata!
+            console.log('🎉 Prima sequenza completata! Ora clicca 5 volte sul logo principale...');
+            
+            // Effetto speciale
+            this.style.animation = 'pulse 0.5s ease-in-out 3';
+            
+            // Suono di conferma
+            playClickSound();
+            
+            // Reset dopo 3 secondi
+            copyrightTimeout = setTimeout(() => {
+              console.log('⏰ Timeout: prima sequenza resettata');
+              copyrightClickCount = 0;
+            }, CLICK_TIMEOUT);
+            
+          } else {
+            // Imposta timeout per reset
+            copyrightTimeout = setTimeout(() => {
+              console.log('⏰ Timeout: sequenza di click resettata');
+              copyrightClickCount = 0;
             }, CLICK_TIMEOUT);
           }
         });
