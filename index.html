@@ -436,6 +436,10 @@
       const logo = document.getElementById('logoClick');
       const copyrightLogo = document.getElementById('copyrightLogo');
       
+      // Debug info
+      console.log('🔍 Logo principale trovato:', !!logo);
+      console.log('🔍 Logo copyright trovato:', !!copyrightLogo);
+      
       // Click sul logo principale
       if (logo) {
         logo.addEventListener('click', function() {
@@ -501,6 +505,7 @@
 
       // Click sul logo del copyright
       if (copyrightLogo) {
+        console.log('✅ Logo copyright configurato correttamente');
         copyrightLogo.addEventListener('click', function() {
           copyrightClickCount++;
           
@@ -545,6 +550,59 @@
             }, CLICK_TIMEOUT);
           }
         });
+      } else {
+        // Fallback: prova a trovare il logo del copyright con selettore alternativo
+        console.log('⚠️ Logo copyright non trovato con ID, provo fallback...');
+        const fallbackLogo = document.querySelector('.footer img');
+        if (fallbackLogo) {
+          console.log('✅ Logo copyright trovato con fallback');
+          fallbackLogo.addEventListener('click', function() {
+            copyrightClickCount++;
+            
+            // Reset timeout se esiste
+            if (copyrightTimeout) {
+              clearTimeout(copyrightTimeout);
+            }
+            
+            // Feedback visivo per il click
+            this.style.transform = 'scale(0.9)';
+            setTimeout(() => {
+              this.style.transform = 'scale(1.1)';
+              setTimeout(() => {
+                this.style.transform = 'scale(1)';
+              }, 100);
+            }, 100);
+            
+            // Debug info
+            console.log(`🔍 Click sul logo copyright (fallback): ${copyrightClickCount}/${REQUIRED_CLICKS}`);
+            
+            if (copyrightClickCount >= REQUIRED_CLICKS) {
+              // Prima sequenza completata!
+              console.log('🎉 Prima sequenza completata! Ora clicca 5 volte sul logo principale...');
+              
+              // Effetto speciale
+              this.style.animation = 'pulse 0.5s ease-in-out 3';
+              
+              // Suono di conferma
+              playClickSound();
+              
+              // Reset dopo 3 secondi
+              copyrightTimeout = setTimeout(() => {
+                console.log('⏰ Timeout: prima sequenza resettata');
+                copyrightClickCount = 0;
+              }, CLICK_TIMEOUT);
+              
+            } else {
+              // Imposta timeout per reset
+              copyrightTimeout = setTimeout(() => {
+                console.log('⏰ Timeout: sequenza di click resettata');
+                copyrightClickCount = 0;
+              }, CLICK_TIMEOUT);
+            }
+          });
+        } else {
+          console.log('❌ Logo copyright non trovato nemmeno con fallback');
+        }
       }
       
       // Aggiungi effetti di hover più fluidi
