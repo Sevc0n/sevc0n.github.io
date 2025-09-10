@@ -30,7 +30,7 @@
       box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
       border: 1px solid rgba(255, 255, 255, 0.1);
       text-align: center;
-      max-width: 400px;
+      max-width: 500px;
       width: 90%;
       animation: slideIn 0.6s ease-out;
     }
@@ -184,6 +184,45 @@
       font-style: italic;
     }
 
+    .test-zones {
+      margin-top: 30px;
+      padding: 20px;
+      background: rgba(45, 55, 72, 0.3);
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .test-zones h3 {
+      color: #63b3ed;
+      margin-bottom: 15px;
+      font-size: 1.1rem;
+    }
+
+    .zone-list {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      text-align: left;
+    }
+
+    .zone-item {
+      padding: 8px 12px;
+      background: rgba(99, 179, 237, 0.1);
+      border-radius: 6px;
+      font-size: 0.9rem;
+      border: 1px solid rgba(99, 179, 237, 0.2);
+    }
+
+    .zone-code {
+      font-weight: 600;
+      color: #68d391;
+    }
+
+    .zone-name {
+      color: #a0aec0;
+      margin-left: 5px;
+    }
+
     /* Animazioni */
     .shake {
       animation: shake 0.5s ease-in-out;
@@ -204,13 +243,23 @@
       50% { transform: scale(1.05); }
       100% { transform: scale(1); }
     }
+
+    @media (max-width: 480px) {
+      .zone-list {
+        grid-template-columns: 1fr;
+      }
+      
+      .container {
+        padding: 20px;
+      }
+    }
   </style>
 </head>
 <body>
   <div class="container">
     <img src="logo.png" alt="Sevcon Logo" class="logo" onerror="this.style.display='none';">
     <h1>🔐 Accesso Area Test</h1>
-    <p class="subtitle">Inserisci il codice per accedere alla versione mobile di test</p>
+    <p class="subtitle">Inserisci il codice per accedere alle zone di test</p>
     
     <form id="accessForm">
       <div class="form-group">
@@ -240,15 +289,47 @@
     </form>
     
     <div class="hint">
-      💡 Il codice è un numero di 6 cifre
+      💡 Inserisci un codice di 6 cifre per accedere alle zone di test
+    </div>
+    
+    <div class="test-zones">
+      <h3>🎯 Zone di Test Disponibili</h3>
+      <div class="zone-list">
+        <div class="zone-item">
+          <span class="zone-code">ABACO1</span>
+          <span class="zone-name">- Abaco Test</span>
+        </div>
+        <div class="zone-item">
+          <span class="zone-code">TOOL1</span>
+          <span class="zone-name">- Tool Test 1</span>
+        </div>
+        <div class="zone-item">
+          <span class="zone-code">TOOL2</span>
+          <span class="zone-name">- Tool Test 2</span>
+        </div>
+        <div class="zone-item">
+          <span class="zone-code">DEMO1</span>
+          <span class="zone-name">- Demo Feature</span>
+        </div>
+        <div class="zone-item">
+          <span class="zone-code">BETA1</span>
+          <span class="zone-name">- Beta Test</span>
+        </div>
+      </div>
     </div>
     
     <a href="index.html" class="back-link">🏠 Torna alla Homepage</a>
   </div>
 
   <script>
-    // Codice di accesso (puoi cambiarlo)
-    const ACCESS_CODE = "202501";
+    // Sistema di codici per diverse zone di test
+    const TEST_CODES = {
+      "ABACO1": "test/abaco/",
+      "TOOL1": "test/tool1/",
+      "TOOL2": "test/tool2/",
+      "DEMO1": "test/demo/",
+      "BETA1": "test/beta/"
+    };
     
     const form = document.getElementById('accessForm');
     const codeInput = document.getElementById('accessCode');
@@ -256,12 +337,12 @@
     const errorMessage = document.getElementById('errorMessage');
     const successMessage = document.getElementById('successMessage');
     
-    // Formattazione input (solo numeri)
+    // Formattazione input (solo lettere e numeri, maiuscole)
     codeInput.addEventListener('input', function(e) {
-      // Rimuove tutti i caratteri non numerici
-      e.target.value = e.target.value.replace(/[^0-9]/g, '');
+      // Converte in maiuscole e rimuove caratteri non validi
+      e.target.value = e.target.value.replace(/[^A-Z0-9]/g, '').toUpperCase();
       
-      // Limita a 6 cifre
+      // Limita a 6 caratteri
       if (e.target.value.length > 6) {
         e.target.value = e.target.value.slice(0, 6);
       }
@@ -277,7 +358,7 @@
       errorMessage.style.display = 'none';
       successMessage.style.display = 'none';
       
-      if (enteredCode === ACCESS_CODE) {
+      if (TEST_CODES[enteredCode]) {
         // Codice corretto
         successMessage.style.display = 'block';
         submitBtn.disabled = true;
@@ -291,7 +372,7 @@
         
         // Reindirizzamento dopo 1.5 secondi
         setTimeout(() => {
-          window.location.href = 'futuro/';
+          window.location.href = TEST_CODES[enteredCode];
         }, 1500);
         
       } else {
@@ -321,8 +402,8 @@
     });
     
     // Debug info (rimuovi in produzione)
-    console.log('🔐 Sistema di accesso attivo');
-    console.log('💡 Codice di accesso:', ACCESS_CODE);
+    console.log('🔐 Sistema di accesso multi-zona attivo');
+    console.log('💡 Codici disponibili:', Object.keys(TEST_CODES));
   </script>
 </body>
 </html>
