@@ -1654,7 +1654,186 @@
        console.log('renderDistribution called with:', participants);
        const container = document.getElementById('distribution-results');
        
-       // Raggruppa per classe
+       if (!container) {
+         console.error('Distribution results container not found');
+         return;
+       }
+       
+       container.innerHTML = '';
+       
+       if (!participants || participants.length === 0) {
+         container.innerHTML = '<div class="empty-state">Nessun partecipante selezionato</div>';
+         return;
+       }
+       
+       // Se è divisione semplice, usa il formato dell'abaco principale
+       if (divisionMethod === 'simple') {
+         renderSimpleDistribution(participants, container);
+         return;
+       }
+       
+       // Altrimenti usa il formato avanzato con classi e stelle
+       renderAdvancedDistribution(participants, container);
+     }
+     
+     function renderSimpleDistribution(participants, container) {
+       console.log('Rendering simple distribution like main abaco');
+       
+       // Raggruppa gli oggetti per tipo per calcolare l'esubero
+       const itemGroups = {};
+       participants.forEach(participant => {
+         participant.items.forEach(item => {
+           if (!itemGroups[item.name]) {
+             itemGroups[item.name] = {
+               name: item.name,
+               price: item.price,
+               qty: 0,
+               esuberoQty: 0
+             };
+           }
+           if (item.isEsubero) {
+             itemGroups[item.name].esuberoQty += item.qty;
+           } else {
+             itemGroups[item.name].qty += item.qty;
+           }
+         });
+       });
+       
+       // Calcola il valore totale dell'esubero
+       const totalEsuberoValue = Object.values(itemGroups).reduce((total, item) => {
+         return total + (item.esuberoQty * item.price);
+       }, 0);
+       
+       // Mostra il messaggio dell'esubero se presente
+       if (totalEsuberoValue > 0) {
+         const infoDiv = document.createElement("div");
+         infoDiv.style.textAlign = "center";
+         infoDiv.style.marginTop = "20px";
+         infoDiv.style.padding = "15px";
+         infoDiv.style.background = "rgba(99, 179, 237, 0.1)";
+         infoDiv.style.borderRadius = "8px";
+         infoDiv.style.border = "1px solid rgba(99, 179, 237, 0.3)";
+         infoDiv.style.color = "#63b3ed";
+         infoDiv.style.fontSize = "0.9rem";
+         infoDiv.innerHTML = `📦 <strong>Esubero distribuito:</strong> ${formatCurrency(totalEsuberoValue)} distribuito in modo bilanciato tra i partecipanti`;
+         container.appendChild(infoDiv);
+       }
+       
+       // Mostra "Ogni partecipante prende"
+       const baseDistributionDiv = document.createElement("div");
+       baseDistributionDiv.style.marginBottom = "30px";
+       baseDistributionDiv.style.padding = "20px";
+       baseDistributionDiv.style.background = "rgba(72, 187, 120, 0.1)";
+       baseDistributionDiv.style.borderRadius = "12px";
+       baseDistributionDiv.style.border = "1px solid rgba(72, 187, 120, 0.3)";
+       
+       const baseTitle = document.createElement("h3");
+       baseTitle.style.color = "#68d391";
+       baseTitle.style.fontSize = "1.2rem";
+       baseTitle.style.marginBottom = "15px";
+       baseTitle.style.textAlign = "center";
+       baseTitle.textContent = "🎯 Ogni partecipante prende:";
+       baseDistributionDiv.appendChild(baseTitle);
+       
+       // Mostra gli oggetti base (non esubero)
+       Object.values(itemGroups).forEach(item => {
+         if (item.qty > 0) {
+           const itemDiv = document.createElement("div");
+           itemDiv.style.display = "flex";
+           itemDiv.style.justifyContent = "space-between";
+           itemDiv.style.alignItems = "center";
+           itemDiv.style.padding = "8px 12px";
+           itemDiv.style.margin = "5px 0";
+           itemDiv.style.background = "rgba(255, 255, 255, 0.05)";
+           itemDiv.style.borderRadius = "6px";
+           
+           const itemName = document.createElement("span");
+           itemName.textContent = `${item.name} x${item.qty}`;
+           itemName.style.color = "#ffffff";
+           
+           const itemCost = document.createElement("span");
+           const cost = item.qty * item.price;
+           itemCost.className = getCurrencyClass(cost);
+           itemCost.textContent = formatCurrency(cost);
+           
+           itemDiv.appendChild(itemName);
+           itemDiv.appendChild(itemCost);
+           baseDistributionDiv.appendChild(itemDiv);
+         }
+       });
+       
+       container.appendChild(baseDistributionDiv);
+       
+       // Mostra i risultati per ogni partecipante (solo esubero e totali)
+       participants.forEach((participant, index) => {
+         const participantDiv = document.createElement("div");
+         participantDiv.className = "participant-result";
+         
+         const title = document.createElement("div");
+         title.className = "participant-title";
+         title.textContent = `Partecipante ${index + 1}`;
+         participantDiv.appendChild(title);
+         
+         // Mostra solo gli oggetti dell'esubero per questo partecipante
+         const esuberoItems = participant.items.filter(item => item.isEsubero);
+         
+         if (esuberoItems.length > 0) {
+           // Raggruppa gli oggetti dell'esubero per nome
+           const groupedEsuberoItems = {};
+           esuberoItems.forEach(item => {
+             if (!groupedEsuberoItems[item.name]) {
+               groupedEsuberoItems[item.name] = {
+                 name: item.name,
+                 qty: 0,
+                 price: item.price
+               };
+             }
+             groupedEsuberoItems[item.name].qty += item.qty;
+           });
+           
+           // Mostra gli oggetti dell'esubero raggruppati
+           Object.values(groupedEsuberoItems).forEach(item => {
+             const itemDiv = document.createElement("div");
+             itemDiv.className = "esubero-item";
+             itemDiv.style.display = "flex";
+             itemDiv.style.justifyContent = "space-between";
+             itemDiv.style.alignItems = "center";
+             itemDiv.style.padding = "6px 10px";
+             itemDiv.style.margin = "3px 0";
+             itemDiv.style.background = "rgba(255, 193, 7, 0.1)";
+             itemDiv.style.borderRadius = "4px";
+             itemDiv.style.border = "1px solid rgba(255, 193, 7, 0.3)";
+             
+             const itemName = document.createElement("span");
+             itemName.textContent = `${item.name} x${item.qty}`;
+             itemName.style.color = "#ffc107";
+             
+             const itemCost = document.createElement("span");
+             const cost = item.qty * item.price;
+             itemCost.className = getCurrencyClass(cost);
+             itemCost.textContent = formatCurrency(cost);
+             
+             itemDiv.appendChild(itemName);
+             itemDiv.appendChild(itemCost);
+             participantDiv.appendChild(itemDiv);
+           });
+         }
+         
+         // Mostra il totale
+         const totalDiv = document.createElement("div");
+         totalDiv.className = "total-cost";
+         const formattedTotal = formatCurrency(participant.totalValue);
+         totalDiv.innerHTML = `Totale: <span class="${getCurrencyClass(participant.totalValue)}">${formattedTotal}</span>`;
+         participantDiv.appendChild(totalDiv);
+         
+         container.appendChild(participantDiv);
+       });
+     }
+     
+     function renderAdvancedDistribution(participants, container) {
+       console.log('Rendering advanced distribution with classes and stars');
+       
+       // Raggruppa i partecipanti per classe
        const classGroups = {};
        participants.forEach(participant => {
          if (!classGroups[participant.class]) {
