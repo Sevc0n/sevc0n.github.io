@@ -368,6 +368,42 @@
       box-shadow: 0 0 0 3px rgba(99, 179, 237, 0.2);
     }
 
+    .division-method-btn {
+      padding: 10px 20px;
+      border: 2px solid rgba(99, 179, 237, 0.3);
+      border-radius: 8px;
+      background: rgba(45, 55, 72, 0.8);
+      color: #ffffff;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    .division-method-btn:hover {
+      background: rgba(99, 179, 237, 0.1);
+      border-color: rgba(99, 179, 237, 0.5);
+      transform: translateY(-2px);
+    }
+
+    .division-method-btn.active {
+      background: linear-gradient(135deg, #63b3ed, #4299e1);
+      border-color: #63b3ed;
+      color: white;
+    }
+
+    .division-method-btn.active:hover {
+      background: linear-gradient(135deg, #4299e1, #3182ce);
+    }
+
+    .advanced-options {
+      transition: all 0.3s ease;
+    }
+
+    .advanced-options.hidden {
+      display: none;
+    }
+
 
     .priority-info {
       background: rgba(99, 179, 237, 0.1);
@@ -722,6 +758,18 @@
              <input type="number" id="participants" min="1" value="4">
              
              <div style="margin: 20px 0; text-align: center;">
+               <label class="participants-label">Metodo di Divisione:</label>
+               <div style="display: flex; gap: 10px; justify-content: center; margin-top: 10px;">
+                 <button id="simple-division-btn" class="division-method-btn active" onclick="setDivisionMethod('simple')">
+                   📊 Divisione Semplice
+                 </button>
+                 <button id="advanced-division-btn" class="division-method-btn" onclick="setDivisionMethod('advanced')">
+                   ⚙️ Divisione Avanzata
+                 </button>
+               </div>
+             </div>
+             
+             <div class="advanced-options" style="margin: 20px 0; text-align: center;">
                <label class="participants-label">Tier Abisso (imposta per tutti):</label>
                <select id="abyss-tier" style="padding: 8px 12px; border: 2px solid rgba(99, 179, 237, 0.3); border-radius: 8px; font-size: 14px; background: rgba(45, 55, 72, 0.8); color: #ffffff; min-width: 120px; margin-left: 10px;">
                  <option value="">Seleziona Tier</option>
@@ -736,7 +784,7 @@
                </div>
              </div>
              
-             <div id="participant-classes"></div>
+             <div id="participant-classes" class="advanced-options"></div>
              
              <div style="text-align: center; margin: 20px 0;">
                <button id="calculate-btn" style="background: linear-gradient(135deg, #63b3ed, #4299e1); color: white; border: none; padding: 15px 30px; border-radius: 10px; font-size: 1.1rem; font-weight: bold; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(99, 179, 237, 0.3);">
@@ -908,6 +956,7 @@
      let participantTiers = [];
      let defaultProducts = [];
      let products = [];
+     let divisionMethod = 'simple'; // 'simple' o 'advanced'
      const distributionResults = document.getElementById("distribution-results");
      const participantsInput = document.getElementById("participants");
  
@@ -1026,6 +1075,33 @@
 
      function getTierClass(tier) {
        return `tier-${tier.toLowerCase()}`;
+     }
+
+     function setDivisionMethod(method) {
+       divisionMethod = method;
+       
+       // Aggiorna i tasti
+       document.getElementById('simple-division-btn').classList.toggle('active', method === 'simple');
+       document.getElementById('advanced-division-btn').classList.toggle('active', method === 'advanced');
+       
+       // Mostra/nascondi opzioni avanzate
+       const advancedOptions = document.querySelectorAll('.advanced-options');
+       advancedOptions.forEach(option => {
+         option.classList.toggle('hidden', method === 'simple');
+       });
+       
+       // Se è divisione semplice, inizializza con valori di default
+       if (method === 'simple') {
+         const numParticipants = parseInt(document.getElementById('participants').value);
+         participantClasses = new Array(numParticipants).fill('Guerriero');
+         participantTiers = new Array(numParticipants).fill('Novizio');
+       } else {
+         // Se è avanzata, aggiorna le classi
+         updateParticipantClasses();
+       }
+       
+       // Aggiorna la distribuzione
+       updateDistribution();
      }
 
      function updateParticipantClasses() {
@@ -1356,6 +1432,11 @@
          });
        }
 
+       // Se è divisione semplice, usa solo distribuzione equa
+       if (divisionMethod === 'simple') {
+         return performSimpleDistribution(items, participants);
+       }
+
        // Fase 1: Distribuzione base (1 oggetto per partecipante)
        const baseItems = [...items];
        let itemIndex = 0;
@@ -1430,6 +1511,35 @@
              }
            }
          }
+       }
+
+       return participants;
+     }
+
+     function performSimpleDistribution(items, participants) {
+       console.log('Using simple distribution method');
+       
+       // Distribuzione semplice: un oggetto per partecipante in ordine
+       let itemIndex = 0;
+       for (let round = 0; round < Math.floor(items.length / participants.length); round++) {
+         for (let p = 0; p < participants.length; p++) {
+           if (itemIndex < items.length) {
+             const item = items[itemIndex++];
+             participants[p].items.push(item);
+             participants[p].totalValue += item.price;
+             participants[p].starValue += getItemStars(item);
+           }
+         }
+       }
+
+       // Distribuisci gli oggetti rimanenti in ordine
+       const remainingItems = items.slice(itemIndex);
+       for (let i = 0; i < remainingItems.length; i++) {
+         const participantIndex = i % participants.length;
+         const item = remainingItems[i];
+         participants[participantIndex].items.push(item);
+         participants[participantIndex].totalValue += item.price;
+         participants[participantIndex].starValue += getItemStars(item);
        }
 
        return participants;
@@ -1548,8 +1658,11 @@
       }
     });
 
-    // Inizializzazione
-    loadProducts();
+     // Inizializzazione
+     loadProducts();
+     
+     // Inizializza con divisione semplice
+     setDivisionMethod('simple');
     
     // Event listener per il pulsante Calcola (dopo che tutte le funzioni sono definite)
     document.addEventListener('DOMContentLoaded', () => {
