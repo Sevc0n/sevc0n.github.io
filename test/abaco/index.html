@@ -792,8 +792,25 @@
                </button>
              </div>
              
-             <div class="priority-info">
-               <h4>Sistema di Priorità per Riparazione Equipaggiamento</h4>
+             <div id="simple-legend" class="priority-info">
+               <h4>Divisione Semplice (Algoritmo Abaco Principale)</h4>
+               <div class="priority-list">
+                 <p><strong>Come funziona:</strong></p>
+                 <ul>
+                   <li>Distribuisce <strong>equamente</strong> gli oggetti interi per tipo</li>
+                   <li>Ogni partecipante riceve la <strong>stessa quantità</strong> di ogni oggetto</li>
+                   <li>L'<strong>esubero</strong> viene distribuito in modo <strong>bilanciato</strong></li>
+                   <li>Gli oggetti dell'esubero vanno al partecipante con <strong>valore più basso</strong></li>
+                   <li><strong>Nessuna priorità</strong> per classi o tier</li>
+                   <li>Distribuzione <strong>equa e bilanciata</strong> per valore</li>
+                   <li>Usa lo <strong>stesso algoritmo</strong> dell'abaco principale</li>
+                 </ul>
+                 <p><strong>Esempio:</strong> Con 4 partecipanti e 10 Brim: ogni partecipante riceve 2 Brim (8 totali), poi i 2 rimanenti vanno al partecipante con valore più basso</p>
+               </div>
+             </div>
+
+             <div id="advanced-legend" class="priority-info advanced-options">
+               <h4>Divisione Avanzata (Sistema Stelline e Priorità)</h4>
                <div class="priority-list">
                  <p><strong>Classi e Maestranze disponibili:</strong></p>
                  <ul>
@@ -1090,6 +1107,15 @@
          option.classList.toggle('hidden', method === 'simple');
        });
        
+       // Mostra/nascondi legende appropriate
+       const simpleLegend = document.getElementById('simple-legend');
+       const advancedLegend = document.getElementById('advanced-legend');
+       
+       if (simpleLegend && advancedLegend) {
+         simpleLegend.style.display = method === 'simple' ? 'block' : 'none';
+         advancedLegend.style.display = method === 'advanced' ? 'block' : 'none';
+       }
+       
        // Se è divisione semplice, inizializza con valori di default
        if (method === 'simple') {
          const numParticipants = parseInt(document.getElementById('participants').value);
@@ -1187,7 +1213,7 @@
        return items.reduce((total, item) => total + getItemStars(item), 0);
      }
  
-     // Funzione per formattare la valuta (conversione automatica br -> a)
+     // Funzione per formattare la valuta (conversione automatica g -> a)
      function formatCurrency(value) {
        if (value >= 100) {
          const argenti = Math.floor(value / 100);
@@ -1197,11 +1223,11 @@
            return `${argenti}a`;
          } else {
            const bronziniDisplay = (bronzini % 1 === 0) ? bronzini.toString() : bronzini.toFixed(1);
-           return `${argenti}a ${bronziniDisplay}br`;
+           return `${argenti}a ${bronziniDisplay}g`;
          }
        } else {
          const display = (value % 1 === 0) ? value.toString() : value.toFixed(1);
-         return `${display}br`;
+         return `${display}g`;
        }
      }
  
@@ -1517,30 +1543,109 @@
      }
 
      function performSimpleDistribution(items, participants) {
-       console.log('Using simple distribution method');
+       console.log('Using simple distribution method (main abaco algorithm)');
        
-       // Distribuzione semplice: un oggetto per partecipante in ordine
-       let itemIndex = 0;
-       for (let round = 0; round < Math.floor(items.length / participants.length); round++) {
-         for (let p = 0; p < participants.length; p++) {
-           if (itemIndex < items.length) {
-             const item = items[itemIndex++];
-             participants[p].items.push(item);
-             participants[p].totalValue += item.price;
-             participants[p].starValue += getItemStars(item);
+       // Raggruppa gli oggetti per tipo e quantità (come nell'abaco principale)
+       const itemGroups = {};
+       items.forEach(item => {
+         if (!itemGroups[item.name]) {
+           itemGroups[item.name] = {
+             name: item.name,
+             price: item.price,
+             qty: 0
+           };
+         }
+         itemGroups[item.name].qty++;
+       });
+       
+       const activeItems = Object.values(itemGroups).filter(item => item.qty > 0);
+       const numParticipants = participants.length;
+       
+       // Array per tenere traccia dei valori di ogni partecipante
+       const participantValues = new Array(numParticipants).fill(0);
+       const participantItems = new Array(numParticipants).fill().map(() => []);
+       
+       // Distribuzione base: divide equamente gli oggetti interi
+       activeItems.forEach(item => {
+         const itemsPerParticipant = Math.floor(item.qty / numParticipants);
+         const totalDistributed = itemsPerParticipant * numParticipants;
+         
+         if (itemsPerParticipant > 0) {
+           for (let i = 0; i < numParticipants; i++) {
+             participantItems[i].push({
+               name: item.name,
+               qty: itemsPerParticipant,
+               price: item.price
+             });
+             participantValues[i] += itemsPerParticipant * item.price;
            }
          }
+       });
+       
+       // Calcola l'esubero (oggetti rimanenti)
+       const esuberoItems = [];
+       activeItems.forEach(item => {
+         const itemsPerParticipant = Math.floor(item.qty / numParticipants);
+         const totalDistributed = itemsPerParticipant * numParticipants;
+         const remaining = item.qty - totalDistributed;
+         
+         if (remaining > 0) {
+           esuberoItems.push({
+             name: item.name,
+             qty: remaining,
+             price: item.price
+           });
+         }
+       });
+       
+       // Se c'è esubero, lo distribuisce in modo bilanciato tra i partecipanti
+       if (esuberoItems.length > 0) {
+         const totalEsuberoValue = esuberoItems.reduce((total, item) => total + (item.qty * item.price), 0);
+         
+         // Ordina gli oggetti dell'esubero per valore (dal più alto al più basso)
+         esuberoItems.sort((a, b) => b.price - a.price);
+         
+         // Distribuisce gli oggetti in modo bilanciato
+         esuberoItems.forEach(item => {
+           let remainingQty = item.qty;
+           
+           // Distribuisce gli oggetti uno per uno, sempre al partecipante con valore più basso
+           while (remainingQty > 0) {
+             const qtyToGive = Math.min(1, remainingQty);
+             
+             // Trova il partecipante con il valore più basso
+             let minValueIndex = 0;
+             let minValue = participantValues[0];
+             
+             for (let i = 1; i < numParticipants; i++) {
+               if (participantValues[i] < minValue) {
+                 minValue = participantValues[i];
+                 minValueIndex = i;
+               }
+             }
+             
+             // Aggiunge l'oggetto al partecipante con valore più basso
+             participantItems[minValueIndex].push({
+               name: item.name,
+               qty: qtyToGive,
+               price: item.price,
+               isEsubero: true // Marca come oggetto dell'esubero
+             });
+             
+             // Aggiorna il valore del partecipante
+             participantValues[minValueIndex] += qtyToGive * item.price;
+             
+             remainingQty -= qtyToGive;
+           }
+         });
        }
-
-       // Distribuisci gli oggetti rimanenti in ordine
-       const remainingItems = items.slice(itemIndex);
-       for (let i = 0; i < remainingItems.length; i++) {
-         const participantIndex = i % participants.length;
-         const item = remainingItems[i];
-         participants[participantIndex].items.push(item);
-         participants[participantIndex].totalValue += item.price;
-         participants[participantIndex].starValue += getItemStars(item);
-       }
+       
+       // Aggiorna i partecipanti con i risultati
+       participants.forEach((participant, index) => {
+         participant.items = participantItems[index];
+         participant.totalValue = participantValues[index];
+         participant.starValue = participantItems[index].reduce((sum, item) => sum + getItemStars(item), 0);
+       });
 
        return participants;
      }
