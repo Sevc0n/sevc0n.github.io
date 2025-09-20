@@ -1694,7 +1694,10 @@
            if (item.isEsubero) {
              itemGroups[item.name].esuberoQty += item.qty;
            } else {
-             itemGroups[item.name].qty += item.qty;
+             // Per la distribuzione base, prendi solo la quantità di un partecipante (tutti hanno la stessa quantità)
+             if (itemGroups[item.name].qty === 0) {
+               itemGroups[item.name].qty = item.qty;
+             }
            }
          });
        });
