@@ -269,7 +269,7 @@
           id="accessCode" 
           class="code-input" 
           placeholder="Inserisci il codice"
-          maxlength="6"
+          maxlength="15"
           autocomplete="off"
           required
         >
@@ -289,7 +289,7 @@
     </form>
     
     <div class="hint">
-      💡 Inserisci un codice di 6 cifre per accedere alle zone di test
+      💡 Inserisci il codice per accedere alle zone di test o download
     </div>
     
     
@@ -303,7 +303,8 @@
       "TOOL1": "test/tool1/",
       "TOOL2": "test/tool2/",
       "DEMO1": "test/demo/",
-      "BETA1": "test/beta/"
+      "BETA1": "test/beta/",
+      "MODPACK6804": "futuro/download-access.html"
     };
     
     const form = document.getElementById('accessForm');
@@ -317,9 +318,9 @@
       // Converte in maiuscole e rimuove caratteri non validi
       e.target.value = e.target.value.replace(/[^A-Z0-9]/g, '').toUpperCase();
       
-      // Limita a 6 caratteri
-      if (e.target.value.length > 6) {
-        e.target.value = e.target.value.slice(0, 6);
+      // Limita a 15 caratteri
+      if (e.target.value.length > 15) {
+        e.target.value = e.target.value.slice(0, 15);
       }
     });
     
