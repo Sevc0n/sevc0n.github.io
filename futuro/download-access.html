@@ -296,7 +296,6 @@
           id="accessCode" 
           class="code-input" 
           placeholder="Inserisci il codice"
-          maxlength="15"
           autocomplete="off"
           required
         >
@@ -360,11 +359,14 @@
       // Converte in maiuscole e rimuove caratteri non validi
       e.target.value = e.target.value.replace(/[^A-Z0-9]/g, '').toUpperCase();
       
-      // Limita a 15 caratteri
-      if (e.target.value.length > 15) {
-        e.target.value = e.target.value.slice(0, 15);
+      // Permette fino a 20 caratteri (più del necessario)
+      if (e.target.value.length > 20) {
+        e.target.value = e.target.value.slice(0, 20);
       }
     });
+    
+    // Rimuove qualsiasi limite HTML residuo
+    codeInput.removeAttribute('maxlength');
     
     // Gestione submit form
     form.addEventListener('submit', function(e) {
