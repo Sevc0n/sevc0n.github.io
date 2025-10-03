@@ -346,6 +346,10 @@
               <label for="guadagnoGiorno">Guadagno del giorno (senza costi):</label>
               <input type="number" id="guadagnoGiorno" placeholder="Es: 1200" min="0" step="0.01">
             </div>
+            <div class="input-group">
+              <label for="causaleGuadagno">Causale del guadagno:</label>
+              <input type="text" id="causaleGuadagno" placeholder="Es: Vendita materiali, Missioni, etc.">
+            </div>
           </div>
 
           <div class="form-group">
@@ -381,6 +385,10 @@
             <div class="result-card">
               <div class="result-value" id="bronziniTotali">0 br</div>
               <div class="result-label">Bronzini dalla Sfida</div>
+            </div>
+            <div class="result-card">
+              <div class="result-value" id="guadagnoTotale">0 br</div>
+              <div class="result-label">Guadagno Totale</div>
             </div>
           </div>
           <button class="calculate-button" style="margin-top: 10px;" onclick="salvaGiornataGuadagno()">💾 Salva giornata</button>
@@ -502,6 +510,25 @@
           <h3>💵 Totale Costi</h3>
           <div class="results-grid">
             <div class="result-card"><div class="result-value" id="costoTotaleGiorno">0 br</div><div class="result-label">Somma costi (armatura + armi + frecce + pozioni)</div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="calculator-section">
+        <h2>📊 Rapporto Guadagno/Costi</h2>
+        <p style="color: #d1d5db; text-align: center; margin-bottom: 30px; font-size: 1.05rem;">
+          Calcola il rapporto tra guadagni e costi per vedere se sei in positivo o negativo.
+        </p>
+        
+        <button class="calculate-button" onclick="calcolaRapporto()" style="background: linear-gradient(135deg, #10b981, #059669);">⚖️ Calcola Rapporto</button>
+
+        <div class="results-section" id="risultatiRapporto" style="display:none;">
+          <h3>📈 Risultati Rapporto</h3>
+          <div class="results-grid">
+            <div class="result-card"><div class="result-value" id="rapportoGuadagno">0 br</div><div class="result-label">💰 Guadagno Totale</div></div>
+            <div class="result-card"><div class="result-value" id="rapportoCosti">0 br</div><div class="result-label">💸 Costi Totali</div></div>
+            <div class="result-card"><div class="result-value" id="rapportoValore">0:1</div><div class="result-label">📊 Rapporto</div></div>
+            <div class="result-card"><div class="result-value" id="rapportoTotale">0 br</div><div class="result-label">⚖️ Bilancio</div></div>
           </div>
         </div>
       </div>
@@ -782,15 +809,18 @@
       const fattaSfida = document.getElementById('fattaSfida').checked;
       const fase = fattaSfida ? document.getElementById('faseSfida').value : 0;
       const bronzini = fattaSfida ? calcolaBronziniPerFase(fase) : 0;
+      const totale = guadagno + bronzini;
 
       document.getElementById('valoreGuadagno').textContent = guadagno.toFixed(2);
       document.getElementById('bronziniTotali').textContent = bronzini + ' br';
+      document.getElementById('guadagnoTotale').textContent = totale.toFixed(2) + ' br';
       document.getElementById('resultsGuadagno').style.display = 'block';
       document.getElementById('resultsGuadagno').scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 
     function salvaGiornataGuadagno() {
       const guadagno = parseFloat(document.getElementById('guadagnoGiorno').value) || 0;
+      const causale = document.getElementById('causaleGuadagno').value.trim() || 'Nessuna causale';
       const fattaSfida = document.getElementById('fattaSfida').checked;
       const fase = fattaSfida ? Number(document.getElementById('faseSfida').value) : 0;
       const bronzini = fattaSfida ? calcolaBronziniPerFase(fase) : 0;
@@ -799,6 +829,7 @@
         id: Date.now(),
         date: new Date().toISOString(),
         guadagno,
+        causale,
         fattaSfida,
         fase,
         bronzini
@@ -809,9 +840,7 @@
       localStorage.setItem(STORAGE_KEY_GUADAGNO, JSON.stringify(existing));
 
       renderStoricoGuadagno();
-      const section = document.getElementById('storicoGuadagno');
-      section.style.display = 'block';
-      section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      alert('Giornata salvata con successo!');
     }
 
     function cancellaStoricoGuadagno() {
@@ -863,7 +892,7 @@
           `;
         }).join('');
 
-      // Riepilogo giornaliero con rapporto guadagno/costo
+      // Riepilogo giornaliero con ordine: data, guadagno, costo, rapporto
       if (riepilogoGiorni) {
         riepilogoGiorni.innerHTML = entries
           .sort((a, b) => b.id - a.id)
@@ -876,12 +905,12 @@
             const colore = totale >= 0 ? 'profit-positive' : 'profit-negative';
             return `
               <div class="result-card">
-                <div class="result-value ${colore}">${formatDate(e.date)}</div>
+                <div class="result-value">${formatDate(e.date)}</div>
                 <div class="result-label">
-                  <div>💰 Guadagno: <strong>${guadagnoBr.toFixed(1)}${BR_LABEL}</strong></div>
+                  <div>💰 Guadagno: <strong>${guadagnoBr.toFixed(1)}${BR_LABEL}</strong> (${e.causale || 'Nessuna causale'})</div>
                   <div>💸 Costi: <strong>${costiBr.toFixed(1)}${BR_LABEL}</strong></div>
                   <div>📊 Rapporto: <strong>${rapporto}:1</strong></div>
-                  <div>⚖️ Totale: <strong class="${colore}">${sign}${Math.abs(totale).toFixed(1)}${BR_LABEL}</strong></div>
+                  <div>⚖️ Bilancio: <strong class="${colore}">${sign}${Math.abs(totale).toFixed(1)}${BR_LABEL}</strong></div>
                 </div>
               </div>
             `;
@@ -912,13 +941,13 @@
           const colore = totale >= 0 ? 'profit-positive' : 'profit-negative';
           return `
             <div class="result-card">
-              <div class="result-value ${colore}">Settimana ${key}</div>
+              <div class="result-value">Settimana ${key}</div>
               <div class="result-label">${range}</div>
               <div class="result-label">
                 <div>💰 Guadagno: <strong>${val.guadagnoBr.toFixed(1)}${BR_LABEL}</strong></div>
                 <div>💸 Costi: <strong>${val.costiBr.toFixed(1)}${BR_LABEL}</strong></div>
                 <div>📊 Rapporto: <strong>${rapporto}:1</strong></div>
-                <div>⚖️ Totale: <strong class="${colore}">${sign}${Math.abs(totale).toFixed(1)}${BR_LABEL}</strong></div>
+                <div>⚖️ Bilancio: <strong class="${colore}">${sign}${Math.abs(totale).toFixed(1)}${BR_LABEL}</strong></div>
               </div>
             </div>
           `;
@@ -1094,6 +1123,40 @@
 
     function calcolaCostoTotalePozioni() {
       return pozioniLista.reduce((totale, pozione) => totale + pozione.totale, 0);
+    }
+
+    function calcolaRapporto() {
+      // Calcola guadagno totale
+      const guadagno = parseFloat(document.getElementById('guadagnoGiorno').value) || 0;
+      const fattaSfida = document.getElementById('fattaSfida').checked;
+      const fase = fattaSfida ? document.getElementById('faseSfida').value : 0;
+      const bronzini = fattaSfida ? calcolaBronziniPerFase(fase) : 0;
+      const guadagnoTotale = guadagno + bronzini;
+
+      // Calcola costi totali
+      const costoArmatura = calcolaCostoArmatura();
+      const costoArmi = calcolaCostoArmi();
+      const costoFrecce = calcolaCostoFrecce();
+      const costoPozioni = calcolaCostoTotalePozioni();
+      const costiTotali = costoArmatura + costoArmi + costoFrecce + costoPozioni;
+
+      // Calcola rapporto e bilancio
+      const rapporto = costiTotali > 0 ? (guadagnoTotale / costiTotali).toFixed(2) : '∞';
+      const bilancio = guadagnoTotale - costiTotali;
+
+      // Aggiorna UI
+      document.getElementById('rapportoGuadagno').textContent = `${guadagnoTotale.toFixed(1)} br`;
+      document.getElementById('rapportoCosti').textContent = `${costiTotali.toFixed(1)} br`;
+      document.getElementById('rapportoValore').textContent = `${rapporto}:1`;
+      
+      const bilancioElement = document.getElementById('rapportoTotale');
+      bilancioElement.textContent = `${bilancio >= 0 ? '+' : ''}${bilancio.toFixed(1)} br`;
+      bilancioElement.className = bilancio >= 0 ? 'result-value profit-positive' : 'result-value profit-negative';
+
+      // Mostra risultati
+      const res = document.getElementById('risultatiRapporto');
+      res.style.display = 'block';
+      res.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
   </script>
 </body>
