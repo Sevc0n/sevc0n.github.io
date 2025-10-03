@@ -323,6 +323,15 @@
         </button>
       </div>
 
+      <!-- Admin Panel -->
+      <div class="secret-area" style="margin-top: 20px; background: rgba(99, 179, 237, 0.1); border-color: rgba(99, 179, 237, 0.3);">
+        <h3 style="color: #63b3ed;">⚙️ Admin Panel</h3>
+        <p>Area amministrativa per la gestione completa dei file</p>
+        <button class="secret-btn" onclick="accessAdminPanel()" style="background: linear-gradient(135deg, #63b3ed, #4299e1);">
+          🔧 Accesso Admin
+        </button>
+      </div>
+
       <a href="../index.html" class="back-link">🏠 Torna alla Homepage</a>
     </div>
   </div>
@@ -364,6 +373,12 @@
     function accessSecretArea() {
       // Reindirizza direttamente all'area segreta
       window.location.href = 'secret/';
+    }
+
+    // Accesso admin panel
+    function accessAdminPanel() {
+      // Reindirizza all'admin panel
+      window.location.href = 'admin/';
     }
 
     // Animazioni al caricamento

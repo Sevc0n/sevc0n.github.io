@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calcolatore Cacciatore - Sevcon Tools</title>
+  <link rel="icon" type="image/png" href="../../logo.png">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+      min-height: 100vh;
+      padding: 20px;
+      color: #ffffff;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+      background: rgba(26, 26, 46, 0.95);
+      backdrop-filter: blur(15px);
+      border-radius: 25px;
+      box-shadow: 0 25px 50px rgba(0, 0, 0, 0.6);
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+    }
+
+    header {
+      background: linear-gradient(135deg, #1a1a2e, #16213e);
+      color: white;
+      padding: 35px;
+      text-align: center;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      position: relative;
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      font-weight: 800;
+      margin-bottom: 10px;
+      background: linear-gradient(45deg, #ff6b6b, #ffd93d);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .subtitle {
+      font-size: 1.2rem;
+      opacity: 0.9;
+      font-weight: 300;
+    }
+
+    .version-badge {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      background: rgba(16, 185, 129, 0.2);
+      border: 1px solid rgba(16, 185, 129, 0.5);
+      border-radius: 8px;
+      padding: 6px 12px;
+      font-size: 0.75rem;
+      color: #10b981;
+      font-weight: 600;
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+    }
+
+    main {
+      padding: 40px;
+    }
+
+    .calculator-section {
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      border-radius: 20px;
+      padding: 35px;
+      margin-bottom: 35px;
+      box-shadow: 0 8px 25px rgba(16, 185, 129, 0.2);
+    }
+
+    .calculator-section h2 {
+      color: #10b981;
+      margin-bottom: 20px;
+      font-size: 1.8rem;
+      font-weight: 700;
+      text-align: center;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 25px;
+      margin: 30px 0;
+    }
+
+    .form-group {
+      background: rgba(50, 130, 184, 0.1);
+      border: 1px solid rgba(50, 130, 184, 0.3);
+      border-radius: 15px;
+      padding: 25px;
+    }
+
+    .form-group h3 {
+      color: #3282b8;
+      margin-bottom: 15px;
+      font-size: 1.3rem;
+      font-weight: 600;
+    }
+
+    .input-group {
+      margin-bottom: 15px;
+    }
+
+    .input-group label {
+      display: block;
+      color: #bbe1fa;
+      margin-bottom: 8px;
+      font-weight: 500;
+    }
+
+    .input-group input, .input-group select {
+      width: 100%;
+      padding: 12px 15px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.1);
+      color: #ffffff;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+    }
+
+    .input-group input:focus, .input-group select:focus {
+      outline: none;
+      border-color: #3282b8;
+      background: rgba(255, 255, 255, 0.15);
+      box-shadow: 0 0 0 3px rgba(50, 130, 184, 0.2);
+    }
+
+    .input-group input::placeholder {
+      color: rgba(255, 255, 255, 0.6);
+    }
+
+    .calculate-button {
+      background: linear-gradient(135deg, #3282b8, #0f4c75);
+      border: none;
+      color: white;
+      padding: 18px 40px;
+      border-radius: 12px;
+      font-size: 1.2rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin: 20px auto;
+      display: block;
+      box-shadow: 0 6px 20px rgba(50, 130, 184, 0.4);
+    }
+
+    .calculate-button:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 30px rgba(50, 130, 184, 0.6);
+    }
+
+    .results-section {
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      border-radius: 20px;
+      padding: 30px;
+      margin: 30px 0;
+      text-align: center;
+    }
+
+    .results-section h3 {
+      color: #10b981;
+      margin-bottom: 20px;
+      font-size: 1.5rem;
+      font-weight: 700;
+    }
+
+    .results-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+      margin: 20px 0;
+    }
+
+    .result-card {
+      background: rgba(50, 130, 184, 0.1);
+      border: 1px solid rgba(50, 130, 184, 0.3);
+      border-radius: 12px;
+      padding: 20px;
+      text-align: center;
+    }
+
+    .result-value {
+      font-size: 2rem;
+      font-weight: 700;
+      color: #3282b8;
+      margin-bottom: 5px;
+    }
+
+    .result-label {
+      color: #bbe1fa;
+      font-size: 0.9rem;
+      font-weight: 500;
+    }
+
+    .profit-positive {
+      color: #10b981 !important;
+    }
+
+    .profit-negative {
+      color: #ef4444 !important;
+    }
+
+
+    .back-link {
+      display: inline-block;
+      padding: 15px 30px;
+      background: rgba(50, 130, 184, 0.1);
+      border: 1px solid rgba(50, 130, 184, 0.3);
+      color: #3282b8;
+      text-decoration: none;
+      border-radius: 12px;
+      transition: all 0.3s ease;
+      font-weight: 600;
+      margin: 5px;
+    }
+
+    .back-link:hover {
+      background: rgba(50, 130, 184, 0.2);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(50, 130, 184, 0.3);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="version-badge">
+        🏹 v1.0.0<br>
+        <small>02/10/2025 23:44</small>
+      </div>
+      <h1>Calcolatore Cacciatore</h1>
+      <p class="subtitle">Calcola guadagni e perdite delle tue spedizioni negli abissi</p>
+    </header>
+
+    <main>
+      <div class="calculator-section">
+        <h2>⚔️ Calcolatore Spedizione Abissale</h2>
+        <p style="color: #d1d5db; text-align: center; margin-bottom: 30px; font-size: 1.1rem;">
+          Inserisci i dati della tua spedizione per calcolare guadagni e perdite totali
+        </p>
+
+        <div class="form-grid">
+          <div class="form-group">
+            <h3>🏆 Ricompense</h3>
+            <div class="input-group">
+              <label for="oro">Oro guadagnato:</label>
+              <input type="number" id="oro" placeholder="Es: 1500" min="0">
+            </div>
+            <div class="input-group">
+              <label for="gemme">Gemme trovate:</label>
+              <input type="number" id="gemme" placeholder="Es: 25" min="0">
+            </div>
+            <div class="input-group">
+              <label for="valoreGemme">Valore per gemma:</label>
+              <input type="number" id="valoreGemme" placeholder="Es: 50" min="0" step="0.01">
+            </div>
+            <div class="input-group">
+              <label for="equipaggiamento">Equipaggiamento trovato (valore):</label>
+              <input type="number" id="equipaggiamento" placeholder="Es: 300" min="0" step="0.01">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <h3>⚔️ Equipaggiamento Consumato</h3>
+            <div class="input-group">
+              <label for="frecce">Frecce utilizzate:</label>
+              <input type="number" id="frecce" placeholder="Es: 50" min="0">
+            </div>
+            <div class="input-group">
+              <label for="costoFrecce">Costo per freccia:</label>
+              <input type="number" id="costoFrecce" placeholder="Es: 2.50" min="0" step="0.01">
+            </div>
+            <div class="input-group">
+              <label for="pozioni">Pozioni di cura usate:</label>
+              <input type="number" id="pozioni" placeholder="Es: 8" min="0">
+            </div>
+            <div class="input-group">
+              <label for="costoPozioni">Costo per pozione:</label>
+              <input type="number" id="costoPozioni" placeholder="Es: 15.00" min="0" step="0.01">
+            </div>
+            <div class="input-group">
+              <label for="stiletto">Danni stiletto (riparazioni):</label>
+              <input type="number" id="stiletto" placeholder="Es: 45.00" min="0" step="0.01">
+            </div>
+            <div class="input-group">
+              <label for="arco">Danni arco (riparazioni):</label>
+              <input type="number" id="arco" placeholder="Es: 30.00" min="0" step="0.01">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <h3>🌊 Spedizione</h3>
+            <div class="input-group">
+              <label for="oreSpedizione">Ore di spedizione:</label>
+              <input type="number" id="oreSpedizione" placeholder="Es: 6" min="0" step="0.5">
+            </div>
+            <div class="input-group">
+              <label for="livelloAbisso">Livello abisso raggiunto:</label>
+              <input type="number" id="livelloAbisso" placeholder="Es: 15" min="1">
+            </div>
+            <div class="input-group">
+              <label for="sfideCompletate">Sfide completate:</label>
+              <input type="number" id="sfideCompletate" placeholder="Es: 8" min="0">
+            </div>
+            <div class="input-group">
+              <label for="morti">Numero di morti:</label>
+              <input type="number" id="morti" placeholder="Es: 2" min="0">
+            </div>
+            <div class="input-group">
+              <label for="costoMorte">Costo per morte (respawn):</label>
+              <input type="number" id="costoMorte" placeholder="Es: 100" min="0" step="0.01">
+            </div>
+          </div>
+        </div>
+
+        <button class="calculate-button" onclick="calcolaSpedizione()">
+          ⚔️ Calcola Risultati
+        </button>
+      </div>
+
+      <div class="results-section" id="resultsSection" style="display: none;">
+        <h3>📊 Risultati della Spedizione</h3>
+        <div class="results-grid">
+          <div class="result-card">
+            <div class="result-value" id="ricompenseTotali">0</div>
+            <div class="result-label">Ricompense Totali</div>
+          </div>
+          <div class="result-card">
+            <div class="result-value" id="costiTotali">0</div>
+            <div class="result-label">Costi Totali</div>
+          </div>
+          <div class="result-card">
+            <div class="result-value" id="guadagnoNetto">0</div>
+            <div class="result-label">Guadagno/Perdita Netta</div>
+          </div>
+          <div class="result-card">
+            <div class="result-value" id="guadagnoOra">0/h</div>
+            <div class="result-label">Guadagno per Ora</div>
+          </div>
+          <div class="result-card">
+            <div class="result-value" id="efficienzaSfide">0%</div>
+            <div class="result-label">Efficienza Sfide</div>
+          </div>
+          <div class="result-card">
+            <div class="result-value" id="profonditaMedia">0</div>
+            <div class="result-label">Profondità Media</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="text-align: center; margin-top: 40px;">
+        <a href="../../accesso-test.html" class="back-link">🔙 Torna all'Accesso</a>
+        <a href="../../index.html" class="back-link">🏠 Homepage</a>
+        <a href="../tool1/index.html" class="back-link">🔧 Tool 1</a>
+        <a href="../tool2/index.html" class="back-link">🔬 Tool 2</a>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    function calcolaSpedizione() {
+      // Raccogli i dati dal form
+      const oro = parseFloat(document.getElementById('oro').value) || 0;
+      const gemme = parseFloat(document.getElementById('gemme').value) || 0;
+      const valoreGemme = parseFloat(document.getElementById('valoreGemme').value) || 0;
+      const equipaggiamento = parseFloat(document.getElementById('equipaggiamento').value) || 0;
+      
+      const frecce = parseFloat(document.getElementById('frecce').value) || 0;
+      const costoFrecce = parseFloat(document.getElementById('costoFrecce').value) || 0;
+      const pozioni = parseFloat(document.getElementById('pozioni').value) || 0;
+      const costoPozioni = parseFloat(document.getElementById('costoPozioni').value) || 0;
+      const stiletto = parseFloat(document.getElementById('stiletto').value) || 0;
+      const arco = parseFloat(document.getElementById('arco').value) || 0;
+      
+      const oreSpedizione = parseFloat(document.getElementById('oreSpedizione').value) || 0;
+      const livelloAbisso = parseFloat(document.getElementById('livelloAbisso').value) || 0;
+      const sfideCompletate = parseFloat(document.getElementById('sfideCompletate').value) || 0;
+      const morti = parseFloat(document.getElementById('morti').value) || 0;
+      const costoMorte = parseFloat(document.getElementById('costoMorte').value) || 0;
+      
+      // Calcoli
+      const valoreGemmeTotali = gemme * valoreGemme;
+      const ricompenseTotali = oro + valoreGemmeTotali + equipaggiamento;
+      
+      const costiFrecce = frecce * costoFrecce;
+      const costiPozioni = pozioni * costoPozioni;
+      const costiRiparazioni = stiletto + arco;
+      const costiMorti = morti * costoMorte;
+      const costiTotali = costiFrecce + costiPozioni + costiRiparazioni + costiMorti;
+      
+      const guadagnoNetto = ricompenseTotali - costiTotali;
+      const guadagnoOra = oreSpedizione > 0 ? guadagnoNetto / oreSpedizione : 0;
+      const efficienzaSfide = oreSpedizione > 0 ? (sfideCompletate / oreSpedizione) * 100 : 0;
+      const profonditaMedia = livelloAbisso;
+      
+      // Aggiorna i risultati
+      document.getElementById('ricompenseTotali').textContent = ricompenseTotali.toFixed(0);
+      document.getElementById('costiTotali').textContent = costiTotali.toFixed(0);
+      
+      const guadagnoNettoElement = document.getElementById('guadagnoNetto');
+      guadagnoNettoElement.textContent = guadagnoNetto.toFixed(0);
+      guadagnoNettoElement.className = 'result-value ' + (guadagnoNetto >= 0 ? 'profit-positive' : 'profit-negative');
+      
+      document.getElementById('guadagnoOra').textContent = guadagnoOra.toFixed(0) + '/h';
+      document.getElementById('efficienzaSfide').textContent = efficienzaSfide.toFixed(1) + '%';
+      document.getElementById('profonditaMedia').textContent = profonditaMedia.toFixed(0);
+      
+      // Mostra la sezione risultati
+      document.getElementById('resultsSection').style.display = 'block';
+      
+      // Scroll ai risultati
+      document.getElementById('resultsSection').scrollIntoView({ 
+        behavior: 'smooth',
+        block: 'start'
+      });
+    }
+
+    // Validazione input in tempo reale
+    document.addEventListener('DOMContentLoaded', function() {
+      const inputs = document.querySelectorAll('input[type="number"]');
+      inputs.forEach(input => {
+        input.addEventListener('input', function() {
+          if (this.value < 0) {
+            this.value = 0;
+          }
+        });
+      });
+    });
+
+    // Animazione di benvenuto
+    window.addEventListener('load', () => {
+      const cards = document.querySelectorAll('.form-group');
+      cards.forEach((card, index) => {
+        setTimeout(() => {
+          card.style.opacity = '0';
+          card.style.transform = 'translateY(20px)';
+          card.style.transition = 'all 0.6s ease';
+          
+          setTimeout(() => {
+            card.style.opacity = '1';
+            card.style.transform = 'translateY(0)';
+          }, 100);
+        }, index * 200);
+      });
+    });
+  </script>
+</body>
+</html>
