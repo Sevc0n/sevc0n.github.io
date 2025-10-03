@@ -4,7 +4,7 @@ const CONFIG = {
     github: {
         username: 'ORGANIZZAZIONE', // Nome dell'organizzazione GitHub
         repo: 'Storage_sito',       // Nome della repository nell'organizzazione
-        token: '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', // Il tuo Personal Access Token
+        token: 'TUO_TOKEN', // Il tuo Personal Access Token (inseriscilo in locale, non committare)
         branch: 'main'              // Branch principale
     },
     
