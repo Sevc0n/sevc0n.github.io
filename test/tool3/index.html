@@ -430,8 +430,11 @@
             <div class="result-card"><div class="result-value" id="cotiArco">0</div><div class="result-label">Coti per Arco</div></div>
             <div class="result-card"><div class="result-value" id="cotiStiletto">0</div><div class="result-label">Coti per Stiletto</div></div>
             <div class="result-card"><div class="result-value" id="cotiTotali">0</div><div class="result-label">Coti Totali</div></div>
+            <div class="result-card"><div class="result-value" id="cotiDaStock">0</div><div class="result-label">Coti usate da stock</div></div>
+            <div class="result-card"><div class="result-value" id="cotiDaCraftare">0</div><div class="result-label">Coti da craftare</div></div>
             <div class="result-card"><div class="result-value" id="craftCoti">0</div><div class="result-label">Craft Coti (x4)</div></div>
             <div class="result-card"><div class="result-value" id="costoCoti">0 br</div><div class="result-label">Costo Totale Coti</div></div>
+            <div class="result-card"><div class="result-value" id="cotiRimanenti">0</div><div class="result-label">Coti rimanenti (fine calcolo)</div></div>
 
             <div class="result-card"><div class="result-value" id="frecceLotti">0</div><div class="result-label">Lotti frecce (x20)</div></div>
             <div class="result-card"><div class="result-value" id="nuggetIngot">0</div><div class="result-label">Lingotti per Nugget</div></div>
@@ -546,8 +549,11 @@
       document.getElementById('cotiArco').textContent = cArco;
       document.getElementById('cotiStiletto').textContent = cStiletto;
       document.getElementById('cotiTotali').textContent = cTot;
+      document.getElementById('cotiDaStock').textContent = cotiDaStock;
+      document.getElementById('cotiDaCraftare').textContent = cotiDaCraftare;
       document.getElementById('craftCoti').textContent = craftCoti;
       document.getElementById('costoCoti').textContent = `${costoCoti.toFixed(1)} br`;
+      document.getElementById('cotiRimanenti').textContent = Math.max(0, cotiStock - cotiDaStock + (craftCoti * 4 - cotiDaCraftare));
 
       // Frecce: 1 lingotto => 9 nugget; 1 nugget+1 stick+1 piuma => 20 frecce
       const frecce = parseFloat(document.getElementById('frecceUsate').value) || 0;
