@@ -510,8 +510,8 @@
           <div class="form-group">
             <h3>🍽️ Costi Fissi</h3>
             <div class="input-group">
-              <label for="costoCalice">Costo Calice Giornaliero (br):</label>
-              <input type="number" id="costoCalice" placeholder="Default 3" min="0" step="0.01" value="3">
+              <label>Costo Calice Giornaliero:</label>
+              <div style="color: #10b981; font-weight: 600; padding: 12px 15px; border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 8px; background: rgba(16, 185, 129, 0.1);">3 br (fisso)</div>
             </div>
             <div class="input-group">
               <label for="costoCibo">Costo Cibo (br):</label>
@@ -792,7 +792,7 @@
       const costoFrecce = calcolaCostoFrecce();
       const costoPozioni = calcolaCostoTotalePozioni();
       const costiFissi = calcolaCostiFissi();
-      const costoCalice = parseFloat(document.getElementById('costoCalice').value) || 0;
+      const costoCalice = 3; // Fisso
       const costoCibo = parseFloat(document.getElementById('costoCibo').value) || 0;
       const totale = costoArmatura + costoArmi + costoFrecce + costoPozioni + costiFissi;
 
@@ -1274,7 +1274,7 @@
     }
 
     function calcolaCostiFissi() {
-      const costoCalice = parseFloat(document.getElementById('costoCalice').value) || 0;
+      const costoCalice = 3; // Fisso, non modificabile
       const costoCibo = parseFloat(document.getElementById('costoCibo').value) || 0;
       return costoCalice + costoCibo;
     }
@@ -1479,7 +1479,7 @@
     }
 
     function segnaGiornoVuoto() {
-      const costoCalice = parseFloat(document.getElementById('costoCalice').value) || 3;
+      const costoCalice = 3; // Fisso
       const confirmed = confirm(
         '📅 Vuoi segnare questo come un giorno vuoto?\n\n' +
         'Questo salverà una giornata con:\n' +
