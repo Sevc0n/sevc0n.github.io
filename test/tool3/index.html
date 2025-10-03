@@ -300,123 +300,20 @@
               <div class="result-label">Bronzini dalla Sfida</div>
             </div>
           </div>
+          <button class="calculate-button" style="margin-top: 10px;" onclick="salvaGiornataGuadagno()">💾 Salva giornata</button>
         </div>
       </div>
 
-      <div class="calculator-section">
-        <h2>⚔️ Calcolatore Spedizione Abissale</h2>
-        <p style="color: #d1d5db; text-align: center; margin-bottom: 30px; font-size: 1.1rem;">
-          Inserisci i dati della tua spedizione per calcolare guadagni e perdite totali
-        </p>
-
-        <div class="form-grid">
-          <div class="form-group">
-            <h3>🏆 Ricompense</h3>
-            <div class="input-group">
-              <label for="oro">Oro guadagnato:</label>
-              <input type="number" id="oro" placeholder="Es: 1500" min="0">
-            </div>
-            <div class="input-group">
-              <label for="gemme">Gemme trovate:</label>
-              <input type="number" id="gemme" placeholder="Es: 25" min="0">
-            </div>
-            <div class="input-group">
-              <label for="valoreGemme">Valore per gemma:</label>
-              <input type="number" id="valoreGemme" placeholder="Es: 50" min="0" step="0.01">
-            </div>
-            <div class="input-group">
-              <label for="equipaggiamento">Equipaggiamento trovato (valore):</label>
-              <input type="number" id="equipaggiamento" placeholder="Es: 300" min="0" step="0.01">
-            </div>
-          </div>
-
-          <div class="form-group">
-            <h3>⚔️ Equipaggiamento Consumato</h3>
-            <div class="input-group">
-              <label for="frecce">Frecce utilizzate:</label>
-              <input type="number" id="frecce" placeholder="Es: 50" min="0">
-            </div>
-            <div class="input-group">
-              <label for="costoFrecce">Costo per freccia:</label>
-              <input type="number" id="costoFrecce" placeholder="Es: 2.50" min="0" step="0.01">
-            </div>
-            <div class="input-group">
-              <label for="pozioni">Pozioni di cura usate:</label>
-              <input type="number" id="pozioni" placeholder="Es: 8" min="0">
-            </div>
-            <div class="input-group">
-              <label for="costoPozioni">Costo per pozione:</label>
-              <input type="number" id="costoPozioni" placeholder="Es: 15.00" min="0" step="0.01">
-            </div>
-            <div class="input-group">
-              <label for="stiletto">Danni stiletto (riparazioni):</label>
-              <input type="number" id="stiletto" placeholder="Es: 45.00" min="0" step="0.01">
-            </div>
-            <div class="input-group">
-              <label for="arco">Danni arco (riparazioni):</label>
-              <input type="number" id="arco" placeholder="Es: 30.00" min="0" step="0.01">
-            </div>
-          </div>
-
-          <div class="form-group">
-            <h3>🌊 Spedizione</h3>
-            <div class="input-group">
-              <label for="oreSpedizione">Ore di spedizione:</label>
-              <input type="number" id="oreSpedizione" placeholder="Es: 6" min="0" step="0.5">
-            </div>
-            <div class="input-group">
-              <label for="livelloAbisso">Livello abisso raggiunto:</label>
-              <input type="number" id="livelloAbisso" placeholder="Es: 15" min="1">
-            </div>
-            <div class="input-group">
-              <label for="sfideCompletate">Sfide completate:</label>
-              <input type="number" id="sfideCompletate" placeholder="Es: 8" min="0">
-            </div>
-            <div class="input-group">
-              <label for="morti">Numero di morti:</label>
-              <input type="number" id="morti" placeholder="Es: 2" min="0">
-            </div>
-            <div class="input-group">
-              <label for="costoMorte">Costo per morte (respawn):</label>
-              <input type="number" id="costoMorte" placeholder="Es: 100" min="0" step="0.01">
-            </div>
-          </div>
-        </div>
-
-        <button class="calculate-button" onclick="calcolaSpedizione()">
-          ⚔️ Calcola Risultati
-        </button>
-      </div>
-
-      <div class="results-section" id="resultsSection" style="display: none;">
-        <h3>📊 Risultati della Spedizione</h3>
-        <div class="results-grid">
-          <div class="result-card">
-            <div class="result-value" id="ricompenseTotali">0</div>
-            <div class="result-label">Ricompense Totali</div>
-          </div>
-          <div class="result-card">
-            <div class="result-value" id="costiTotali">0</div>
-            <div class="result-label">Costi Totali</div>
-          </div>
-          <div class="result-card">
-            <div class="result-value" id="guadagnoNetto">0</div>
-            <div class="result-label">Guadagno/Perdita Netta</div>
-          </div>
-          <div class="result-card">
-            <div class="result-value" id="guadagnoOra">0/h</div>
-            <div class="result-label">Guadagno per Ora</div>
-          </div>
-          <div class="result-card">
-            <div class="result-value" id="efficienzaSfide">0%</div>
-            <div class="result-label">Efficienza Sfide</div>
-          </div>
-          <div class="result-card">
-            <div class="result-value" id="profonditaMedia">0</div>
-            <div class="result-label">Profondità Media</div>
-          </div>
+      <div class="calculator-section" id="storicoGuadagno" style="display: none;">
+        <h2>🗂️ Storico Giorni (Guadagno)</h2>
+        <p style="color: #d1d5db; text-align: center; margin-bottom: 20px; font-size: 0.95rem;">I dati vengono salvati solo sul tuo browser.</p>
+        <div id="listaStorico" class="feature-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 15px;"></div>
+        <div style="text-align: center; margin-top: 15px;">
+          <button class="calculate-button" onclick="cancellaStoricoGuadagno()">🗑️ Cancella storico</button>
         </div>
       </div>
+
+      
 
       <div style="text-align: center; margin-top: 40px;">
         <a href="../../accesso-test.html" class="back-link">🔙 Torna all'Accesso</a>
@@ -424,10 +321,19 @@
         <a href="../tool1/index.html" class="back-link">🔧 Tool 1</a>
         <a href="../tool2/index.html" class="back-link">🔬 Tool 2</a>
       </div>
+
+      <div class="calculator-section" id="riepilogoGenerale" style="margin-top: 25px;">
+        <h2>🧾 Riepilogo</h2>
+        <div id="riepilogoGiorni" class="results-grid"></div>
+        <div id="riepilogoSettimane" class="results-grid" style="margin-top: 20px;"></div>
+      </div>
     </main>
   </div>
 
   <script>
+    const STORAGE_KEY_GUADAGNO = 'hunter_calc_guadagno_v1';
+    const BR_LABEL = ' br';
+
     function toggleFaseVisibility() {
       const fattaSfida = document.getElementById('fattaSfida').checked;
       const faseContainer = document.getElementById('faseContainer');
@@ -457,62 +363,139 @@
       document.getElementById('resultsGuadagno').scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 
-    function calcolaSpedizione() {
-      // Raccogli i dati dal form
-      const oro = parseFloat(document.getElementById('oro').value) || 0;
-      const gemme = parseFloat(document.getElementById('gemme').value) || 0;
-      const valoreGemme = parseFloat(document.getElementById('valoreGemme').value) || 0;
-      const equipaggiamento = parseFloat(document.getElementById('equipaggiamento').value) || 0;
-      
-      const frecce = parseFloat(document.getElementById('frecce').value) || 0;
-      const costoFrecce = parseFloat(document.getElementById('costoFrecce').value) || 0;
-      const pozioni = parseFloat(document.getElementById('pozioni').value) || 0;
-      const costoPozioni = parseFloat(document.getElementById('costoPozioni').value) || 0;
-      const stiletto = parseFloat(document.getElementById('stiletto').value) || 0;
-      const arco = parseFloat(document.getElementById('arco').value) || 0;
-      
-      const oreSpedizione = parseFloat(document.getElementById('oreSpedizione').value) || 0;
-      const livelloAbisso = parseFloat(document.getElementById('livelloAbisso').value) || 0;
-      const sfideCompletate = parseFloat(document.getElementById('sfideCompletate').value) || 0;
-      const morti = parseFloat(document.getElementById('morti').value) || 0;
-      const costoMorte = parseFloat(document.getElementById('costoMorte').value) || 0;
-      
-      // Calcoli
-      const valoreGemmeTotali = gemme * valoreGemme;
-      const ricompenseTotali = oro + valoreGemmeTotali + equipaggiamento;
-      
-      const costiFrecce = frecce * costoFrecce;
-      const costiPozioni = pozioni * costoPozioni;
-      const costiRiparazioni = stiletto + arco;
-      const costiMorti = morti * costoMorte;
-      const costiTotali = costiFrecce + costiPozioni + costiRiparazioni + costiMorti;
-      
-      const guadagnoNetto = ricompenseTotali - costiTotali;
-      const guadagnoOra = oreSpedizione > 0 ? guadagnoNetto / oreSpedizione : 0;
-      const efficienzaSfide = oreSpedizione > 0 ? (sfideCompletate / oreSpedizione) * 100 : 0;
-      const profonditaMedia = livelloAbisso;
-      
-      // Aggiorna i risultati
-      document.getElementById('ricompenseTotali').textContent = ricompenseTotali.toFixed(0);
-      document.getElementById('costiTotali').textContent = costiTotali.toFixed(0);
-      
-      const guadagnoNettoElement = document.getElementById('guadagnoNetto');
-      guadagnoNettoElement.textContent = guadagnoNetto.toFixed(0);
-      guadagnoNettoElement.className = 'result-value ' + (guadagnoNetto >= 0 ? 'profit-positive' : 'profit-negative');
-      
-      document.getElementById('guadagnoOra').textContent = guadagnoOra.toFixed(0) + '/h';
-      document.getElementById('efficienzaSfide').textContent = efficienzaSfide.toFixed(1) + '%';
-      document.getElementById('profonditaMedia').textContent = profonditaMedia.toFixed(0);
-      
-      // Mostra la sezione risultati
-      document.getElementById('resultsSection').style.display = 'block';
-      
-      // Scroll ai risultati
-      document.getElementById('resultsSection').scrollIntoView({ 
-        behavior: 'smooth',
-        block: 'start'
-      });
+    function salvaGiornataGuadagno() {
+      const guadagno = parseFloat(document.getElementById('guadagnoGiorno').value) || 0;
+      const fattaSfida = document.getElementById('fattaSfida').checked;
+      const fase = fattaSfida ? Number(document.getElementById('faseSfida').value) : 0;
+      const bronzini = fattaSfida ? calcolaBronziniPerFase(fase) : 0;
+
+      const entry = {
+        id: Date.now(),
+        date: new Date().toISOString(),
+        guadagno,
+        fattaSfida,
+        fase,
+        bronzini
+      };
+
+      const existing = JSON.parse(localStorage.getItem(STORAGE_KEY_GUADAGNO) || '[]');
+      existing.push(entry);
+      localStorage.setItem(STORAGE_KEY_GUADAGNO, JSON.stringify(existing));
+
+      renderStoricoGuadagno();
+      const section = document.getElementById('storicoGuadagno');
+      section.style.display = 'block';
+      section.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
+
+    function cancellaStoricoGuadagno() {
+      if (!confirm('Sei sicuro di voler cancellare lo storico del guadagno?')) return;
+      localStorage.removeItem(STORAGE_KEY_GUADAGNO);
+      renderStoricoGuadagno();
+    }
+
+    function formatDate(d) {
+      try {
+        const date = new Date(d);
+        return date.toLocaleString();
+      } catch (_) { return d; }
+    }
+
+    function renderStoricoGuadagno() {
+      const container = document.getElementById('listaStorico');
+      const wrapper = document.getElementById('storicoGuadagno');
+      const riepilogoGiorni = document.getElementById('riepilogoGiorni');
+      const riepilogoSettimane = document.getElementById('riepilogoSettimane');
+      if (!container || !wrapper) return;
+
+      const entries = JSON.parse(localStorage.getItem(STORAGE_KEY_GUADAGNO) || '[]');
+      if (entries.length === 0) {
+        wrapper.style.display = 'none';
+        container.innerHTML = '';
+        if (riepilogoGiorni) riepilogoGiorni.innerHTML = '';
+        if (riepilogoSettimane) riepilogoSettimane.innerHTML = '';
+        return;
+      }
+
+      wrapper.style.display = 'block';
+      container.innerHTML = entries
+        .sort((a, b) => b.id - a.id)
+        .map(e => {
+          const labelFase = e.fattaSfida && e.fase ? `Fase ${e.fase}` : 'Nessuna sfida';
+          return `
+            <div class="feature-card" style="background: rgba(45,55,72,0.5); border:1px solid rgba(255,255,255,0.08);">
+              <h3>🗓️ ${formatDate(e.date)}</h3>
+              <ul>
+                <li>Guadagno: <strong>€${e.guadagno.toFixed(2)}</strong></li>
+                <li>Sfida: <strong>${labelFase}</strong></li>
+                <li>Bronzini: <strong>${e.bronzini} br</strong></li>
+              </ul>
+              <div style="margin-top:10px; display:flex; gap:10px;">
+                <button class="back-link" onclick="eliminaEntryGuadagno(${e.id})">Elimina</button>
+              </div>
+            </div>
+          `;
+        }).join('');
+
+      // Riepilogo giornaliero (per ora costi=0 perché la sezione costi arriverà dopo)
+      if (riepilogoGiorni) {
+        riepilogoGiorni.innerHTML = entries
+          .sort((a, b) => b.id - a.id)
+          .map(e => {
+            const guadagnoBr = e.bronzini; // bronzini dalla sfida
+            const costiBr = 0;            // placeholder fino alla sezione costi
+            const totale = guadagnoBr - costiBr;
+            const sign = totale >= 0 ? '+' : '-';
+            return `
+              <div class="result-card">
+                <div class="result-value">${formatDate(e.date)}</div>
+                <div class="result-label">guadagno: <strong>${guadagnoBr}${BR_LABEL}</strong>, costi: <strong>${costiBr} bronzini</strong>, totale ${sign} <strong>${Math.abs(totale)}${BR_LABEL}</strong></div>
+              </div>
+            `;
+          }).join('');
+      }
+
+      // Aggregazione settimanale (ISO week)
+      if (riepilogoSettimane) {
+        const byWeek = {};
+        entries.forEach(e => {
+          const d = new Date(e.date);
+          const year = d.getFullYear();
+          const week = getISOWeekNumber(d);
+          const key = `${year}-W${week}`;
+          if (!byWeek[key]) byWeek[key] = { dates: [], guadagnoBr: 0, costiBr: 0 };
+          byWeek[key].dates.push(d);
+          byWeek[key].guadagnoBr += e.bronzini;
+          // costiBr resterà 0 finché non implementiamo la sezione costi
+        });
+
+        const cards = Object.entries(byWeek).sort(([a], [b]) => a < b ? 1 : -1).map(([key, val]) => {
+          const minDate = new Date(Math.min.apply(null, val.dates));
+          const maxDate = new Date(Math.max.apply(null, val.dates));
+          const range = `${minDate.toLocaleDateString()} → ${maxDate.toLocaleDateString()}`;
+          const totale = val.guadagnoBr - val.costiBr;
+          const sign = totale >= 0 ? '+' : '-';
+          return `
+            <div class="result-card">
+              <div class="result-value">Settimana ${key}</div>
+              <div class="result-label">${range}</div>
+              <div class="result-label">guadagno: <strong>${val.guadagnoBr}${BR_LABEL}</strong>, costi: <strong>${val.costiBr} bronzini</strong>, totale ${sign} <strong>${Math.abs(totale)}${BR_LABEL}</strong></div>
+            </div>
+          `;
+        }).join('');
+
+        riepilogoSettimane.innerHTML = cards;
+      }
+    }
+
+    function eliminaEntryGuadagno(id) {
+      const entries = JSON.parse(localStorage.getItem(STORAGE_KEY_GUADAGNO) || '[]');
+      const filtered = entries.filter(e => e.id !== id);
+      localStorage.setItem(STORAGE_KEY_GUADAGNO, JSON.stringify(filtered));
+      renderStoricoGuadagno();
+    }
+
+    // placeholder: la sezione spedizione verrà reintrodotta in seguito
 
     // Validazione input in tempo reale
     document.addEventListener('DOMContentLoaded', function() {
@@ -524,6 +507,14 @@
           }
         });
       });
+      // Attiva toggle fase alla prima apertura
+      const fattaSfida = document.getElementById('fattaSfida');
+      if (fattaSfida) {
+        fattaSfida.addEventListener('change', toggleFaseVisibility);
+        toggleFaseVisibility();
+      }
+      // Render iniziale storico
+      renderStoricoGuadagno();
     });
 
     // Animazione di benvenuto
@@ -542,6 +533,15 @@
         }, index * 200);
       });
     });
+
+    function getISOWeekNumber(date) {
+      const tmp = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+      const dayNum = tmp.getUTCDay() || 7;
+      tmp.setUTCDate(tmp.getUTCDate() + 4 - dayNum);
+      const yearStart = new Date(Date.UTC(tmp.getUTCFullYear(),0,1));
+      const weekNo = Math.ceil((((tmp - yearStart) / 86400000) + 1)/7);
+      return weekNo;
+    }
   </script>
 </body>
 </html>
