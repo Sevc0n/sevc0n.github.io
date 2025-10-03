@@ -347,16 +347,12 @@
             </div>
             <hr style="border-color: rgba(255,255,255,0.1); margin: 12px 0;">
             <div class="input-group">
-              <label for="frecceUsate">Frecce utilizzate:</label>
-              <input type="number" id="frecceUsate" placeholder="Es: 120" min="0">
-            </div>
-            <div class="input-group">
-              <label for="frecceDisponibili">Frecce già craftate disponibili:</label>
-              <input type="number" id="frecceDisponibili" placeholder="Es: 40" min="0" step="1" value="0">
+              <label for="frecceRimanenti">Frecce rimanenti a fine giornata:</label>
+              <input type="number" id="frecceRimanenti" placeholder="Es: 30" min="0" step="1">
             </div>
             <div class="input-group">
               <label>Note crafting frecce:</label>
-              <div style="color:#a0aec0;">1 nugget rame + 1 stick + 1 piuma ⇒ 20 frecce • 1 lingotto ⇒ 9 nugget</div>
+              <div style="color:#a0aec0;">Target: 150 frecce • 1 nugget rame + 1 stick + 1 piuma ⇒ 20 frecce • 1 lingotto ⇒ 9 nugget</div>
             </div>
           </div>
 
@@ -436,9 +432,12 @@
             <div class="result-card"><div class="result-value" id="costoCoti">0 br</div><div class="result-label">Costo Totale Coti</div></div>
             <div class="result-card"><div class="result-value" id="cotiRimanenti">0</div><div class="result-label">Coti rimanenti (fine calcolo)</div></div>
 
+            <div class="result-card"><div class="result-value" id="frecceTarget">150</div><div class="result-label">Target frecce</div></div>
+            <div class="result-card"><div class="result-value" id="frecceDaCraftare">0</div><div class="result-label">Frecce da craftare</div></div>
             <div class="result-card"><div class="result-value" id="frecceLotti">0</div><div class="result-label">Lotti frecce (x20)</div></div>
             <div class="result-card"><div class="result-value" id="nuggetIngot">0</div><div class="result-label">Lingotti per Nugget</div></div>
             <div class="result-card"><div class="result-value" id="costoFrecceMat">0 br</div><div class="result-label">Costo Materiali Frecce</div></div>
+            <div class="result-card"><div class="result-value" id="frecceFinali">150</div><div class="result-label">Frecce finali (dopo crafting)</div></div>
           </div>
         </div>
 
@@ -555,10 +554,13 @@
       document.getElementById('costoCoti').textContent = `${costoCoti.toFixed(1)} br`;
       document.getElementById('cotiRimanenti').textContent = Math.max(0, cotiStock - cotiDaStock + (craftCoti * 4 - cotiDaCraftare));
 
-      // Frecce: 1 lingotto => 9 nugget; 1 nugget+1 stick+1 piuma => 20 frecce
-      const frecce = parseFloat(document.getElementById('frecceUsate').value) || 0;
-      const frecceStock = Math.max(0, parseInt(document.getElementById('frecceDisponibili').value) || 0);
-      const frecceDaCraftare = Math.max(0, frecce - frecceStock);
+      // Frecce: target 150, calcola quante craftare per arrivare al target
+      const frecceRimanenti = parseFloat(document.getElementById('frecceRimanenti').value) || 0;
+      const targetFrecce = 150;
+      
+      // Frecce da craftare = target - rimanenti
+      const frecceDaCraftare = Math.max(0, targetFrecce - frecceRimanenti);
+      
       const costoStick = parseFloat(document.getElementById('costoStick').value) || 0;
       const costoPiuma = parseFloat(document.getElementById('costoPiuma').value) || 0;
       const lotti = Math.ceil(frecceDaCraftare / 20);
@@ -569,13 +571,16 @@
       const costoPiumaTot = lotti * costoPiuma;
       const costoFrecce = costoNugget + costoStickTot + costoPiumaTot;
 
+      document.getElementById('frecceTarget').textContent = targetFrecce;
+      document.getElementById('frecceDaCraftare').textContent = frecceDaCraftare;
       document.getElementById('frecceLotti').textContent = lotti;
       document.getElementById('nuggetIngot').textContent = lingottiPerNugget;
       document.getElementById('costoFrecceMat').textContent = `${costoFrecce.toFixed(1)} br`;
+      document.getElementById('frecceFinali').textContent = frecceRimanenti + (lotti * 20);
 
       // salva rimanenze parziali
       const cotiRim = Math.max(0, cotiStock - cotiDaStock + (craftCoti * 4 - cotiDaCraftare));
-      const frecceRim = Math.max(0, frecceStock - Math.min(frecceStock, frecce) + (lotti * 20 - frecceDaCraftare));
+      const frecceRim = Math.max(0, frecceRimanenti + (lotti * 20) - targetFrecce); // frecce in eccesso rispetto al target
       window.__stockPartial = window.__stockPartial || {};
       window.__stockPartial.coti = cotiRim;
       window.__stockPartial.frecce = frecceRim;
@@ -800,7 +805,6 @@
         if (savedStock && typeof savedStock === 'object') {
           if (typeof savedStock.patch === 'number') document.getElementById('patchDisponibili').value = savedStock.patch;
           if (typeof savedStock.coti === 'number') document.getElementById('cotiDisponibili').value = savedStock.coti;
-          if (typeof savedStock.frecce === 'number') document.getElementById('frecceDisponibili').value = savedStock.frecce;
         }
       } catch (e) {}
 
