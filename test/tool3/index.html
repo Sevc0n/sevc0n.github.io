@@ -668,19 +668,17 @@
       calcolaCostiArmatura();
       calcolaCostiArmiEFrecce();
 
-      // Legge i totali dalle sezioni
-      const costoPatchText = document.getElementById('costoTotalePatch').textContent || '0 br';
-      const costoCotiText = document.getElementById('costoCoti').textContent || '0 br';
-      const costoFrecceText = document.getElementById('costoFrecceMat').textContent || '0 br';
-
-      const num = t => parseFloat((t || '0').toString().replace(' br','').replace(',', '.')) || 0;
+      // Legge i totali dalle sezioni (ora calcolati direttamente)
+      const costoArmatura = calcolaCostoArmatura();
+      const costoArmi = calcolaCostoArmi();
+      const costoFrecce = calcolaCostoFrecce();
       const costoPozioni = calcolaCostoTotalePozioni();
-      const totale = num(costoPatchText) + num(costoCotiText) + num(costoFrecceText) + costoPozioni;
+      const totale = costoArmatura + costoArmi + costoFrecce + costoPozioni;
 
       // Aggiorna risultati compatti
-      document.getElementById('costoArmatura').textContent = `${num(costoPatchText).toFixed(1)} br`;
-      document.getElementById('costoArmi').textContent = `${num(costoCotiText).toFixed(1)} br`;
-      document.getElementById('costoFrecce').textContent = `${num(costoFrecceText).toFixed(1)} br`;
+      document.getElementById('costoArmatura').textContent = `${costoArmatura.toFixed(1)} br`;
+      document.getElementById('costoArmi').textContent = `${costoArmi.toFixed(1)} br`;
+      document.getElementById('costoFrecce').textContent = `${costoFrecce.toFixed(1)} br`;
       document.getElementById('costoPozioni').textContent = `${costoPozioni.toFixed(1)} br`;
       
       document.getElementById('costoTotaleGiorno').textContent = `${totale.toFixed(1)} br`;
@@ -697,6 +695,63 @@
         frecce: Number(stock.frecce || 0)
       };
       localStorage.setItem(STORAGE_KEY_STOCK, JSON.stringify(toSave));
+    }
+
+    function calcolaCostoArmatura() {
+      const elmo = parseFloat(document.getElementById('elmoDur').value) || 0;
+      const torso = parseFloat(document.getElementById('torsoDur').value) || 0;
+      const gambe = parseFloat(document.getElementById('gambeDur').value) || 0;
+      const stivali = parseFloat(document.getElementById('stivaliDur').value) || 0;
+
+      const costoLingotto = parseFloat(document.getElementById('costoLingotto').value) || 0;
+      const costoWool = parseFloat(document.getElementById('costoWool').value) || 0;
+
+      const pElmo = patchesNecessariePerPezzo(elmo);
+      const pTorso = patchesNecessariePerPezzo(torso);
+      const pGambe = patchesNecessariePerPezzo(gambe);
+      const pStivali = patchesNecessariePerPezzo(stivali);
+      const pTot = pElmo + pTorso + pGambe + pStivali;
+      const stock = Math.max(0, parseInt(document.getElementById('patchDisponibili').value) || 0);
+      const usateDaStock = Math.min(stock, pTot);
+      const daCraftare = Math.max(0, pTot - usateDaStock);
+
+      // 1 craft = 1 lingotto + 1 woolen = 4 patch
+      const craft = Math.ceil(daCraftare / 4);
+      return craft * (costoLingotto + costoWool);
+    }
+
+    function calcolaCostoArmi() {
+      const arcoDur = parseFloat(document.getElementById('arcoDur').value) || 0;
+      const stilettoDur = parseFloat(document.getElementById('stilettoDur').value) || 0;
+      const costoLingotto = parseFloat(document.getElementById('costoLingotto').value) || 0;
+      const costoHilt = parseFloat(document.getElementById('costoHilt').value) || 0;
+
+      const cArco = patchesNecessariePerPezzo(arcoDur);
+      const cStiletto = patchesNecessariePerPezzo(stilettoDur);
+      const cTot = cArco + cStiletto;
+      const cotiStock = Math.max(0, parseInt(document.getElementById('cotiDisponibili').value) || 0);
+      const cotiDaStock = Math.min(cotiStock, cTot);
+      const cotiDaCraftare = Math.max(0, cTot - cotiDaStock);
+      const craftCoti = Math.ceil(cotiDaCraftare / 4);
+      return craftCoti * (costoHilt + costoLingotto);
+    }
+
+    function calcolaCostoFrecce() {
+      const frecceRimanenti = parseFloat(document.getElementById('frecceRimanenti').value) || 0;
+      const targetFrecce = 150;
+      const frecceDaCraftare = Math.max(0, targetFrecce - frecceRimanenti);
+      
+      const costoLingotto = parseFloat(document.getElementById('costoLingotto').value) || 0;
+      const costoStick = parseFloat(document.getElementById('costoStick').value) || 0;
+      const costoPiuma = parseFloat(document.getElementById('costoPiuma').value) || 0;
+      
+      const lotti = Math.ceil(frecceDaCraftare / 20);
+      const nuggetNecessari = lotti;
+      const lingottiPerNugget = Math.ceil(nuggetNecessari / 9);
+      const costoNugget = lingottiPerNugget * costoLingotto;
+      const costoStickTot = lotti * costoStick;
+      const costoPiumaTot = lotti * costoPiuma;
+      return costoNugget + costoStickTot + costoPiumaTot;
     }
     const STORAGE_KEY_GUADAGNO = 'hunter_calc_guadagno_v1';
     const STORAGE_KEY_STOCK = 'hunter_calc_stock_v1';
@@ -907,8 +962,10 @@
         }
       } catch (e) {}
 
-      // Carica e renderizza pozioni
-      caricaPozioni();
+      // Carica e renderizza pozioni (solo se non ci sono già)
+      if (pozioniLista.length === 0) {
+        caricaPozioni();
+      }
       renderPozioni();
 
       // Render iniziale storico
@@ -1001,7 +1058,13 @@
     function caricaPozioni() {
       const saved = localStorage.getItem(STORAGE_KEY_POZIONI);
       if (saved) {
-        pozioniLista = JSON.parse(saved);
+        try {
+          pozioniLista = JSON.parse(saved);
+        } catch (e) {
+          pozioniLista = [];
+        }
+      } else {
+        pozioniLista = [];
       }
     }
 
