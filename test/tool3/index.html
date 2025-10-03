@@ -319,6 +319,31 @@
     .btn-remove:hover {
       background: rgba(239, 68, 68, 0.3);
     }
+
+    .guadagno-card {
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      border-radius: 12px;
+      padding: 15px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .guadagno-info {
+      flex: 1;
+    }
+
+    .guadagno-info h4 {
+      color: #10b981;
+      margin: 0 0 5px 0;
+      font-size: 1.1rem;
+    }
+
+    .guadagno-details {
+      color: #a0aec0;
+      font-size: 0.9rem;
+    }
   </style>
 </head>
 <body>
@@ -339,38 +364,30 @@
           Inserisci il guadagno del giorno. Se hai fatto la sfida, seleziona la fase raggiunta per calcolare i bronzini (br) ottenuti.
         </p>
 
-        <div class="form-grid">
-          <div class="form-group">
-            <h3>💵 Guadagno Giornaliero</h3>
-            <div class="input-group">
-              <label for="guadagnoGiorno">Guadagno del giorno (senza costi):</label>
-              <input type="number" id="guadagnoGiorno" placeholder="Es: 1200" min="0" step="0.01">
-            </div>
-            <div class="input-group">
-              <label for="causaleGuadagno">Causale del guadagno:</label>
-              <input type="text" id="causaleGuadagno" placeholder="Es: Vendita materiali, Missioni, etc.">
-            </div>
+        <div style="text-align: center; margin-bottom: 20px;">
+          <button class="calculate-button" onclick="apriFinestraGuadagno()" style="background: linear-gradient(135deg, #10b981, #059669);">➕ Aggiungi Guadagno</button>
+        </div>
+        <div id="listaGuadagni" style="display: grid; gap: 15px; margin-bottom: 20px;"></div>
+
+        <div class="form-group">
+          <h3>🏁 Sfida</h3>
+          <div class="input-group" style="display: flex; align-items: center; gap: 10px;">
+            <input type="checkbox" id="fattaSfida" style="width: 20px; height: 20px;">
+            <label for="fattaSfida" style="margin: 0;">Hai fatto la sfida?</label>
           </div>
 
-          <div class="form-group">
-            <h3>🏁 Sfida</h3>
-            <div class="input-group" style="display: flex; align-items: center; gap: 10px;">
-              <input type="checkbox" id="fattaSfida" style="width: 20px; height: 20px;">
-              <label for="fattaSfida" style="margin: 0;">Hai fatto la sfida?</label>
-            </div>
-
-            <div id="faseContainer" style="display: none; margin-top: 10px;">
-              <div class="input-group">
-                <label for="faseSfida">Fase raggiunta:</label>
-                <select id="faseSfida">
-                  <option value="1">Fase 1 (13 br)</option>
-                  <option value="2">Fase 2 (13 + 18 = 31 br)</option>
-                  <option value="3">Fase 3 (31 + 18 = 49 br)</option>
-                  <option value="4">Fase 4 (49 + 23 = 72 br)</option>
-                </select>
-              </div>
+          <div id="faseContainer" style="display: none; margin-top: 10px;">
+            <div class="input-group">
+              <label for="faseSfida">Fase raggiunta:</label>
+              <select id="faseSfida">
+                <option value="1">Fase 1 (13 br)</option>
+                <option value="2">Fase 2 (13 + 18 = 31 br)</option>
+                <option value="3">Fase 3 (31 + 18 = 49 br)</option>
+                <option value="4">Fase 4 (49 + 23 = 72 br)</option>
+              </select>
             </div>
           </div>
+        </div>
         </div>
 
         <button class="calculate-button" onclick="calcolaGuadagno()">🧮 Calcola Guadagno</button>
@@ -579,6 +596,29 @@
     </div>
   </div>
 
+  <!-- Modal per aggiungere guadagni -->
+  <div id="modalGuadagno" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="chiudiFinestraGuadagno()">&times;</span>
+      <h3 style="color: #10b981; margin-bottom: 20px; text-align: center;">💰 Aggiungi Guadagno</h3>
+      
+      <div class="input-group">
+        <label for="causaleGuadagno">Causale del guadagno:</label>
+        <input type="text" id="causaleGuadagno" placeholder="Es: Vendita materiali, Missioni, etc." style="width: 100%; padding: 12px 15px; border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 8px; background: rgba(255, 255, 255, 0.1); color: #ffffff; font-size: 1rem;">
+      </div>
+      
+      <div class="input-group">
+        <label for="importoGuadagno">Importo guadagnato (br):</label>
+        <input type="number" id="importoGuadagno" placeholder="Es: 1200" min="0" step="0.01" style="width: 100%; padding: 12px 15px; border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 8px; background: rgba(255, 255, 255, 0.1); color: #ffffff; font-size: 1rem;">
+      </div>
+      
+      <div style="text-align: center; margin-top: 25px;">
+        <button class="calculate-button" onclick="aggiungiGuadagno()" style="background: linear-gradient(135deg, #10b981, #059669); margin-right: 10px;">✅ Aggiungi</button>
+        <button class="calculate-button" onclick="chiudiFinestraGuadagno()" style="background: linear-gradient(135deg, #6b7280, #4b5563);">❌ Annulla</button>
+      </div>
+    </div>
+  </div>
+
   <script>
     function placeholderCalcolaCosti() {
       alert('La sezione costi verrà completata nel prossimo step con i calcoli dettagliati.');
@@ -783,9 +823,11 @@
     const STORAGE_KEY_GUADAGNO = 'hunter_calc_guadagno_v1';
     const STORAGE_KEY_STOCK = 'hunter_calc_stock_v1';
     const STORAGE_KEY_POZIONI = 'hunter_calc_pozioni_v1';
+    const STORAGE_KEY_GUADAGNI_GIORNO = 'hunter_calc_guadagni_giorno_v1';
     const BR_LABEL = ' br';
     
     let pozioniLista = [];
+    let guadagniLista = [];
 
     function toggleFaseVisibility() {
       const fattaSfida = document.getElementById('fattaSfida').checked;
@@ -805,13 +847,16 @@
     }
 
     function calcolaGuadagno() {
-      const guadagno = parseFloat(document.getElementById('guadagnoGiorno').value) || 0;
+      // Calcola guadagni dalle card dinamiche
+      const guadagniTotali = guadagniLista.reduce((totale, guadagno) => totale + guadagno.importo, 0);
+      
+      // Calcola bronzini dalla sfida
       const fattaSfida = document.getElementById('fattaSfida').checked;
       const fase = fattaSfida ? document.getElementById('faseSfida').value : 0;
       const bronzini = fattaSfida ? calcolaBronziniPerFase(fase) : 0;
-      const totale = guadagno + bronzini;
+      const totale = guadagniTotali + bronzini;
 
-      document.getElementById('valoreGuadagno').textContent = guadagno.toFixed(2);
+      document.getElementById('valoreGuadagno').textContent = guadagniTotali.toFixed(2);
       document.getElementById('bronziniTotali').textContent = bronzini + ' br';
       document.getElementById('guadagnoTotale').textContent = totale.toFixed(2) + ' br';
       document.getElementById('resultsGuadagno').style.display = 'block';
@@ -819,8 +864,10 @@
     }
 
     function salvaGiornataGuadagno() {
-      const guadagno = parseFloat(document.getElementById('guadagnoGiorno').value) || 0;
-      const causale = document.getElementById('causaleGuadagno').value.trim() || 'Nessuna causale';
+      // Calcola guadagni totali dalle card dinamiche
+      const guadagniTotali = guadagniLista.reduce((totale, guadagno) => totale + guadagno.importo, 0);
+      const causale = guadagniLista.length > 0 ? guadagniLista.map(g => g.causale).join(', ') : 'Nessuna causale';
+      
       const fattaSfida = document.getElementById('fattaSfida').checked;
       const fase = fattaSfida ? Number(document.getElementById('faseSfida').value) : 0;
       const bronzini = fattaSfida ? calcolaBronziniPerFase(fase) : 0;
@@ -828,7 +875,7 @@
       const entry = {
         id: Date.now(),
         date: new Date().toISOString(),
-        guadagno,
+        guadagno: guadagniTotali,
         causale,
         fattaSfida,
         fase,
@@ -997,6 +1044,10 @@
       }
       renderPozioni();
 
+      // Carica e renderizza guadagni
+      caricaGuadagni();
+      renderGuadagni();
+
       // Render iniziale storico
       renderStoricoGuadagno();
     });
@@ -1125,13 +1176,99 @@
       return pozioniLista.reduce((totale, pozione) => totale + pozione.totale, 0);
     }
 
+    // Funzioni per gestire i guadagni dinamici
+    function apriFinestraGuadagno() {
+      document.getElementById('modalGuadagno').style.display = 'block';
+      // Pulisci i campi
+      document.getElementById('causaleGuadagno').value = '';
+      document.getElementById('importoGuadagno').value = '';
+    }
+
+    function chiudiFinestraGuadagno() {
+      document.getElementById('modalGuadagno').style.display = 'none';
+    }
+
+    function aggiungiGuadagno() {
+      const causale = document.getElementById('causaleGuadagno').value.trim();
+      const importo = parseFloat(document.getElementById('importoGuadagno').value) || 0;
+
+      if (!causale) {
+        alert('Inserisci la causale del guadagno');
+        return;
+      }
+
+      if (importo <= 0) {
+        alert('Inserisci un importo valido');
+        return;
+      }
+
+      const guadagno = {
+        id: Date.now(),
+        causale: causale,
+        importo: importo
+      };
+
+      guadagniLista.push(guadagno);
+      salvaGuadagni();
+      renderGuadagni();
+      chiudiFinestraGuadagno();
+    }
+
+    function rimuoviGuadagno(id) {
+      guadagniLista = guadagniLista.filter(g => g.id !== id);
+      salvaGuadagni();
+      renderGuadagni();
+    }
+
+    function salvaGuadagni() {
+      localStorage.setItem(STORAGE_KEY_GUADAGNI_GIORNO, JSON.stringify(guadagniLista));
+    }
+
+    function caricaGuadagni() {
+      const saved = localStorage.getItem(STORAGE_KEY_GUADAGNI_GIORNO);
+      if (saved) {
+        try {
+          guadagniLista = JSON.parse(saved);
+        } catch (e) {
+          guadagniLista = [];
+        }
+      } else {
+        guadagniLista = [];
+      }
+    }
+
+    function renderGuadagni() {
+      const container = document.getElementById('listaGuadagni');
+      if (!container) return;
+
+      if (guadagniLista.length === 0) {
+        container.innerHTML = '<div style="text-align: center; color: #a0aec0; padding: 20px;">Nessun guadagno aggiunto</div>';
+        return;
+      }
+
+      container.innerHTML = guadagniLista.map(guadagno => `
+        <div class="guadagno-card">
+          <div class="guadagno-info">
+            <h4>${guadagno.causale}</h4>
+            <div class="guadagno-details">
+              <strong>${guadagno.importo.toFixed(2)} br</strong>
+            </div>
+          </div>
+          <div class="pozione-actions">
+            <button class="btn-remove" onclick="rimuoviGuadagno(${guadagno.id})">🗑️ Rimuovi</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
     function calcolaRapporto() {
-      // Calcola guadagno totale
-      const guadagno = parseFloat(document.getElementById('guadagnoGiorno').value) || 0;
+      // Calcola guadagno totale dalle card dinamiche
+      const guadagniTotali = guadagniLista.reduce((totale, guadagno) => totale + guadagno.importo, 0);
+      
       const fattaSfida = document.getElementById('fattaSfida').checked;
       const fase = fattaSfida ? document.getElementById('faseSfida').value : 0;
       const bronzini = fattaSfida ? calcolaBronziniPerFase(fase) : 0;
-      const guadagnoTotale = guadagno + bronzini;
+      const guadagnoTotale = guadagniTotali + bronzini;
 
       // Calcola costi totali
       const costoArmatura = calcolaCostoArmatura();
