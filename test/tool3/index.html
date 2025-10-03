@@ -251,6 +251,59 @@
 
     <main>
       <div class="calculator-section">
+        <h2>💰 Sezione Guadagno</h2>
+        <p style="color: #d1d5db; text-align: center; margin-bottom: 30px; font-size: 1.05rem;">
+          Inserisci il guadagno del giorno. Se hai fatto la sfida, seleziona la fase raggiunta per calcolare i bronzini (br) ottenuti.
+        </p>
+
+        <div class="form-grid">
+          <div class="form-group">
+            <h3>💵 Guadagno Giornaliero</h3>
+            <div class="input-group">
+              <label for="guadagnoGiorno">Guadagno del giorno (senza costi):</label>
+              <input type="number" id="guadagnoGiorno" placeholder="Es: 1200" min="0" step="0.01">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <h3>🏁 Sfida</h3>
+            <div class="input-group" style="display: flex; align-items: center; gap: 10px;">
+              <input type="checkbox" id="fattaSfida" style="width: 20px; height: 20px;">
+              <label for="fattaSfida" style="margin: 0;">Hai fatto la sfida?</label>
+            </div>
+
+            <div id="faseContainer" style="display: none; margin-top: 10px;">
+              <div class="input-group">
+                <label for="faseSfida">Fase raggiunta:</label>
+                <select id="faseSfida">
+                  <option value="1">Fase 1 (13 br)</option>
+                  <option value="2">Fase 2 (13 + 18 = 31 br)</option>
+                  <option value="3">Fase 3 (31 + 18 = 49 br)</option>
+                  <option value="4">Fase 4 (49 + 23 = 72 br)</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <button class="calculate-button" onclick="calcolaGuadagno()">🧮 Calcola Guadagno</button>
+
+        <div class="results-section" id="resultsGuadagno" style="display: none;">
+          <h3>📊 Risultati Guadagno</h3>
+          <div class="results-grid">
+            <div class="result-card">
+              <div class="result-value" id="valoreGuadagno">0</div>
+              <div class="result-label">Guadagno del Giorno</div>
+            </div>
+            <div class="result-card">
+              <div class="result-value" id="bronziniTotali">0 br</div>
+              <div class="result-label">Bronzini dalla Sfida</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="calculator-section">
         <h2>⚔️ Calcolatore Spedizione Abissale</h2>
         <p style="color: #d1d5db; text-align: center; margin-bottom: 30px; font-size: 1.1rem;">
           Inserisci i dati della tua spedizione per calcolare guadagni e perdite totali
@@ -375,6 +428,35 @@
   </div>
 
   <script>
+    function toggleFaseVisibility() {
+      const fattaSfida = document.getElementById('fattaSfida').checked;
+      const faseContainer = document.getElementById('faseContainer');
+      faseContainer.style.display = fattaSfida ? 'block' : 'none';
+    }
+
+    function calcolaBronziniPerFase(fase) {
+      // cumulativo: F1=13, F2=31, F3=49, F4=72
+      switch (Number(fase)) {
+        case 1: return 13;
+        case 2: return 31;
+        case 3: return 49;
+        case 4: return 72;
+        default: return 0;
+      }
+    }
+
+    function calcolaGuadagno() {
+      const guadagno = parseFloat(document.getElementById('guadagnoGiorno').value) || 0;
+      const fattaSfida = document.getElementById('fattaSfida').checked;
+      const fase = fattaSfida ? document.getElementById('faseSfida').value : 0;
+      const bronzini = fattaSfida ? calcolaBronziniPerFase(fase) : 0;
+
+      document.getElementById('valoreGuadagno').textContent = guadagno.toFixed(2);
+      document.getElementById('bronziniTotali').textContent = bronzini + ' br';
+      document.getElementById('resultsGuadagno').style.display = 'block';
+      document.getElementById('resultsGuadagno').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
     function calcolaSpedizione() {
       // Raccogli i dati dal form
       const oro = parseFloat(document.getElementById('oro').value) || 0;
