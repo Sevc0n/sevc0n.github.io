@@ -236,6 +236,89 @@
       transform: translateY(-2px);
       box-shadow: 0 8px 20px rgba(50, 130, 184, 0.3);
     }
+
+    /* Modal styles */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(5px);
+    }
+
+    .modal-content {
+      background: rgba(26, 26, 46, 0.95);
+      backdrop-filter: blur(15px);
+      margin: 10% auto;
+      padding: 30px;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 20px;
+      width: 90%;
+      max-width: 500px;
+      box-shadow: 0 25px 50px rgba(0, 0, 0, 0.6);
+    }
+
+    .close {
+      color: #aaa;
+      float: right;
+      font-size: 28px;
+      font-weight: bold;
+      cursor: pointer;
+      line-height: 1;
+    }
+
+    .close:hover {
+      color: #fff;
+    }
+
+    .pozione-card {
+      background: rgba(139, 92, 246, 0.1);
+      border: 1px solid rgba(139, 92, 246, 0.3);
+      border-radius: 12px;
+      padding: 15px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .pozione-info {
+      flex: 1;
+    }
+
+    .pozione-info h4 {
+      color: #8b5cf6;
+      margin: 0 0 5px 0;
+      font-size: 1.1rem;
+    }
+
+    .pozione-details {
+      color: #a0aec0;
+      font-size: 0.9rem;
+    }
+
+    .pozione-actions {
+      display: flex;
+      gap: 10px;
+    }
+
+    .btn-remove {
+      background: rgba(239, 68, 68, 0.2);
+      border: 1px solid rgba(239, 68, 68, 0.5);
+      color: #ef4444;
+      padding: 8px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.8rem;
+      transition: all 0.3s ease;
+    }
+
+    .btn-remove:hover {
+      background: rgba(239, 68, 68, 0.3);
+    }
   </style>
 </head>
 <body>
@@ -329,6 +412,11 @@
               <label for="stivaliDur">Stivali - durabilità finale (0-240):</label>
               <input type="number" id="stivaliDur" placeholder="Es: 240" min="0" max="240" step="1">
             </div>
+            <hr style="border-color: rgba(255,255,255,0.1); margin: 12px 0;">
+            <div class="input-group">
+              <label for="patchDisponibili">Patch già craftate disponibili:</label>
+              <input type="number" id="patchDisponibili" placeholder="Es: 2" min="0" step="1" value="0">
+            </div>
           </div>
 
           <div class="form-group">
@@ -358,14 +446,10 @@
 
           <div class="form-group">
             <h3>🧪 Pozioni</h3>
-            <div class="input-group">
-              <label for="pozioniUsate">Pozioni utilizzate:</label>
-              <input type="number" id="pozioniUsate" placeholder="Es: 6" min="0">
+            <div style="text-align: center; margin-bottom: 20px;">
+              <button class="calculate-button" onclick="apriFinestraPozione()" style="background: linear-gradient(135deg, #8b5cf6, #7c3aed);">➕ Aggiungi Pozione</button>
             </div>
-            <div class="input-group">
-              <label for="costoPerPozione">Costo per pozione:</label>
-              <input type="number" id="costoPerPozione" placeholder="Es: 15.00" min="0" step="0.01">
-            </div>
+            <div id="listaPozioni" style="display: grid; gap: 15px;"></div>
           </div>
 
           <div class="form-group">
@@ -398,11 +482,6 @@
                 <div><strong>Frecce:</strong> 1 nugget + 1 stick + 1 piuma ⇒ 20 frecce</div>
                 <div><strong>Nugget:</strong> 1 lingotto ⇒ 9 nugget</div>
               </div>
-            </div>
-            <hr style="border-color: rgba(255,255,255,0.1); margin: 12px 0;">
-            <div class="input-group">
-              <label for="patchDisponibili">Patch già craftate disponibili:</label>
-              <input type="number" id="patchDisponibili" placeholder="Es: 2" min="0" step="1" value="0">
             </div>
           </div>
         </div>
@@ -449,7 +528,7 @@
         <div class="results-section" id="risultatiCostiTotali" style="display:none;">
           <h3>💵 Totale Costi</h3>
           <div class="results-grid">
-            <div class="result-card"><div class="result-value" id="costoTotaleGiorno">0 br</div><div class="result-label">Somma costi (armatura + armi + frecce)</div></div>
+            <div class="result-card"><div class="result-value" id="costoTotaleGiorno">0 br</div><div class="result-label">Somma costi (armatura + armi + frecce + pozioni)</div></div>
           </div>
         </div>
       </div>
@@ -478,6 +557,34 @@
         <div id="riepilogoSettimane" class="results-grid" style="margin-top: 20px;"></div>
       </div>
     </main>
+  </div>
+
+  <!-- Modal per aggiungere pozioni -->
+  <div id="modalPozione" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="chiudiFinestraPozione()">&times;</span>
+      <h3 style="color: #8b5cf6; margin-bottom: 20px; text-align: center;">🧪 Aggiungi Pozione</h3>
+      
+      <div class="input-group">
+        <label for="tipoPozione">Tipo di pozione:</label>
+        <input type="text" id="tipoPozione" placeholder="Es: Health Potion, Mana Potion" style="width: 100%; padding: 12px 15px; border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 8px; background: rgba(255, 255, 255, 0.1); color: #ffffff; font-size: 1rem;">
+      </div>
+      
+      <div class="input-group">
+        <label for="costoSingolaPozione">Costo per singola pozione (br):</label>
+        <input type="number" id="costoSingolaPozione" placeholder="Es: 15.00" min="0" step="0.01" style="width: 100%; padding: 12px 15px; border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 8px; background: rgba(255, 255, 255, 0.1); color: #ffffff; font-size: 1rem;">
+      </div>
+      
+      <div class="input-group">
+        <label for="quantitaPozioni">Quantità utilizzate:</label>
+        <input type="number" id="quantitaPozioni" placeholder="Es: 6" min="0" step="1" style="width: 100%; padding: 12px 15px; border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 8px; background: rgba(255, 255, 255, 0.1); color: #ffffff; font-size: 1rem;">
+      </div>
+      
+      <div style="text-align: center; margin-top: 25px;">
+        <button class="calculate-button" onclick="aggiungiPozione()" style="background: linear-gradient(135deg, #8b5cf6, #7c3aed); margin-right: 10px;">✅ Aggiungi</button>
+        <button class="calculate-button" onclick="chiudiFinestraPozione()" style="background: linear-gradient(135deg, #6b7280, #4b5563);">❌ Annulla</button>
+      </div>
+    </div>
   </div>
 
   <script>
@@ -606,7 +713,8 @@
       const costoFrecceText = document.getElementById('costoFrecceMat').textContent || '0 br';
 
       const num = t => parseFloat((t || '0').toString().replace(' br','').replace(',', '.')) || 0;
-      const totale = num(costoPatchText) + num(costoCotiText) + num(costoFrecceText);
+      const costoPozioni = calcolaCostoTotalePozioni();
+      const totale = num(costoPatchText) + num(costoCotiText) + num(costoFrecceText) + costoPozioni;
 
       document.getElementById('costoTotaleGiorno').textContent = `${totale.toFixed(1)} br`;
       const res = document.getElementById('risultatiCostiTotali');
@@ -623,7 +731,10 @@
     }
     const STORAGE_KEY_GUADAGNO = 'hunter_calc_guadagno_v1';
     const STORAGE_KEY_STOCK = 'hunter_calc_stock_v1';
+    const STORAGE_KEY_POZIONI = 'hunter_calc_pozioni_v1';
     const BR_LABEL = ' br';
+    
+    let pozioniLista = [];
 
     function toggleFaseVisibility() {
       const fattaSfida = document.getElementById('fattaSfida').checked;
@@ -813,6 +924,10 @@
         }
       } catch (e) {}
 
+      // Carica e renderizza pozioni
+      caricaPozioni();
+      renderPozioni();
+
       // Render iniziale storico
       renderStoricoGuadagno();
     });
@@ -841,6 +956,98 @@
       const yearStart = new Date(Date.UTC(tmp.getUTCFullYear(),0,1));
       const weekNo = Math.ceil((((tmp - yearStart) / 86400000) + 1)/7);
       return weekNo;
+    }
+
+    // Funzioni per gestire le pozioni
+    function apriFinestraPozione() {
+      document.getElementById('modalPozione').style.display = 'block';
+      // Pulisci i campi
+      document.getElementById('tipoPozione').value = '';
+      document.getElementById('costoSingolaPozione').value = '';
+      document.getElementById('quantitaPozioni').value = '';
+    }
+
+    function chiudiFinestraPozione() {
+      document.getElementById('modalPozione').style.display = 'none';
+    }
+
+    function aggiungiPozione() {
+      const tipo = document.getElementById('tipoPozione').value.trim();
+      const costo = parseFloat(document.getElementById('costoSingolaPozione').value) || 0;
+      const quantita = parseInt(document.getElementById('quantitaPozioni').value) || 0;
+
+      if (!tipo) {
+        alert('Inserisci il tipo di pozione');
+        return;
+      }
+
+      if (costo <= 0) {
+        alert('Inserisci un costo valido');
+        return;
+      }
+
+      if (quantita <= 0) {
+        alert('Inserisci una quantità valida');
+        return;
+      }
+
+      const pozione = {
+        id: Date.now(),
+        tipo: tipo,
+        costo: costo,
+        quantita: quantita,
+        totale: costo * quantita
+      };
+
+      pozioniLista.push(pozione);
+      salvaPozioni();
+      renderPozioni();
+      chiudiFinestraPozione();
+    }
+
+    function rimuoviPozione(id) {
+      pozioniLista = pozioniLista.filter(p => p.id !== id);
+      salvaPozioni();
+      renderPozioni();
+    }
+
+    function salvaPozioni() {
+      localStorage.setItem(STORAGE_KEY_POZIONI, JSON.stringify(pozioniLista));
+    }
+
+    function caricaPozioni() {
+      const saved = localStorage.getItem(STORAGE_KEY_POZIONI);
+      if (saved) {
+        pozioniLista = JSON.parse(saved);
+      }
+    }
+
+    function renderPozioni() {
+      const container = document.getElementById('listaPozioni');
+      if (!container) return;
+
+      if (pozioniLista.length === 0) {
+        container.innerHTML = '<div style="text-align: center; color: #a0aec0; padding: 20px;">Nessuna pozione aggiunta</div>';
+        return;
+      }
+
+      container.innerHTML = pozioniLista.map(pozione => `
+        <div class="pozione-card">
+          <div class="pozione-info">
+            <h4>${pozione.tipo}</h4>
+            <div class="pozione-details">
+              ${pozione.quantita} × ${pozione.costo.toFixed(2)} br = <strong>${pozione.totale.toFixed(2)} br</strong>
+            </div>
+          </div>
+          <div class="pozione-actions">
+            <button class="btn-remove" onclick="rimuoviPozione(${pozione.id})">🗑️ Rimuovi</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function calcolaCostoTotalePozioni() {
+      return pozioniLista.reduce((totale, pozione) => totale + pozione.totale, 0);
     }
   </script>
 </body>
