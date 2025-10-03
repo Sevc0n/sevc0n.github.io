@@ -344,6 +344,36 @@
       color: #a0aec0;
       font-size: 0.9rem;
     }
+
+    .summary-compact {
+      background: rgba(45, 55, 72, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      padding: 12px;
+      margin: 8px 0;
+      font-size: 0.9rem;
+    }
+
+    .summary-compact .date {
+      color: #10b981;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .summary-compact .details {
+      color: #a0aec0;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: 8px;
+    }
+
+    .summary-compact .positive {
+      color: #10b981;
+    }
+
+    .summary-compact .negative {
+      color: #ef4444;
+    }
   </style>
 </head>
 <body>
@@ -366,6 +396,7 @@
 
         <div style="text-align: center; margin-bottom: 20px;">
           <button class="calculate-button" onclick="apriFinestraGuadagno()" style="background: linear-gradient(135deg, #10b981, #059669);">➕ Aggiungi Guadagno</button>
+          <button class="calculate-button" onclick="segnaGiornoVuoto()" style="background: linear-gradient(135deg, #6b7280, #4b5563); margin-left: 10px;">📅 Giorno Vuoto</button>
         </div>
         <div id="listaGuadagni" style="display: grid; gap: 15px; margin-bottom: 20px;"></div>
 
@@ -408,7 +439,6 @@
               <div class="result-label">Guadagno Totale</div>
             </div>
           </div>
-          <button class="calculate-button" style="margin-top: 10px;" onclick="salvaGiornataGuadagno()">💾 Salva giornata</button>
         </div>
       </div>
 
@@ -478,6 +508,18 @@
           </div>
 
           <div class="form-group">
+            <h3>🍽️ Costi Fissi</h3>
+            <div class="input-group">
+              <label for="costoCalice">Costo Calice Giornaliero (br):</label>
+              <input type="number" id="costoCalice" placeholder="Default 3" min="0" step="0.01" value="3">
+            </div>
+            <div class="input-group">
+              <label for="costoCibo">Costo Cibo (br):</label>
+              <input type="number" id="costoCibo" placeholder="Es: 15.50" min="0" step="0.01" value="0">
+            </div>
+          </div>
+
+          <div class="form-group">
             <h3>🏷️ Prezzi materie prime</h3>
             <div class="input-group">
               <label for="costoLingotto">Costo 1x Lingotto di Rame (br):</label>
@@ -520,13 +562,15 @@
             <div class="result-card"><div class="result-value" id="costoArmi">0 br</div><div class="result-label">🗡️ Armi</div></div>
             <div class="result-card"><div class="result-value" id="costoFrecce">0 br</div><div class="result-label">🏹 Frecce</div></div>
             <div class="result-card"><div class="result-value" id="costoPozioni">0 br</div><div class="result-label">🧪 Pozioni</div></div>
+            <div class="result-card"><div class="result-value" id="costoCalice">0 br</div><div class="result-label">🍽️ Calice</div></div>
+            <div class="result-card"><div class="result-value" id="costoCibo">0 br</div><div class="result-label">🍽️ Cibo</div></div>
           </div>
         </div>
 
         <div class="results-section" id="risultatiCostiTotali" style="display:none;">
           <h3>💵 Totale Costi</h3>
           <div class="results-grid">
-            <div class="result-card"><div class="result-value" id="costoTotaleGiorno">0 br</div><div class="result-label">Somma costi (armatura + armi + frecce + pozioni)</div></div>
+            <div class="result-card"><div class="result-value" id="costoTotaleGiorno">0 br</div><div class="result-label">Somma costi (armatura + armi + frecce + pozioni + calice + cibo)</div></div>
           </div>
         </div>
       </div>
@@ -562,6 +606,10 @@
 
       <div class="calculator-section" id="riepilogoGenerale" style="margin-top: 25px;">
         <h2>🧾 Riepilogo</h2>
+        <div style="text-align: center; margin-bottom: 20px;">
+          <button class="calculate-button" onclick="salvaGiornataCompleta()" style="background: linear-gradient(135deg, #f59e0b, #d97706);">💾 Salva Giornata Completa</button>
+          <button class="calculate-button" onclick="esportaExcelManuale()" style="background: linear-gradient(135deg, #059669, #047857); margin-left: 10px;">📊 Esporta Excel</button>
+        </div>
         <div id="riepilogoGiorni" class="results-grid"></div>
         <div id="riepilogoSettimane" class="results-grid" style="margin-top: 20px;"></div>
       </div>
@@ -618,6 +666,9 @@
       </div>
     </div>
   </div>
+
+  <!-- CDN per Excel -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
   <script>
     function placeholderCalcolaCosti() {
@@ -740,13 +791,18 @@
       const costoArmi = calcolaCostoArmi();
       const costoFrecce = calcolaCostoFrecce();
       const costoPozioni = calcolaCostoTotalePozioni();
-      const totale = costoArmatura + costoArmi + costoFrecce + costoPozioni;
+      const costiFissi = calcolaCostiFissi();
+      const costoCalice = parseFloat(document.getElementById('costoCalice').value) || 0;
+      const costoCibo = parseFloat(document.getElementById('costoCibo').value) || 0;
+      const totale = costoArmatura + costoArmi + costoFrecce + costoPozioni + costiFissi;
 
       // Aggiorna risultati compatti
       document.getElementById('costoArmatura').textContent = `${costoArmatura.toFixed(1)} br`;
       document.getElementById('costoArmi').textContent = `${costoArmi.toFixed(1)} br`;
       document.getElementById('costoFrecce').textContent = `${costoFrecce.toFixed(1)} br`;
       document.getElementById('costoPozioni').textContent = `${costoPozioni.toFixed(1)} br`;
+      document.getElementById('costoCalice').textContent = `${costoCalice.toFixed(1)} br`;
+      document.getElementById('costoCibo').textContent = `${costoCibo.toFixed(1)} br`;
       
       document.getElementById('costoTotaleGiorno').textContent = `${totale.toFixed(1)} br`;
       const res = document.getElementById('risultatiCostiCompatti');
@@ -761,7 +817,7 @@
         coti: Number(stock.coti || 0),
         frecce: Number(stock.frecce || 0)
       };
-      localStorage.setItem(STORAGE_KEY_STOCK, JSON.stringify(toSave));
+      setCookie(STORAGE_KEY_STOCK, JSON.stringify(toSave), 365);
     }
 
     function calcolaCostoArmatura() {
@@ -863,7 +919,7 @@
       document.getElementById('resultsGuadagno').scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 
-    function salvaGiornataGuadagno() {
+    function salvaGiornataCompleta() {
       // Calcola guadagni totali dalle card dinamiche
       const guadagniTotali = guadagniLista.reduce((totale, guadagno) => totale + guadagno.importo, 0);
       const causale = guadagniLista.length > 0 ? guadagniLista.map(g => g.causale).join(', ') : 'Nessuna causale';
@@ -872,6 +928,18 @@
       const fase = fattaSfida ? Number(document.getElementById('faseSfida').value) : 0;
       const bronzini = fattaSfida ? calcolaBronziniPerFase(fase) : 0;
 
+      // Calcola costi totali
+      const costoArmatura = calcolaCostoArmatura();
+      const costoArmi = calcolaCostoArmi();
+      const costoFrecce = calcolaCostoFrecce();
+      const costoPozioni = calcolaCostoTotalePozioni();
+      const costiFissi = calcolaCostiFissi();
+      const costiTotali = costoArmatura + costoArmi + costoFrecce + costoPozioni + costiFissi;
+
+      const guadagnoTotale = guadagniTotali + bronzini;
+      const bilancio = guadagnoTotale - costiTotali;
+      const rapporto = costiTotali > 0 ? (guadagnoTotale / costiTotali).toFixed(2) : '∞';
+
       const entry = {
         id: Date.now(),
         date: new Date().toISOString(),
@@ -879,20 +947,26 @@
         causale,
         fattaSfida,
         fase,
-        bronzini
+        bronzini,
+        costi: costiTotali,
+        bilancio: bilancio,
+        rapporto: rapporto
       };
 
-      const existing = JSON.parse(localStorage.getItem(STORAGE_KEY_GUADAGNO) || '[]');
+      const existing = JSON.parse(getCookie(STORAGE_KEY_GUADAGNO) || '[]');
       existing.push(entry);
-      localStorage.setItem(STORAGE_KEY_GUADAGNO, JSON.stringify(existing));
+      setCookie(STORAGE_KEY_GUADAGNO, JSON.stringify(existing), 365);
+
+      // Controlla se è il momento di esportare (1 mese di dati)
+      controllaEsportazioneMensile(existing);
 
       renderStoricoGuadagno();
-      alert('Giornata salvata con successo!');
+      alert('Giornata completa salvata con successo!');
     }
 
     function cancellaStoricoGuadagno() {
       if (!confirm('Sei sicuro di voler cancellare lo storico del guadagno?')) return;
-      localStorage.removeItem(STORAGE_KEY_GUADAGNO);
+      deleteCookie(STORAGE_KEY_GUADAGNO);
       renderStoricoGuadagno();
     }
 
@@ -910,7 +984,7 @@
       const riepilogoSettimane = document.getElementById('riepilogoSettimane');
       if (!container || !wrapper) return;
 
-      const entries = JSON.parse(localStorage.getItem(STORAGE_KEY_GUADAGNO) || '[]');
+      const entries = JSON.parse(getCookie(STORAGE_KEY_GUADAGNO) || '[]');
       if (entries.length === 0) {
         wrapper.style.display = 'none';
         container.innerHTML = '';
@@ -939,22 +1013,22 @@
           `;
         }).join('');
 
-      // Riepilogo giornaliero con ordine: data, guadagno, costo, rapporto
+      // Riepilogo giornaliero compatto
       if (riepilogoGiorni) {
         riepilogoGiorni.innerHTML = entries
           .sort((a, b) => b.id - a.id)
           .map(e => {
             const guadagnoBr = e.guadagno + e.bronzini; // guadagno totale (giornaliero + sfida)
-            const costiBr = 0; // placeholder - sarà aggiornato quando implementiamo il salvataggio costi
-            const totale = guadagnoBr - costiBr;
-            const rapporto = costiBr > 0 ? (guadagnoBr / costiBr).toFixed(2) : '∞';
+            const costiBr = e.costi || 0; // usa i costi salvati se disponibili
+            const totale = e.bilancio !== undefined ? e.bilancio : (guadagnoBr - costiBr);
+            const rapporto = e.rapporto || (costiBr > 0 ? (guadagnoBr / costiBr).toFixed(2) : '∞');
             const sign = totale >= 0 ? '+' : '-';
-            const colore = totale >= 0 ? 'profit-positive' : 'profit-negative';
+            const colore = totale >= 0 ? 'positive' : 'negative';
             return `
-              <div class="result-card">
-                <div class="result-value">${formatDate(e.date)}</div>
-                <div class="result-label">
-                  <div>💰 Guadagno: <strong>${guadagnoBr.toFixed(1)}${BR_LABEL}</strong> (${e.causale || 'Nessuna causale'})</div>
+              <div class="summary-compact">
+                <div class="date">${formatDate(e.date)}</div>
+                <div class="details">
+                  <div>💰 Guadagno: <strong>${guadagnoBr.toFixed(1)}${BR_LABEL}</strong></div>
                   <div>💸 Costi: <strong>${costiBr.toFixed(1)}${BR_LABEL}</strong></div>
                   <div>📊 Rapporto: <strong>${rapporto}:1</strong></div>
                   <div>⚖️ Bilancio: <strong class="${colore}">${sign}${Math.abs(totale).toFixed(1)}${BR_LABEL}</strong></div>
@@ -975,7 +1049,7 @@
           if (!byWeek[key]) byWeek[key] = { dates: [], guadagnoBr: 0, costiBr: 0 };
           byWeek[key].dates.push(d);
           byWeek[key].guadagnoBr += (e.guadagno + e.bronzini);
-          // costiBr resterà 0 finché non implementiamo la sezione costi
+          byWeek[key].costiBr += (e.costi || 0);
         });
 
         const cards = Object.entries(byWeek).sort(([a], [b]) => a < b ? 1 : -1).map(([key, val]) => {
@@ -985,12 +1059,11 @@
           const totale = val.guadagnoBr - val.costiBr;
           const rapporto = val.costiBr > 0 ? (val.guadagnoBr / val.costiBr).toFixed(2) : '∞';
           const sign = totale >= 0 ? '+' : '-';
-          const colore = totale >= 0 ? 'profit-positive' : 'profit-negative';
+          const colore = totale >= 0 ? 'positive' : 'negative';
           return `
-            <div class="result-card">
-              <div class="result-value">Settimana ${key}</div>
-              <div class="result-label">${range}</div>
-              <div class="result-label">
+            <div class="summary-compact">
+              <div class="date">Settimana ${key} (${range})</div>
+              <div class="details">
                 <div>💰 Guadagno: <strong>${val.guadagnoBr.toFixed(1)}${BR_LABEL}</strong></div>
                 <div>💸 Costi: <strong>${val.costiBr.toFixed(1)}${BR_LABEL}</strong></div>
                 <div>📊 Rapporto: <strong>${rapporto}:1</strong></div>
@@ -1005,9 +1078,9 @@
     }
 
     function eliminaEntryGuadagno(id) {
-      const entries = JSON.parse(localStorage.getItem(STORAGE_KEY_GUADAGNO) || '[]');
+      const entries = JSON.parse(getCookie(STORAGE_KEY_GUADAGNO) || '[]');
       const filtered = entries.filter(e => e.id !== id);
-      localStorage.setItem(STORAGE_KEY_GUADAGNO, JSON.stringify(filtered));
+      setCookie(STORAGE_KEY_GUADAGNO, JSON.stringify(filtered), 365);
       renderStoricoGuadagno();
     }
 
@@ -1029,9 +1102,9 @@
         fattaSfida.addEventListener('change', toggleFaseVisibility);
         toggleFaseVisibility();
       }
-      // Precompila stock da localStorage
+      // Precompila stock da cookie
       try {
-        const savedStock = JSON.parse(localStorage.getItem(STORAGE_KEY_STOCK) || '{}');
+        const savedStock = JSON.parse(getCookie(STORAGE_KEY_STOCK) || '{}');
         if (savedStock && typeof savedStock === 'object') {
           if (typeof savedStock.patch === 'number') document.getElementById('patchDisponibili').value = savedStock.patch;
           if (typeof savedStock.coti === 'number') document.getElementById('cotiDisponibili').value = savedStock.coti;
@@ -1131,12 +1204,36 @@
       renderPozioni();
     }
 
+    // Funzioni per gestire i cookie persistenti
+    function setCookie(name, value, days = 365) {
+      const expires = new Date();
+      expires.setTime(expires.getTime() + (days * 24 * 60 * 60 * 1000));
+      document.cookie = `${name}=${encodeURIComponent(value)};expires=${expires.toUTCString()};path=/;SameSite=Strict`;
+    }
+
+    function getCookie(name) {
+      const nameEQ = name + "=";
+      const ca = document.cookie.split(';');
+      for (let i = 0; i < ca.length; i++) {
+        let c = ca[i];
+        while (c.charAt(0) === ' ') c = c.substring(1, c.length);
+        if (c.indexOf(nameEQ) === 0) {
+          return decodeURIComponent(c.substring(nameEQ.length, c.length));
+        }
+      }
+      return null;
+    }
+
+    function deleteCookie(name) {
+      document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/;`;
+    }
+
     function salvaPozioni() {
-      localStorage.setItem(STORAGE_KEY_POZIONI, JSON.stringify(pozioniLista));
+      setCookie(STORAGE_KEY_POZIONI, JSON.stringify(pozioniLista), 365);
     }
 
     function caricaPozioni() {
-      const saved = localStorage.getItem(STORAGE_KEY_POZIONI);
+      const saved = getCookie(STORAGE_KEY_POZIONI);
       if (saved) {
         try {
           pozioniLista = JSON.parse(saved);
@@ -1174,6 +1271,12 @@
 
     function calcolaCostoTotalePozioni() {
       return pozioniLista.reduce((totale, pozione) => totale + pozione.totale, 0);
+    }
+
+    function calcolaCostiFissi() {
+      const costoCalice = parseFloat(document.getElementById('costoCalice').value) || 0;
+      const costoCibo = parseFloat(document.getElementById('costoCibo').value) || 0;
+      return costoCalice + costoCibo;
     }
 
     // Funzioni per gestire i guadagni dinamici
@@ -1221,11 +1324,11 @@
     }
 
     function salvaGuadagni() {
-      localStorage.setItem(STORAGE_KEY_GUADAGNI_GIORNO, JSON.stringify(guadagniLista));
+      setCookie(STORAGE_KEY_GUADAGNI_GIORNO, JSON.stringify(guadagniLista), 365);
     }
 
     function caricaGuadagni() {
-      const saved = localStorage.getItem(STORAGE_KEY_GUADAGNI_GIORNO);
+      const saved = getCookie(STORAGE_KEY_GUADAGNI_GIORNO);
       if (saved) {
         try {
           guadagniLista = JSON.parse(saved);
@@ -1261,6 +1364,156 @@
       `).join('');
     }
 
+    // Funzioni per esportazione mensile automatica
+    function controllaEsportazioneMensile(entries) {
+      if (entries.length < 2) return; // Almeno 2 giorni per considerare un mese
+
+      // Ordina per data
+      const sortedEntries = entries.sort((a, b) => new Date(a.date) - new Date(b.date));
+      const firstDate = new Date(sortedEntries[0].date);
+      const lastDate = new Date(sortedEntries[sortedEntries.length - 1].date);
+      
+      // Calcola differenza in giorni
+      const diffTime = Math.abs(lastDate - firstDate);
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+      
+      // Se sono passati 30+ giorni, suggerisci esportazione
+      if (diffDays >= 30) {
+        const shouldExport = confirm(
+          `📊 Hai raccolto dati per ${diffDays} giorni!\n\n` +
+          `È il momento di esportare i tuoi rapporti mensili.\n` +
+          `Vuoi scaricare un file Excel con tutti i dati?`
+        );
+        
+        if (shouldExport) {
+          esportaExcelMensile(sortedEntries);
+        }
+      }
+    }
+
+    function esportaExcelMensile(entries) {
+      try {
+        // Prepara i dati per Excel
+        const excelData = entries.map(entry => {
+          const date = new Date(entry.date);
+          return {
+            'Data': date.toLocaleDateString('it-IT'),
+            'Ora': date.toLocaleTimeString('it-IT'),
+            'Guadagno Giornaliero (br)': entry.guadagno.toFixed(2),
+            'Bronzini Sfida (br)': entry.bronzini,
+            'Guadagno Totale (br)': (entry.guadagno + entry.bronzini).toFixed(2),
+            'Costi Totali (br)': entry.costi ? entry.costi.toFixed(2) : '0.00',
+            'Bilancio (br)': entry.bilancio ? entry.bilancio.toFixed(2) : '0.00',
+            'Rapporto': entry.rapporto || '∞',
+            'Causale': entry.causale || 'Nessuna',
+            'Sfida Completata': entry.fattaSfida ? 'Sì' : 'No',
+            'Fase Sfida': entry.fase || 'N/A',
+            'Tipo Giorno': entry.causale === 'Giorno vuoto' ? 'Vuoto' : 'Normale'
+          };
+        });
+
+        // Aggiungi riga di totali
+        const totali = {
+          'Data': 'TOTALI',
+          'Ora': '',
+          'Guadagno Giornaliero (br)': entries.reduce((sum, e) => sum + e.guadagno, 0).toFixed(2),
+          'Bronzini Sfida (br)': entries.reduce((sum, e) => sum + e.bronzini, 0),
+          'Guadagno Totale (br)': entries.reduce((sum, e) => sum + e.guadagno + e.bronzini, 0).toFixed(2),
+          'Costi Totali (br)': entries.reduce((sum, e) => sum + (e.costi || 0), 0).toFixed(2),
+          'Bilancio (br)': entries.reduce((sum, e) => sum + (e.bilancio || 0), 0).toFixed(2),
+          'Rapporto': 'N/A',
+          'Causale': '',
+          'Sfida Completata': '',
+          'Fase Sfida': '',
+          'Tipo Giorno': ''
+        };
+
+        excelData.push(totali);
+
+        // Crea workbook Excel
+        const wb = XLSX.utils.book_new();
+        const ws = XLSX.utils.json_to_sheet(excelData);
+        
+        // Imposta larghezza colonne
+        ws['!cols'] = [
+          { wch: 12 }, // Data
+          { wch: 10 }, // Ora
+          { wch: 18 }, // Guadagno Giornaliero
+          { wch: 15 }, // Bronzini Sfida
+          { wch: 16 }, // Guadagno Totale
+          { wch: 15 }, // Costi Totali
+          { wch: 12 }, // Bilancio
+          { wch: 10 }, // Rapporto
+          { wch: 25 }, // Causale
+          { wch: 15 }, // Sfida Completata
+          { wch: 12 }, // Fase Sfida
+          { wch: 12 }  // Tipo Giorno
+        ];
+
+        XLSX.utils.book_append_sheet(wb, ws, 'Rapporti Cacciatore');
+
+        // Genera nome file con data
+        const now = new Date();
+        const fileName = `rapporti_cacciatore_${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}.xlsx`;
+
+        // Scarica il file
+        XLSX.writeFile(wb, fileName);
+
+        alert('📊 File Excel esportato con successo!\n\n' + fileName);
+        
+      } catch (error) {
+        console.error('Errore durante esportazione Excel:', error);
+        alert('❌ Errore durante l\'esportazione. Riprova più tardi.');
+      }
+    }
+
+    function esportaExcelManuale() {
+      const entries = JSON.parse(getCookie(STORAGE_KEY_GUADAGNO) || '[]');
+      if (entries.length === 0) {
+        alert('❌ Nessun dato da esportare. Salva prima alcune giornate!');
+        return;
+      }
+      
+      const sortedEntries = entries.sort((a, b) => new Date(a.date) - new Date(b.date));
+      esportaExcelMensile(sortedEntries);
+    }
+
+    function segnaGiornoVuoto() {
+      const costoCalice = parseFloat(document.getElementById('costoCalice').value) || 3;
+      const confirmed = confirm(
+        '📅 Vuoi segnare questo come un giorno vuoto?\n\n' +
+        'Questo salverà una giornata con:\n' +
+        '• Guadagno: 0 br\n' +
+        '• Costi: ' + costoCalice + ' br (solo calice)\n' +
+        '• Causale: "Giorno vuoto"'
+      );
+      
+      if (!confirmed) return;
+
+      const entry = {
+        id: Date.now(),
+        date: new Date().toISOString(),
+        guadagno: 0,
+        causale: 'Giorno vuoto',
+        fattaSfida: false,
+        fase: 0,
+        bronzini: 0,
+        costi: costoCalice,
+        bilancio: -costoCalice,
+        rapporto: '0'
+      };
+
+      const existing = JSON.parse(getCookie(STORAGE_KEY_GUADAGNO) || '[]');
+      existing.push(entry);
+      setCookie(STORAGE_KEY_GUADAGNO, JSON.stringify(existing), 365);
+
+      // Controlla se è il momento di esportare (1 mese di dati)
+      controllaEsportazioneMensile(existing);
+
+      renderStoricoGuadagno();
+      alert('📅 Giorno vuoto salvato con successo!');
+    }
+
     function calcolaRapporto() {
       // Calcola guadagno totale dalle card dinamiche
       const guadagniTotali = guadagniLista.reduce((totale, guadagno) => totale + guadagno.importo, 0);
@@ -1275,7 +1528,8 @@
       const costoArmi = calcolaCostoArmi();
       const costoFrecce = calcolaCostoFrecce();
       const costoPozioni = calcolaCostoTotalePozioni();
-      const costiTotali = costoArmatura + costoArmi + costoFrecce + costoPozioni;
+      const costiFissi = calcolaCostiFissi();
+      const costiTotali = costoArmatura + costoArmi + costoFrecce + costoPozioni + costiFissi;
 
       // Calcola rapporto e bilancio
       const rapporto = costiTotali > 0 ? (guadagnoTotale / costiTotali).toFixed(2) : '∞';
