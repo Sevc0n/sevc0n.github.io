@@ -488,40 +488,13 @@
 
         <button class="calculate-button" onclick="calcolaCostiTotali()">🧮 Calcola Costi</button>
 
-        <div class="results-section" id="risultatiCostiArmatura" style="display:none;">
-          <h3>📉 Risultati Costi Armatura</h3>
+        <div class="results-section" id="risultatiCostiCompatti" style="display:none;">
+          <h3>📊 Riepilogo Costi</h3>
           <div class="results-grid">
-            <div class="result-card"><div class="result-value" id="patchElmo">0</div><div class="result-label">Patch per Elmo</div></div>
-            <div class="result-card"><div class="result-value" id="patchTorso">0</div><div class="result-label">Patch per Torso</div></div>
-            <div class="result-card"><div class="result-value" id="patchGambe">0</div><div class="result-label">Patch per Gambe</div></div>
-            <div class="result-card"><div class="result-value" id="patchStivali">0</div><div class="result-label">Patch per Stivali</div></div>
-            <div class="result-card"><div class="result-value" id="patchTotali">0</div><div class="result-label">Patch Totali</div></div>
-            <div class="result-card"><div class="result-value" id="patchDaStock">0</div><div class="result-label">Patch usate da stock</div></div>
-            <div class="result-card"><div class="result-value" id="patchDaCraftare">0</div><div class="result-label">Patch da craftare</div></div>
-            <div class="result-card"><div class="result-value" id="craftNecessari">0</div><div class="result-label">Craft (x4 patch)</div></div>
-            <div class="result-card"><div class="result-value" id="costoTotalePatch">0 br</div><div class="result-label">Costo Totale Patch</div></div>
-            <div class="result-card"><div class="result-value" id="patchRimanenti">0</div><div class="result-label">Patch rimanenti (fine calcolo)</div></div>
-          </div>
-        </div>
-
-        <div class="results-section" id="risultatiCostiArmiFrecce" style="display:none;">
-          <h3>📉 Risultati Costi Armi e Frecce</h3>
-          <div class="results-grid">
-            <div class="result-card"><div class="result-value" id="cotiArco">0</div><div class="result-label">Coti per Arco</div></div>
-            <div class="result-card"><div class="result-value" id="cotiStiletto">0</div><div class="result-label">Coti per Stiletto</div></div>
-            <div class="result-card"><div class="result-value" id="cotiTotali">0</div><div class="result-label">Coti Totali</div></div>
-            <div class="result-card"><div class="result-value" id="cotiDaStock">0</div><div class="result-label">Coti usate da stock</div></div>
-            <div class="result-card"><div class="result-value" id="cotiDaCraftare">0</div><div class="result-label">Coti da craftare</div></div>
-            <div class="result-card"><div class="result-value" id="craftCoti">0</div><div class="result-label">Craft Coti (x4)</div></div>
-            <div class="result-card"><div class="result-value" id="costoCoti">0 br</div><div class="result-label">Costo Totale Coti</div></div>
-            <div class="result-card"><div class="result-value" id="cotiRimanenti">0</div><div class="result-label">Coti rimanenti (fine calcolo)</div></div>
-
-            <div class="result-card"><div class="result-value" id="frecceTarget">150</div><div class="result-label">Target frecce</div></div>
-            <div class="result-card"><div class="result-value" id="frecceDaCraftare">0</div><div class="result-label">Frecce da craftare</div></div>
-            <div class="result-card"><div class="result-value" id="frecceLotti">0</div><div class="result-label">Lotti frecce (x20)</div></div>
-            <div class="result-card"><div class="result-value" id="nuggetIngot">0</div><div class="result-label">Lingotti per Nugget</div></div>
-            <div class="result-card"><div class="result-value" id="costoFrecceMat">0 br</div><div class="result-label">Costo Materiali Frecce</div></div>
-            <div class="result-card"><div class="result-value" id="frecceFinali">150</div><div class="result-label">Frecce finali (dopo crafting)</div></div>
+            <div class="result-card"><div class="result-value" id="costoArmatura">0 br</div><div class="result-label">🛡️ Armatura</div></div>
+            <div class="result-card"><div class="result-value" id="costoArmi">0 br</div><div class="result-label">🗡️ Armi</div></div>
+            <div class="result-card"><div class="result-value" id="costoFrecce">0 br</div><div class="result-label">🏹 Frecce</div></div>
+            <div class="result-card"><div class="result-value" id="costoPozioni">0 br</div><div class="result-label">🧪 Pozioni</div></div>
           </div>
         </div>
 
@@ -533,14 +506,6 @@
         </div>
       </div>
 
-      <div class="calculator-section" id="storicoGuadagno" style="display: none;">
-        <h2>🗂️ Storico Giorni (Guadagno)</h2>
-        <p style="color: #d1d5db; text-align: center; margin-bottom: 20px; font-size: 0.95rem;">I dati vengono salvati solo sul tuo browser.</p>
-        <div id="listaStorico" class="feature-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 15px;"></div>
-        <div style="text-align: center; margin-top: 15px;">
-          <button class="calculate-button" onclick="cancellaStoricoGuadagno()">🗑️ Cancella storico</button>
-        </div>
-      </div>
 
       
 
@@ -636,9 +601,7 @@
       window.__stockPartial = window.__stockPartial || {};
       window.__stockPartial.patch = Math.max(0, rim);
 
-      const res = document.getElementById('risultatiCostiArmatura');
-      res.style.display = 'block';
-      res.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      // Non mostrare più i dettagli, solo i risultati compatti
     }
 
     function calcolaCostiArmiEFrecce() {
@@ -697,9 +660,7 @@
       window.__stockPartial.coti = cotiRim;
       window.__stockPartial.frecce = frecceRim;
 
-      const res = document.getElementById('risultatiCostiArmiFrecce');
-      res.style.display = 'block';
-      res.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      // Non mostrare più i dettagli, solo i risultati compatti
     }
 
     function calcolaCostiTotali() {
@@ -716,9 +677,17 @@
       const costoPozioni = calcolaCostoTotalePozioni();
       const totale = num(costoPatchText) + num(costoCotiText) + num(costoFrecceText) + costoPozioni;
 
+      // Aggiorna risultati compatti
+      document.getElementById('costoArmatura').textContent = `${num(costoPatchText).toFixed(1)} br`;
+      document.getElementById('costoArmi').textContent = `${num(costoCotiText).toFixed(1)} br`;
+      document.getElementById('costoFrecce').textContent = `${num(costoFrecceText).toFixed(1)} br`;
+      document.getElementById('costoPozioni').textContent = `${costoPozioni.toFixed(1)} br`;
+      
       document.getElementById('costoTotaleGiorno').textContent = `${totale.toFixed(1)} br`;
-      const res = document.getElementById('risultatiCostiTotali');
+      const res = document.getElementById('risultatiCostiCompatti');
       res.style.display = 'block';
+      const resTot = document.getElementById('risultatiCostiTotali');
+      resTot.style.display = 'block';
 
       // salva stock rimanente
       const stock = window.__stockPartial || {};
@@ -828,7 +797,7 @@
             <div class="feature-card" style="background: rgba(45,55,72,0.5); border:1px solid rgba(255,255,255,0.08);">
               <h3>🗓️ ${formatDate(e.date)}</h3>
               <ul>
-                <li>Guadagno: <strong>€${e.guadagno.toFixed(2)}</strong></li>
+                <li>Guadagno: <strong>${e.guadagno.toFixed(2)} br</strong></li>
                 <li>Sfida: <strong>${labelFase}</strong></li>
                 <li>Bronzini: <strong>${e.bronzini} br</strong></li>
               </ul>
@@ -839,19 +808,26 @@
           `;
         }).join('');
 
-      // Riepilogo giornaliero (per ora costi=0 perché la sezione costi arriverà dopo)
+      // Riepilogo giornaliero con rapporto guadagno/costo
       if (riepilogoGiorni) {
         riepilogoGiorni.innerHTML = entries
           .sort((a, b) => b.id - a.id)
           .map(e => {
-            const guadagnoBr = e.bronzini; // bronzini dalla sfida
-            const costiBr = 0;            // placeholder fino alla sezione costi
+            const guadagnoBr = e.guadagno + e.bronzini; // guadagno totale (giornaliero + sfida)
+            const costiBr = 0; // placeholder - sarà aggiornato quando implementiamo il salvataggio costi
             const totale = guadagnoBr - costiBr;
+            const rapporto = costiBr > 0 ? (guadagnoBr / costiBr).toFixed(2) : '∞';
             const sign = totale >= 0 ? '+' : '-';
+            const colore = totale >= 0 ? 'profit-positive' : 'profit-negative';
             return `
               <div class="result-card">
-                <div class="result-value">${formatDate(e.date)}</div>
-                <div class="result-label">guadagno: <strong>${guadagnoBr}${BR_LABEL}</strong>, costi: <strong>${costiBr} bronzini</strong>, totale ${sign} <strong>${Math.abs(totale)}${BR_LABEL}</strong></div>
+                <div class="result-value ${colore}">${formatDate(e.date)}</div>
+                <div class="result-label">
+                  <div>💰 Guadagno: <strong>${guadagnoBr.toFixed(1)}${BR_LABEL}</strong></div>
+                  <div>💸 Costi: <strong>${costiBr.toFixed(1)}${BR_LABEL}</strong></div>
+                  <div>📊 Rapporto: <strong>${rapporto}:1</strong></div>
+                  <div>⚖️ Totale: <strong class="${colore}">${sign}${Math.abs(totale).toFixed(1)}${BR_LABEL}</strong></div>
+                </div>
               </div>
             `;
           }).join('');
@@ -867,7 +843,7 @@
           const key = `${year}-W${week}`;
           if (!byWeek[key]) byWeek[key] = { dates: [], guadagnoBr: 0, costiBr: 0 };
           byWeek[key].dates.push(d);
-          byWeek[key].guadagnoBr += e.bronzini;
+          byWeek[key].guadagnoBr += (e.guadagno + e.bronzini);
           // costiBr resterà 0 finché non implementiamo la sezione costi
         });
 
@@ -876,12 +852,19 @@
           const maxDate = new Date(Math.max.apply(null, val.dates));
           const range = `${minDate.toLocaleDateString()} → ${maxDate.toLocaleDateString()}`;
           const totale = val.guadagnoBr - val.costiBr;
+          const rapporto = val.costiBr > 0 ? (val.guadagnoBr / val.costiBr).toFixed(2) : '∞';
           const sign = totale >= 0 ? '+' : '-';
+          const colore = totale >= 0 ? 'profit-positive' : 'profit-negative';
           return `
             <div class="result-card">
-              <div class="result-value">Settimana ${key}</div>
+              <div class="result-value ${colore}">Settimana ${key}</div>
               <div class="result-label">${range}</div>
-              <div class="result-label">guadagno: <strong>${val.guadagnoBr}${BR_LABEL}</strong>, costi: <strong>${val.costiBr} bronzini</strong>, totale ${sign} <strong>${Math.abs(totale)}${BR_LABEL}</strong></div>
+              <div class="result-label">
+                <div>💰 Guadagno: <strong>${val.guadagnoBr.toFixed(1)}${BR_LABEL}</strong></div>
+                <div>💸 Costi: <strong>${val.costiBr.toFixed(1)}${BR_LABEL}</strong></div>
+                <div>📊 Rapporto: <strong>${rapporto}:1</strong></div>
+                <div>⚖️ Totale: <strong class="${colore}">${sign}${Math.abs(totale).toFixed(1)}${BR_LABEL}</strong></div>
+              </div>
             </div>
           `;
         }).join('');
