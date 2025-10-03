@@ -304,6 +304,90 @@
         </div>
       </div>
 
+      <div class="calculator-section">
+        <h2>🛡️ Sezione Costi</h2>
+        <p style="color: #d1d5db; text-align: center; margin-bottom: 30px; font-size: 1.05rem;">
+          Inserisci i dati dei consumi e delle riparazioni. I calcoli verranno applicati nel prossimo step.
+        </p>
+
+        <div class="form-grid">
+          <div class="form-group">
+            <h3>🛡️ Armatura (durabilità pezzi)</h3>
+            <div class="input-group">
+              <label for="elmoDur">Elmo - durabilità finale (0-240):</label>
+              <input type="number" id="elmoDur" placeholder="Es: 210" min="0" max="240" step="1">
+            </div>
+            <div class="input-group">
+              <label for="torsoDur">Torso - durabilità finale (0-240):</label>
+              <input type="number" id="torsoDur" placeholder="Es: 180" min="0" max="240" step="1">
+            </div>
+            <div class="input-group">
+              <label for="gambeDur">Gambe - durabilità finale (0-240):</label>
+              <input type="number" id="gambeDur" placeholder="Es: 95" min="0" max="240" step="1">
+            </div>
+            <div class="input-group">
+              <label for="stivaliDur">Stivali - durabilità finale (0-240):</label>
+              <input type="number" id="stivaliDur" placeholder="Es: 240" min="0" max="240" step="1">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <h3>🏹 Frecce</h3>
+            <div class="input-group">
+              <label for="frecceUsate">Frecce utilizzate:</label>
+              <input type="number" id="frecceUsate" placeholder="Es: 120" min="0">
+            </div>
+            <div class="input-group">
+              <label for="costoPerFreccia">Costo per freccia:</label>
+              <input type="number" id="costoPerFreccia" placeholder="Es: 2.50" min="0" step="0.01">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <h3>🧪 Pozioni</h3>
+            <div class="input-group">
+              <label for="pozioniUsate">Pozioni utilizzate:</label>
+              <input type="number" id="pozioniUsate" placeholder="Es: 6" min="0">
+            </div>
+            <div class="input-group">
+              <label for="costoPerPozione">Costo per pozione:</label>
+              <input type="number" id="costoPerPozione" placeholder="Es: 15.00" min="0" step="0.01">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <h3>🧰 Materiali Patch Rame</h3>
+            <div class="input-group">
+              <label for="costoLingotto">Costo 1x Lingotto di Rame (br):</label>
+              <input type="number" id="costoLingotto" placeholder="Default 21" min="0" step="0.1" value="21">
+            </div>
+            <div class="input-group">
+              <label for="costoWool">Costo 1x Woolen Fabric (br):</label>
+              <input type="number" id="costoWool" placeholder="Default 1.5" min="0" step="0.1" value="1.5">
+            </div>
+            <div class="input-group">
+              <label>Note crafting:</label>
+              <div style="color:#a0aec0;">1 lingotto + 1 woolen fabric ⇒ 4 patch (1 patch ripara 60 durabilità)</div>
+            </div>
+          </div>
+        </div>
+
+        <button class="calculate-button" onclick="calcolaCostiArmatura()">🧮 Calcola Costi Armatura</button>
+
+        <div class="results-section" id="risultatiCostiArmatura" style="display:none;">
+          <h3>📉 Risultati Costi Armatura</h3>
+          <div class="results-grid">
+            <div class="result-card"><div class="result-value" id="patchElmo">0</div><div class="result-label">Patch per Elmo</div></div>
+            <div class="result-card"><div class="result-value" id="patchTorso">0</div><div class="result-label">Patch per Torso</div></div>
+            <div class="result-card"><div class="result-value" id="patchGambe">0</div><div class="result-label">Patch per Gambe</div></div>
+            <div class="result-card"><div class="result-value" id="patchStivali">0</div><div class="result-label">Patch per Stivali</div></div>
+            <div class="result-card"><div class="result-value" id="patchTotali">0</div><div class="result-label">Patch Totali</div></div>
+            <div class="result-card"><div class="result-value" id="craftNecessari">0</div><div class="result-label">Craft (x4 patch)</div></div>
+            <div class="result-card"><div class="result-value" id="costoTotalePatch">0 br</div><div class="result-label">Costo Totale Patch</div></div>
+          </div>
+        </div>
+      </div>
+
       <div class="calculator-section" id="storicoGuadagno" style="display: none;">
         <h2>🗂️ Storico Giorni (Guadagno)</h2>
         <p style="color: #d1d5db; text-align: center; margin-bottom: 20px; font-size: 0.95rem;">I dati vengono salvati solo sul tuo browser.</p>
@@ -331,6 +415,49 @@
   </div>
 
   <script>
+    function placeholderCalcolaCosti() {
+      alert('La sezione costi verrà completata nel prossimo step con i calcoli dettagliati.');
+    }
+
+    function patchesNecessariePerPezzo(durFinale) {
+      // Ogni pezzo ha max 240; patch ripara 60. Spreco accettabile: ≤ 6 durabilità
+      const max = 240;
+      const deficit = Math.max(0, max - (Number(durFinale) || 0));
+      if (deficit <= 6) return 0; // Non patchare se il recupero sprecherebbe fino a 6 punti
+      return Math.ceil(deficit / 60);
+    }
+
+    function calcolaCostiArmatura() {
+      const elmo = parseFloat(document.getElementById('elmoDur').value) || 0;
+      const torso = parseFloat(document.getElementById('torsoDur').value) || 0;
+      const gambe = parseFloat(document.getElementById('gambeDur').value) || 0;
+      const stivali = parseFloat(document.getElementById('stivaliDur').value) || 0;
+
+      const costoLingotto = parseFloat(document.getElementById('costoLingotto').value) || 0;
+      const costoWool = parseFloat(document.getElementById('costoWool').value) || 0;
+
+      const pElmo = patchesNecessariePerPezzo(elmo);
+      const pTorso = patchesNecessariePerPezzo(torso);
+      const pGambe = patchesNecessariePerPezzo(gambe);
+      const pStivali = patchesNecessariePerPezzo(stivali);
+      const pTot = pElmo + pTorso + pGambe + pStivali;
+
+      // 1 craft = 1 lingotto + 1 woolen = 4 patch
+      const craft = Math.ceil(pTot / 4);
+      const costoTot = craft * (costoLingotto + costoWool);
+
+      document.getElementById('patchElmo').textContent = pElmo;
+      document.getElementById('patchTorso').textContent = pTorso;
+      document.getElementById('patchGambe').textContent = pGambe;
+      document.getElementById('patchStivali').textContent = pStivali;
+      document.getElementById('patchTotali').textContent = pTot;
+      document.getElementById('craftNecessari').textContent = craft;
+      document.getElementById('costoTotalePatch').textContent = `${costoTot.toFixed(1)} br`;
+
+      const res = document.getElementById('risultatiCostiArmatura');
+      res.style.display = 'block';
+      res.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
     const STORAGE_KEY_GUADAGNO = 'hunter_calc_guadagno_v1';
     const BR_LABEL = ' br';
 
