@@ -332,7 +332,7 @@
           </div>
 
           <div class="form-group">
-            <h3>🗡️ Armi (durabilità)</h3>
+            <h3>🗡️ Armi e Frecce</h3>
             <div class="input-group">
               <label for="arcoDur">Arco - durabilità finale (0-240):</label>
               <input type="number" id="arcoDur" placeholder="Es: 170" min="0" max="240" step="1">
@@ -341,25 +341,22 @@
               <label for="stilettoDur">Stiletto - durabilità finale (0-240):</label>
               <input type="number" id="stilettoDur" placeholder="Es: 120" min="0" max="240" step="1">
             </div>
-          </div>
-
-          <div class="form-group">
-            <h3>🏹 Frecce</h3>
+            <div class="input-group">
+              <label for="cotiDisponibili">Coti già craftate disponibili:</label>
+              <input type="number" id="cotiDisponibili" placeholder="Es: 1" min="0" step="1" value="0">
+            </div>
+            <hr style="border-color: rgba(255,255,255,0.1); margin: 12px 0;">
             <div class="input-group">
               <label for="frecceUsate">Frecce utilizzate:</label>
               <input type="number" id="frecceUsate" placeholder="Es: 120" min="0">
             </div>
             <div class="input-group">
-              <label for="costoStick">Costo 1x Stick (br):</label>
-              <input type="number" id="costoStick" placeholder="Es: 0.2" min="0" step="0.01" value="0.2">
-            </div>
-            <div class="input-group">
-              <label for="costoPiuma">Costo 1x Piuma (br):</label>
-              <input type="number" id="costoPiuma" placeholder="Es: 0.5" min="0" step="0.01" value="0.5">
+              <label for="frecceDisponibili">Frecce già craftate disponibili:</label>
+              <input type="number" id="frecceDisponibili" placeholder="Es: 40" min="0" step="1" value="0">
             </div>
             <div class="input-group">
               <label>Note crafting frecce:</label>
-              <div style="color:#a0aec0;">1 nugget rame + 1 stick + 1 piuma ⇒ 20 frecce | 1 lingotto ⇒ 9 nugget</div>
+              <div style="color:#a0aec0;">1 nugget rame + 1 stick + 1 piuma ⇒ 20 frecce • 1 lingotto ⇒ 9 nugget</div>
             </div>
           </div>
 
@@ -376,7 +373,7 @@
           </div>
 
           <div class="form-group">
-            <h3>🧰 Materiali Patch Rame</h3>
+            <h3>🏷️ Prezzi materie prime</h3>
             <div class="input-group">
               <label for="costoLingotto">Costo 1x Lingotto di Rame (br):</label>
               <input type="number" id="costoLingotto" placeholder="Default 21" min="0" step="0.1" value="21">
@@ -386,22 +383,30 @@
               <input type="number" id="costoWool" placeholder="Default 1.5" min="0" step="0.1" value="1.5">
             </div>
             <div class="input-group">
-              <label>Note crafting:</label>
-              <div style="color:#a0aec0;">1 lingotto + 1 woolen fabric ⇒ 4 patch (1 patch ripara 60 durabilità)</div>
-            </div>
-            <div class="input-group">
               <label for="costoHilt">Costo 1x Hilt (br) per coti:</label>
               <input type="number" id="costoHilt" placeholder="Es: 2.0" min="0" step="0.1" value="2.0">
             </div>
             <div class="input-group">
-              <label>Note coti:</label>
-              <div style="color:#a0aec0;">1 hilt + 1 lingotto ⇒ 4 coti (1 coti ripara 60 durabilità)</div>
+              <label for="costoStick">Costo 1x Stick (br):</label>
+              <input type="number" id="costoStick" placeholder="Es: 0.2" min="0" step="0.01" value="0.2">
+            </div>
+            <div class="input-group">
+              <label for="costoPiuma">Costo 1x Piuma (br):</label>
+              <input type="number" id="costoPiuma" placeholder="Es: 0.5" min="0" step="0.01" value="0.5">
+            </div>
+            <div class="input-group">
+              <label>Note crafting:</label>
+              <div style="color:#a0aec0;">Patch: 1 lingotto + 1 woolen ⇒ 4 patch • Coti: 1 hilt + 1 lingotto ⇒ 4 coti • Frecce: 1 nugget + 1 stick + 1 piuma ⇒ 20 frecce • 1 lingotto ⇒ 9 nugget</div>
+            </div>
+            <hr style="border-color: rgba(255,255,255,0.1); margin: 12px 0;">
+            <div class="input-group">
+              <label for="patchDisponibili">Patch già craftate disponibili:</label>
+              <input type="number" id="patchDisponibili" placeholder="Es: 2" min="0" step="1" value="0">
             </div>
           </div>
         </div>
 
-        <button class="calculate-button" onclick="calcolaCostiArmatura()">🧮 Calcola Costi Armatura</button>
-        <button class="calculate-button" onclick="calcolaCostiArmiEFrecce()">🧮 Calcola Costi Armi e Frecce</button>
+        <button class="calculate-button" onclick="calcolaCostiTotali()">🧮 Calcola Costi</button>
 
         <div class="results-section" id="risultatiCostiArmatura" style="display:none;">
           <h3>📉 Risultati Costi Armatura</h3>
@@ -411,8 +416,11 @@
             <div class="result-card"><div class="result-value" id="patchGambe">0</div><div class="result-label">Patch per Gambe</div></div>
             <div class="result-card"><div class="result-value" id="patchStivali">0</div><div class="result-label">Patch per Stivali</div></div>
             <div class="result-card"><div class="result-value" id="patchTotali">0</div><div class="result-label">Patch Totali</div></div>
+            <div class="result-card"><div class="result-value" id="patchDaStock">0</div><div class="result-label">Patch usate da stock</div></div>
+            <div class="result-card"><div class="result-value" id="patchDaCraftare">0</div><div class="result-label">Patch da craftare</div></div>
             <div class="result-card"><div class="result-value" id="craftNecessari">0</div><div class="result-label">Craft (x4 patch)</div></div>
             <div class="result-card"><div class="result-value" id="costoTotalePatch">0 br</div><div class="result-label">Costo Totale Patch</div></div>
+            <div class="result-card"><div class="result-value" id="patchRimanenti">0</div><div class="result-label">Patch rimanenti (fine calcolo)</div></div>
           </div>
         </div>
 
@@ -428,6 +436,13 @@
             <div class="result-card"><div class="result-value" id="frecceLotti">0</div><div class="result-label">Lotti frecce (x20)</div></div>
             <div class="result-card"><div class="result-value" id="nuggetIngot">0</div><div class="result-label">Lingotti per Nugget</div></div>
             <div class="result-card"><div class="result-value" id="costoFrecceMat">0 br</div><div class="result-label">Costo Materiali Frecce</div></div>
+          </div>
+        </div>
+
+        <div class="results-section" id="risultatiCostiTotali" style="display:none;">
+          <h3>💵 Totale Costi</h3>
+          <div class="results-grid">
+            <div class="result-card"><div class="result-value" id="costoTotaleGiorno">0 br</div><div class="result-label">Somma costi (armatura + armi + frecce)</div></div>
           </div>
         </div>
       </div>
@@ -485,9 +500,12 @@
       const pGambe = patchesNecessariePerPezzo(gambe);
       const pStivali = patchesNecessariePerPezzo(stivali);
       const pTot = pElmo + pTorso + pGambe + pStivali;
+      const stock = Math.max(0, parseInt(document.getElementById('patchDisponibili').value) || 0);
+      const usateDaStock = Math.min(stock, pTot);
+      const daCraftare = Math.max(0, pTot - usateDaStock);
 
       // 1 craft = 1 lingotto + 1 woolen = 4 patch
-      const craft = Math.ceil(pTot / 4);
+      const craft = Math.ceil(daCraftare / 4);
       const costoTot = craft * (costoLingotto + costoWool);
 
       document.getElementById('patchElmo').textContent = pElmo;
@@ -495,8 +513,14 @@
       document.getElementById('patchGambe').textContent = pGambe;
       document.getElementById('patchStivali').textContent = pStivali;
       document.getElementById('patchTotali').textContent = pTot;
+      document.getElementById('patchDaStock').textContent = usateDaStock;
+      document.getElementById('patchDaCraftare').textContent = daCraftare;
       document.getElementById('craftNecessari').textContent = craft;
       document.getElementById('costoTotalePatch').textContent = `${costoTot.toFixed(1)} br`;
+      const rim = stock - usateDaStock + (craft * 4 - daCraftare);
+      document.getElementById('patchRimanenti').textContent = Math.max(0, rim);
+      window.__stockPartial = window.__stockPartial || {};
+      window.__stockPartial.patch = Math.max(0, rim);
 
       const res = document.getElementById('risultatiCostiArmatura');
       res.style.display = 'block';
@@ -513,7 +537,10 @@
       const cArco = patchesNecessariePerPezzo(arcoDur); // 1 coti ripara 60
       const cStiletto = patchesNecessariePerPezzo(stilettoDur);
       const cTot = cArco + cStiletto;
-      const craftCoti = Math.ceil(cTot / 4); // 1 craft = 1 hilt + 1 lingotto => 4 coti
+      const cotiStock = Math.max(0, parseInt(document.getElementById('cotiDisponibili').value) || 0);
+      const cotiDaStock = Math.min(cotiStock, cTot);
+      const cotiDaCraftare = Math.max(0, cTot - cotiDaStock);
+      const craftCoti = Math.ceil(cotiDaCraftare / 4); // 1 craft = 1 hilt + 1 lingotto => 4 coti
       const costoCoti = craftCoti * (costoHilt + costoLingotto);
 
       document.getElementById('cotiArco').textContent = cArco;
@@ -524,9 +551,11 @@
 
       // Frecce: 1 lingotto => 9 nugget; 1 nugget+1 stick+1 piuma => 20 frecce
       const frecce = parseFloat(document.getElementById('frecceUsate').value) || 0;
+      const frecceStock = Math.max(0, parseInt(document.getElementById('frecceDisponibili').value) || 0);
+      const frecceDaCraftare = Math.max(0, frecce - frecceStock);
       const costoStick = parseFloat(document.getElementById('costoStick').value) || 0;
       const costoPiuma = parseFloat(document.getElementById('costoPiuma').value) || 0;
-      const lotti = Math.ceil(frecce / 20);
+      const lotti = Math.ceil(frecceDaCraftare / 20);
       const nuggetNecessari = lotti; // 1 nugget per lotto da 20 frecce
       const lingottiPerNugget = Math.ceil(nuggetNecessari / 9);
       const costoNugget = lingottiPerNugget * costoLingotto; // semplificazione: costo derivato da lingotti
@@ -538,11 +567,46 @@
       document.getElementById('nuggetIngot').textContent = lingottiPerNugget;
       document.getElementById('costoFrecceMat').textContent = `${costoFrecce.toFixed(1)} br`;
 
+      // salva rimanenze parziali
+      const cotiRim = Math.max(0, cotiStock - cotiDaStock + (craftCoti * 4 - cotiDaCraftare));
+      const frecceRim = Math.max(0, frecceStock - Math.min(frecceStock, frecce) + (lotti * 20 - frecceDaCraftare));
+      window.__stockPartial = window.__stockPartial || {};
+      window.__stockPartial.coti = cotiRim;
+      window.__stockPartial.frecce = frecceRim;
+
       const res = document.getElementById('risultatiCostiArmiFrecce');
       res.style.display = 'block';
       res.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
+
+    function calcolaCostiTotali() {
+      // Esegue entrambi i calcoli e somma i risultati
+      calcolaCostiArmatura();
+      calcolaCostiArmiEFrecce();
+
+      // Legge i totali dalle sezioni
+      const costoPatchText = document.getElementById('costoTotalePatch').textContent || '0 br';
+      const costoCotiText = document.getElementById('costoCoti').textContent || '0 br';
+      const costoFrecceText = document.getElementById('costoFrecceMat').textContent || '0 br';
+
+      const num = t => parseFloat((t || '0').toString().replace(' br','').replace(',', '.')) || 0;
+      const totale = num(costoPatchText) + num(costoCotiText) + num(costoFrecceText);
+
+      document.getElementById('costoTotaleGiorno').textContent = `${totale.toFixed(1)} br`;
+      const res = document.getElementById('risultatiCostiTotali');
+      res.style.display = 'block';
+
+      // salva stock rimanente
+      const stock = window.__stockPartial || {};
+      const toSave = {
+        patch: Number(stock.patch || 0),
+        coti: Number(stock.coti || 0),
+        frecce: Number(stock.frecce || 0)
+      };
+      localStorage.setItem(STORAGE_KEY_STOCK, JSON.stringify(toSave));
+    }
     const STORAGE_KEY_GUADAGNO = 'hunter_calc_guadagno_v1';
+    const STORAGE_KEY_STOCK = 'hunter_calc_stock_v1';
     const BR_LABEL = ' br';
 
     function toggleFaseVisibility() {
@@ -724,6 +788,16 @@
         fattaSfida.addEventListener('change', toggleFaseVisibility);
         toggleFaseVisibility();
       }
+      // Precompila stock da localStorage
+      try {
+        const savedStock = JSON.parse(localStorage.getItem(STORAGE_KEY_STOCK) || '{}');
+        if (savedStock && typeof savedStock === 'object') {
+          if (typeof savedStock.patch === 'number') document.getElementById('patchDisponibili').value = savedStock.patch;
+          if (typeof savedStock.coti === 'number') document.getElementById('cotiDisponibili').value = savedStock.coti;
+          if (typeof savedStock.frecce === 'number') document.getElementById('frecceDisponibili').value = savedStock.frecce;
+        }
+      } catch (e) {}
+
       // Render iniziale storico
       renderStoricoGuadagno();
     });
@@ -756,3 +830,5 @@
   </script>
 </body>
 </html>
+
+
