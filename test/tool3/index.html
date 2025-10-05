@@ -477,8 +477,12 @@
           <div class="form-group">
             <h3>🗡️ Armi e Frecce</h3>
             <div class="input-group">
-              <label for="arcoDur">Arco - durabilità finale (0-240):</label>
-              <input type="number" id="arcoDur" placeholder="Es: 170" min="0" max="240" step="1">
+              <label for="arco1Dur">Arco 1 - durabilità finale (0-240):</label>
+              <input type="number" id="arco1Dur" placeholder="Es: 170" min="0" max="240" step="1">
+            </div>
+            <div class="input-group">
+              <label for="arco2Dur">Arco 2 - durabilità finale (0-240):</label>
+              <input type="number" id="arco2Dur" placeholder="Es: 190" min="0" max="240" step="1">
             </div>
             <div class="input-group">
               <label for="stilettoDur">Stiletto - durabilità finale (0-240):</label>
@@ -676,9 +680,15 @@
     }
 
     function patchesNecessariePerPezzo(durFinale) {
-      // Ogni pezzo ha max 240; patch ripara 60. Spreco accettabile: ≤ 6 durabilità
+      // Ogni pezzo ha max 240; patch ripara 60. 
+      // Non riparare se la durabilità è tra 120-180 (metà/tre quarti) - sufficiente per abisso
       const max = 240;
-      const deficit = Math.max(0, max - (Number(durFinale) || 0));
+      const durata = Number(durFinale) || 0;
+      
+      // Se la durabilità è tra 120 e 180, non riparare (sufficiente per abisso)
+      if (durata >= 120 && durata <= 180) return 0;
+      
+      const deficit = Math.max(0, max - durata);
       if (deficit <= 6) return 0; // Non patchare se il recupero sprecherebbe fino a 6 punti
       return Math.ceil(deficit / 60);
     }
@@ -724,21 +734,24 @@
 
     function calcolaCostiArmiEFrecce() {
       // Coti per armi (stessa logica patch: 60 dur per coti, spreco ≤6)
-      const arcoDur = parseFloat(document.getElementById('arcoDur').value) || 0;
+      const arco1Dur = parseFloat(document.getElementById('arco1Dur').value) || 0;
+      const arco2Dur = parseFloat(document.getElementById('arco2Dur').value) || 0;
       const stilettoDur = parseFloat(document.getElementById('stilettoDur').value) || 0;
       const costoLingotto = parseFloat(document.getElementById('costoLingotto').value) || 0;
       const costoHilt = parseFloat(document.getElementById('costoHilt').value) || 0;
 
-      const cArco = patchesNecessariePerPezzo(arcoDur); // 1 coti ripara 60
+      const cArco1 = patchesNecessariePerPezzo(arco1Dur); // 1 coti ripara 60
+      const cArco2 = patchesNecessariePerPezzo(arco2Dur);
       const cStiletto = patchesNecessariePerPezzo(stilettoDur);
-      const cTot = cArco + cStiletto;
+      const cTot = cArco1 + cArco2 + cStiletto;
       const cotiStock = Math.max(0, parseInt(document.getElementById('cotiDisponibili').value) || 0);
       const cotiDaStock = Math.min(cotiStock, cTot);
       const cotiDaCraftare = Math.max(0, cTot - cotiDaStock);
       const craftCoti = Math.ceil(cotiDaCraftare / 4); // 1 craft = 1 hilt + 1 lingotto => 4 coti
       const costoCoti = craftCoti * (costoHilt + costoLingotto);
 
-      document.getElementById('cotiArco').textContent = cArco;
+      document.getElementById('cotiArco1').textContent = cArco1;
+      document.getElementById('cotiArco2').textContent = cArco2;
       document.getElementById('cotiStiletto').textContent = cStiletto;
       document.getElementById('cotiTotali').textContent = cTot;
       document.getElementById('cotiDaStock').textContent = cotiDaStock;
@@ -844,14 +857,16 @@
     }
 
     function calcolaCostoArmi() {
-      const arcoDur = parseFloat(document.getElementById('arcoDur').value) || 0;
+      const arco1Dur = parseFloat(document.getElementById('arco1Dur').value) || 0;
+      const arco2Dur = parseFloat(document.getElementById('arco2Dur').value) || 0;
       const stilettoDur = parseFloat(document.getElementById('stilettoDur').value) || 0;
       const costoLingotto = parseFloat(document.getElementById('costoLingotto').value) || 0;
       const costoHilt = parseFloat(document.getElementById('costoHilt').value) || 0;
 
-      const cArco = patchesNecessariePerPezzo(arcoDur);
+      const cArco1 = patchesNecessariePerPezzo(arco1Dur);
+      const cArco2 = patchesNecessariePerPezzo(arco2Dur);
       const cStiletto = patchesNecessariePerPezzo(stilettoDur);
-      const cTot = cArco + cStiletto;
+      const cTot = cArco1 + cArco2 + cStiletto;
       const cotiStock = Math.max(0, parseInt(document.getElementById('cotiDisponibili').value) || 0);
       const cotiDaStock = Math.min(cotiStock, cTot);
       const cotiDaCraftare = Math.max(0, cTot - cotiDaStock);
@@ -1515,6 +1530,9 @@
     }
 
     function calcolaRapporto() {
+      // Prima assicurati che i costi siano stati calcolati
+      calcolaCostiTotali();
+      
       // Calcola guadagno totale dalle card dinamiche
       const guadagniTotali = guadagniLista.reduce((totale, guadagno) => totale + guadagno.importo, 0);
       
