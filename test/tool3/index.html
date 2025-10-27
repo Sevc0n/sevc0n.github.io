@@ -383,69 +383,15 @@
         🏹 v1.0.0<br>
         <small>02/10/2025 23:44</small>
       </div>
-      <h1>Calcolatore Cacciatore</h1>
-      <p class="subtitle">Calcola guadagni e perdite delle tue spedizioni negli abissi</p>
+      <h1>Calcolatore Riparazioni Cacciatore</h1>
+      <p class="subtitle">Calcola patch, coti e materiali necessari per le tue riparazioni</p>
     </header>
 
     <main>
       <div class="calculator-section">
-        <h2>💰 Sezione Guadagno</h2>
+        <h2>🛡️ Sezione Riparazioni e Materiali</h2>
         <p style="color: #d1d5db; text-align: center; margin-bottom: 30px; font-size: 1.05rem;">
-          Inserisci il guadagno del giorno. Se hai fatto la sfida, seleziona la fase raggiunta per calcolare i bronzini (br) ottenuti.
-        </p>
-
-        <div style="text-align: center; margin-bottom: 20px;">
-          <button class="calculate-button" onclick="apriFinestraGuadagno()" style="background: linear-gradient(135deg, #10b981, #059669);">➕ Aggiungi Guadagno</button>
-          <button class="calculate-button" onclick="segnaGiornoVuoto()" style="background: linear-gradient(135deg, #6b7280, #4b5563); margin-left: 10px;">📅 Giorno Vuoto</button>
-        </div>
-        <div id="listaGuadagni" style="display: grid; gap: 15px; margin-bottom: 20px;"></div>
-
-        <div class="form-group">
-          <h3>🏁 Sfida</h3>
-          <div class="input-group" style="display: flex; align-items: center; gap: 10px;">
-            <input type="checkbox" id="fattaSfida" style="width: 20px; height: 20px;">
-            <label for="fattaSfida" style="margin: 0;">Hai fatto la sfida?</label>
-          </div>
-
-          <div id="faseContainer" style="display: none; margin-top: 10px;">
-            <div class="input-group">
-              <label for="faseSfida">Fase raggiunta:</label>
-              <select id="faseSfida">
-                <option value="1">Fase 1 (13 br)</option>
-                <option value="2">Fase 2 (13 + 18 = 31 br)</option>
-                <option value="3">Fase 3 (31 + 18 = 49 br)</option>
-                <option value="4">Fase 4 (49 + 23 = 72 br)</option>
-              </select>
-            </div>
-          </div>
-        </div>
-        </div>
-
-        <button class="calculate-button" onclick="calcolaGuadagno()">🧮 Calcola Guadagno</button>
-
-        <div class="results-section" id="resultsGuadagno" style="display: none;">
-          <h3>📊 Risultati Guadagno</h3>
-          <div class="results-grid">
-            <div class="result-card">
-              <div class="result-value" id="valoreGuadagno">0</div>
-              <div class="result-label">Guadagno del Giorno</div>
-            </div>
-            <div class="result-card">
-              <div class="result-value" id="bronziniTotali">0 br</div>
-              <div class="result-label">Bronzini dalla Sfida</div>
-            </div>
-            <div class="result-card">
-              <div class="result-value" id="guadagnoTotale">0 br</div>
-              <div class="result-label">Guadagno Totale</div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="calculator-section">
-        <h2>🛡️ Sezione Costi</h2>
-        <p style="color: #d1d5db; text-align: center; margin-bottom: 30px; font-size: 1.05rem;">
-          Inserisci i dati dei consumi e delle riparazioni. I calcoli verranno applicati nel prossimo step.
+          Inserisci la durabilità attuale dei tuoi oggetti per calcolare quanti patch, coti e frecce ti servono.
         </p>
 
         <div class="form-grid">
@@ -504,14 +450,6 @@
           </div>
 
           <div class="form-group">
-            <h3>🧪 Pozioni</h3>
-            <div style="text-align: center; margin-bottom: 20px;">
-              <button class="calculate-button" onclick="apriFinestraPozione()" style="background: linear-gradient(135deg, #8b5cf6, #7c3aed);">➕ Aggiungi Pozione</button>
-            </div>
-            <div id="listaPozioni" style="display: grid; gap: 15px;"></div>
-          </div>
-
-          <div class="form-group">
             <h3>🍽️ Costi Fissi</h3>
             <div class="input-group">
               <label>Costo Calice Giornaliero:</label>
@@ -557,49 +495,102 @@
           </div>
         </div>
 
-        <button class="calculate-button" onclick="calcolaCostiTotali()">🧮 Calcola Costi</button>
+        <button class="calculate-button" onclick="calcolaRiparazioni()">🔧 Calcola Riparazioni</button>
 
-        <div class="results-section" id="risultatiCostiCompatti" style="display:none;">
-          <h3>📊 Riepilogo Costi</h3>
+        <!-- Risultati Armatura -->
+        <div class="results-section" id="risultatiArmatura" style="display:none;">
+          <h3>🛡️ Riparazioni Armatura</h3>
           <div class="results-grid">
-            <div class="result-card"><div class="result-value" id="costoArmatura">0 br</div><div class="result-label">🛡️ Armatura</div></div>
-            <div class="result-card"><div class="result-value" id="costoArmi">0 br</div><div class="result-label">🗡️ Armi</div></div>
-            <div class="result-card"><div class="result-value" id="costoFrecce">0 br</div><div class="result-label">🏹 Frecce</div></div>
-            <div class="result-card"><div class="result-value" id="costoPozioni">0 br</div><div class="result-label">🧪 Pozioni</div></div>
-            <div class="result-card"><div class="result-value" id="costoCalice">0 br</div><div class="result-label">🍽️ Calice</div></div>
-            <div class="result-card"><div class="result-value" id="costoCibo">0 br</div><div class="result-label">🍽️ Cibo</div></div>
+            <div class="result-card"><div class="result-value" id="patchElmo">0</div><div class="result-label">Patch Elmo</div></div>
+            <div class="result-card"><div class="result-value" id="patchTorso">0</div><div class="result-label">Patch Torso</div></div>
+            <div class="result-card"><div class="result-value" id="patchGambe">0</div><div class="result-label">Patch Gambe</div></div>
+            <div class="result-card"><div class="result-value" id="patchStivali">0</div><div class="result-label">Patch Stivali</div></div>
+          </div>
+          <div class="results-grid" style="margin-top: 20px;">
+            <div class="result-card"><div class="result-value" id="patchTotali">0</div><div class="result-label">📦 Patch Totali Necessarie</div></div>
+            <div class="result-card"><div class="result-value" id="patchDaStock">0</div><div class="result-label">✅ Patch da Stock</div></div>
+            <div class="result-card"><div class="result-value" id="patchDaCraftare">0</div><div class="result-label">🔨 Patch da Craftare</div></div>
+            <div class="result-card"><div class="result-value" id="craftNecessari">0</div><div class="result-label">⚒️ Craft Necessari (x4)</div></div>
+          </div>
+          <div class="results-grid" style="margin-top: 20px;">
+            <div class="result-card"><div class="result-value" id="lingottiArmatura">0</div><div class="result-label">🔩 Lingotti Necessari</div></div>
+            <div class="result-card"><div class="result-value" id="woolenArmatura">0</div><div class="result-label">🧵 Woolen Fabric Necessari</div></div>
+            <div class="result-card"><div class="result-value" id="patchRimanenti">0</div><div class="result-label">📦 Patch Rimanenti</div></div>
+            <div class="result-card"><div class="result-value" id="costoTotalePatch">0 br</div><div class="result-label">💰 Costo Totale</div></div>
           </div>
         </div>
 
-        <div class="results-section" id="risultatiCostiTotali" style="display:none;">
-          <h3>💵 Totale Costi</h3>
+        <!-- Risultati Armi -->
+        <div class="results-section" id="risultatiArmi" style="display:none;">
+          <h3>⚔️ Riparazioni Armi</h3>
           <div class="results-grid">
-            <div class="result-card"><div class="result-value" id="costoTotaleGiorno">0 br</div><div class="result-label">Somma costi (armatura + armi + frecce + pozioni + calice + cibo)</div></div>
+            <div class="result-card"><div class="result-value" id="cotiArco1">0</div><div class="result-label">Coti Arco 1</div></div>
+            <div class="result-card"><div class="result-value" id="cotiArco2">0</div><div class="result-label">Coti Arco 2</div></div>
+            <div class="result-card"><div class="result-value" id="cotiStiletto">0</div><div class="result-label">Coti Stiletto</div></div>
+          </div>
+          <div class="results-grid" style="margin-top: 20px;">
+            <div class="result-card"><div class="result-value" id="cotiTotali">0</div><div class="result-label">📦 Coti Totali Necessarie</div></div>
+            <div class="result-card"><div class="result-value" id="cotiDaStock">0</div><div class="result-label">✅ Coti da Stock</div></div>
+            <div class="result-card"><div class="result-value" id="cotiDaCraftare">0</div><div class="result-label">🔨 Coti da Craftare</div></div>
+            <div class="result-card"><div class="result-value" id="craftCoti">0</div><div class="result-label">⚒️ Craft Necessari (x4)</div></div>
+          </div>
+          <div class="results-grid" style="margin-top: 20px;">
+            <div class="result-card"><div class="result-value" id="lingottiArmi">0</div><div class="result-label">🔩 Lingotti Necessari</div></div>
+            <div class="result-card"><div class="result-value" id="hiltArmi">0</div><div class="result-label">🗡️ Hilt Necessari</div></div>
+            <div class="result-card"><div class="result-value" id="cotiRimanenti">0</div><div class="result-label">📦 Coti Rimanenti</div></div>
+            <div class="result-card"><div class="result-value" id="costoCoti">0 br</div><div class="result-label">💰 Costo Totale</div></div>
           </div>
         </div>
-      </div>
 
-      <div class="calculator-section">
-        <h2>📊 Rapporto Guadagno/Costi</h2>
-        <p style="color: #d1d5db; text-align: center; margin-bottom: 30px; font-size: 1.05rem;">
-          Calcola il rapporto tra guadagni e costi per vedere se sei in positivo o negativo.
-        </p>
-        
-        <button class="calculate-button" onclick="calcolaRapporto()" style="background: linear-gradient(135deg, #10b981, #059669);">⚖️ Calcola Rapporto</button>
-
-        <div class="results-section" id="risultatiRapporto" style="display:none;">
-          <h3>📈 Risultati Rapporto</h3>
+        <!-- Risultati Frecce -->
+        <div class="results-section" id="risultatiFrecce" style="display:none;">
+          <h3>🏹 Crafting Frecce</h3>
           <div class="results-grid">
-            <div class="result-card"><div class="result-value" id="rapportoGuadagno">0 br</div><div class="result-label">💰 Guadagno Totale</div></div>
-            <div class="result-card"><div class="result-value" id="rapportoCosti">0 br</div><div class="result-label">💸 Costi Totali</div></div>
-            <div class="result-card"><div class="result-value" id="rapportoValore">0:1</div><div class="result-label">📊 Rapporto</div></div>
-            <div class="result-card"><div class="result-value" id="rapportoTotale">0 br</div><div class="result-label">⚖️ Bilancio</div></div>
+            <div class="result-card"><div class="result-value" id="frecceAttuali">0</div><div class="result-label">Frecce Attuali</div></div>
+            <div class="result-card"><div class="result-value" id="frecceTarget">150</div><div class="result-label">🎯 Target Frecce</div></div>
+            <div class="result-card"><div class="result-value" id="frecceDaCraftare">0</div><div class="result-label">🔨 Frecce da Craftare</div></div>
+            <div class="result-card"><div class="result-value" id="frecceLotti">0</div><div class="result-label">📦 Lotti Necessari (x20)</div></div>
+          </div>
+          <div class="results-grid" style="margin-top: 20px;">
+            <div class="result-card"><div class="result-value" id="nuggetFrecce">0</div><div class="result-label">🔸 Nugget Necessari</div></div>
+            <div class="result-card"><div class="result-value" id="nuggetIngot">0</div><div class="result-label">🔩 Lingotti per Nugget</div></div>
+            <div class="result-card"><div class="result-value" id="stickFrecce">0</div><div class="result-label">🪵 Stick Necessari</div></div>
+            <div class="result-card"><div class="result-value" id="piumeFrecce">0</div><div class="result-label">🪶 Piume Necessarie</div></div>
+          </div>
+          <div class="results-grid" style="margin-top: 20px;">
+            <div class="result-card"><div class="result-value" id="frecceFinali">0</div><div class="result-label">🏹 Frecce Finali</div></div>
+            <div class="result-card"><div class="result-value" id="costoFrecceMat">0 br</div><div class="result-label">💰 Costo Totale</div></div>
+          </div>
+        </div>
+
+        <!-- Riepilogo Totale -->
+        <div class="results-section" id="risultatiTotali" style="display:none;">
+          <h3>📋 Riepilogo Totale Materiali</h3>
+          <div class="results-grid">
+            <div class="result-card"><div class="result-value" id="totaleLingotti">0</div><div class="result-label">🔩 Lingotti Totali</div></div>
+            <div class="result-card"><div class="result-value" id="totaleWoolen">0</div><div class="result-label">🧵 Woolen Fabric</div></div>
+            <div class="result-card"><div class="result-value" id="totaleHilt">0</div><div class="result-label">🗡️ Hilt</div></div>
+            <div class="result-card"><div class="result-value" id="totaleStick">0</div><div class="result-label">🪵 Stick</div></div>
+            <div class="result-card"><div class="result-value" id="totalePiume">0</div><div class="result-label">🪶 Piume</div></div>
+            <div class="result-card"><div class="result-value" id="costoTotaleRiparazioni">0 br</div><div class="result-label">💰 Costo Totale</div></div>
           </div>
         </div>
       </div>
 
 
       
+
+      <!-- Sezione Opzionale: Calcolo Costi (nascosta di default) -->
+      <div class="calculator-section" id="sezionePozioni" style="border: 1px dashed rgba(139, 92, 246, 0.3);">
+        <h2>🧪 Pozioni (Opzionale)</h2>
+        <p style="color: #d1d5db; text-align: center; margin-bottom: 30px; font-size: 1.05rem;">
+          Se vuoi includere anche il costo delle pozioni nel calcolo totale.
+        </p>
+        <div style="text-align: center; margin-bottom: 20px;">
+          <button class="calculate-button" onclick="apriFinestraPozione()" style="background: linear-gradient(135deg, #8b5cf6, #7c3aed);">➕ Aggiungi Pozione</button>
+        </div>
+        <div id="listaPozioni" style="display: grid; gap: 15px;"></div>
+      </div>
 
       <div style="text-align: center; margin-top: 40px;">
         <a href="../../accesso-test.html" class="back-link">🔙 Torna all'Accesso</a>
@@ -608,15 +599,6 @@
         <a href="../tool2/index.html" class="back-link">🔬 Tool 2</a>
       </div>
 
-      <div class="calculator-section" id="riepilogoGenerale" style="margin-top: 25px;">
-        <h2>🧾 Riepilogo</h2>
-        <div style="text-align: center; margin-bottom: 20px;">
-          <button class="calculate-button" onclick="salvaGiornataCompleta()" style="background: linear-gradient(135deg, #f59e0b, #d97706);">💾 Salva Giornata Completa</button>
-          <button class="calculate-button" onclick="esportaExcelManuale()" style="background: linear-gradient(135deg, #059669, #047857); margin-left: 10px;">📊 Esporta Excel</button>
-        </div>
-        <div id="riepilogoGiorni" class="results-grid"></div>
-        <div id="riepilogoSettimane" class="results-grid" style="margin-top: 20px;"></div>
-      </div>
     </main>
   </div>
 
@@ -671,9 +653,6 @@
     </div>
   </div>
 
-  <!-- CDN per Excel -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-
   <script>
     function placeholderCalcolaCosti() {
       alert('La sezione costi verrà completata nel prossimo step con i calcoli dettagliati.');
@@ -693,12 +672,12 @@
       return Math.ceil(deficit / 60);
     }
 
-    function calcolaCostiArmatura() {
+    function calcolaRiparazioni() {
+      // Calcola Armatura
       const elmo = parseFloat(document.getElementById('elmoDur').value) || 0;
       const torso = parseFloat(document.getElementById('torsoDur').value) || 0;
       const gambe = parseFloat(document.getElementById('gambeDur').value) || 0;
       const stivali = parseFloat(document.getElementById('stivaliDur').value) || 0;
-
       const costoLingotto = parseFloat(document.getElementById('costoLingotto').value) || 0;
       const costoWool = parseFloat(document.getElementById('costoWool').value) || 0;
 
@@ -710,11 +689,11 @@
       const stock = Math.max(0, parseInt(document.getElementById('patchDisponibili').value) || 0);
       const usateDaStock = Math.min(stock, pTot);
       const daCraftare = Math.max(0, pTot - usateDaStock);
-
-      // 1 craft = 1 lingotto + 1 woolen = 4 patch
       const craft = Math.ceil(daCraftare / 4);
-      const costoTot = craft * (costoLingotto + costoWool);
+      const costoTotPatch = craft * (costoLingotto + costoWool);
+      const rim = stock - usateDaStock + (craft * 4 - daCraftare);
 
+      // Aggiorna UI Armatura
       document.getElementById('patchElmo').textContent = pElmo;
       document.getElementById('patchTorso').textContent = pTorso;
       document.getElementById('patchGambe').textContent = pGambe;
@@ -723,33 +702,30 @@
       document.getElementById('patchDaStock').textContent = usateDaStock;
       document.getElementById('patchDaCraftare').textContent = daCraftare;
       document.getElementById('craftNecessari').textContent = craft;
-      document.getElementById('costoTotalePatch').textContent = `${costoTot.toFixed(1)} br`;
-      const rim = stock - usateDaStock + (craft * 4 - daCraftare);
+      document.getElementById('lingottiArmatura').textContent = craft;
+      document.getElementById('woolenArmatura').textContent = craft;
       document.getElementById('patchRimanenti').textContent = Math.max(0, rim);
-      window.__stockPartial = window.__stockPartial || {};
-      window.__stockPartial.patch = Math.max(0, rim);
+      document.getElementById('costoTotalePatch').textContent = `${costoTotPatch.toFixed(1)} br`;
+      document.getElementById('risultatiArmatura').style.display = 'block';
 
-      // Non mostrare più i dettagli, solo i risultati compatti
-    }
-
-    function calcolaCostiArmiEFrecce() {
-      // Coti per armi (stessa logica patch: 60 dur per coti, spreco ≤6)
+      // Calcola Armi
       const arco1Dur = parseFloat(document.getElementById('arco1Dur').value) || 0;
       const arco2Dur = parseFloat(document.getElementById('arco2Dur').value) || 0;
       const stilettoDur = parseFloat(document.getElementById('stilettoDur').value) || 0;
-      const costoLingotto = parseFloat(document.getElementById('costoLingotto').value) || 0;
       const costoHilt = parseFloat(document.getElementById('costoHilt').value) || 0;
 
-      const cArco1 = patchesNecessariePerPezzo(arco1Dur); // 1 coti ripara 60
+      const cArco1 = patchesNecessariePerPezzo(arco1Dur);
       const cArco2 = patchesNecessariePerPezzo(arco2Dur);
       const cStiletto = patchesNecessariePerPezzo(stilettoDur);
       const cTot = cArco1 + cArco2 + cStiletto;
       const cotiStock = Math.max(0, parseInt(document.getElementById('cotiDisponibili').value) || 0);
       const cotiDaStock = Math.min(cotiStock, cTot);
       const cotiDaCraftare = Math.max(0, cTot - cotiDaStock);
-      const craftCoti = Math.ceil(cotiDaCraftare / 4); // 1 craft = 1 hilt + 1 lingotto => 4 coti
-      const costoCoti = craftCoti * (costoHilt + costoLingotto);
+      const craftCoti = Math.ceil(cotiDaCraftare / 4);
+      const costoCotiTot = craftCoti * (costoHilt + costoLingotto);
+      const cotiRim = Math.max(0, cotiStock - cotiDaStock + (craftCoti * 4 - cotiDaCraftare));
 
+      // Aggiorna UI Armi
       document.getElementById('cotiArco1').textContent = cArco1;
       document.getElementById('cotiArco2').textContent = cArco2;
       document.getElementById('cotiStiletto').textContent = cStiletto;
@@ -757,80 +733,60 @@
       document.getElementById('cotiDaStock').textContent = cotiDaStock;
       document.getElementById('cotiDaCraftare').textContent = cotiDaCraftare;
       document.getElementById('craftCoti').textContent = craftCoti;
-      document.getElementById('costoCoti').textContent = `${costoCoti.toFixed(1)} br`;
-      document.getElementById('cotiRimanenti').textContent = Math.max(0, cotiStock - cotiDaStock + (craftCoti * 4 - cotiDaCraftare));
+      document.getElementById('lingottiArmi').textContent = craftCoti;
+      document.getElementById('hiltArmi').textContent = craftCoti;
+      document.getElementById('cotiRimanenti').textContent = cotiRim;
+      document.getElementById('costoCoti').textContent = `${costoCotiTot.toFixed(1)} br`;
+      document.getElementById('risultatiArmi').style.display = 'block';
 
-      // Frecce: target 150, calcola quante craftare per arrivare al target
+      // Calcola Frecce
       const frecceRimanenti = parseFloat(document.getElementById('frecceRimanenti').value) || 0;
       const targetFrecce = 150;
-      
-      // Frecce da craftare = target - rimanenti
       const frecceDaCraftare = Math.max(0, targetFrecce - frecceRimanenti);
-      
       const costoStick = parseFloat(document.getElementById('costoStick').value) || 0;
       const costoPiuma = parseFloat(document.getElementById('costoPiuma').value) || 0;
       const lotti = Math.ceil(frecceDaCraftare / 20);
-      const nuggetNecessari = lotti; // 1 nugget per lotto da 20 frecce
+      const nuggetNecessari = lotti;
       const lingottiPerNugget = Math.ceil(nuggetNecessari / 9);
-      const costoNugget = lingottiPerNugget * costoLingotto; // semplificazione: costo derivato da lingotti
+      const costoNugget = lingottiPerNugget * costoLingotto;
       const costoStickTot = lotti * costoStick;
       const costoPiumaTot = lotti * costoPiuma;
       const costoFrecce = costoNugget + costoStickTot + costoPiumaTot;
+      const frecceFinali = frecceRimanenti + (lotti * 20);
 
+      // Aggiorna UI Frecce
+      document.getElementById('frecceAttuali').textContent = frecceRimanenti;
       document.getElementById('frecceTarget').textContent = targetFrecce;
       document.getElementById('frecceDaCraftare').textContent = frecceDaCraftare;
       document.getElementById('frecceLotti').textContent = lotti;
+      document.getElementById('nuggetFrecce').textContent = nuggetNecessari;
       document.getElementById('nuggetIngot').textContent = lingottiPerNugget;
+      document.getElementById('stickFrecce').textContent = lotti;
+      document.getElementById('piumeFrecce').textContent = lotti;
+      document.getElementById('frecceFinali').textContent = frecceFinali;
       document.getElementById('costoFrecceMat').textContent = `${costoFrecce.toFixed(1)} br`;
-      document.getElementById('frecceFinali').textContent = frecceRimanenti + (lotti * 20);
+      document.getElementById('risultatiFrecce').style.display = 'block';
 
-      // salva rimanenze parziali
-      const cotiRim = Math.max(0, cotiStock - cotiDaStock + (craftCoti * 4 - cotiDaCraftare));
-      const frecceRim = Math.max(0, frecceRimanenti + (lotti * 20) - targetFrecce); // frecce in eccesso rispetto al target
-      window.__stockPartial = window.__stockPartial || {};
-      window.__stockPartial.coti = cotiRim;
-      window.__stockPartial.frecce = frecceRim;
-
-      // Non mostrare più i dettagli, solo i risultati compatti
-    }
-
-    function calcolaCostiTotali() {
-      // Esegue entrambi i calcoli e somma i risultati
-      calcolaCostiArmatura();
-      calcolaCostiArmiEFrecce();
-
-      // Legge i totali dalle sezioni (ora calcolati direttamente)
-      const costoArmatura = calcolaCostoArmatura();
-      const costoArmi = calcolaCostoArmi();
-      const costoFrecce = calcolaCostoFrecce();
+      // Riepilogo Totale
+      const totaleLingotti = craft + craftCoti + lingottiPerNugget;
+      const totaleWoolen = craft;
+      const totaleHilt = craftCoti;
+      const totaleStick = lotti;
+      const totalePiume = lotti;
       const costoPozioni = calcolaCostoTotalePozioni();
       const costiFissi = calcolaCostiFissi();
-      const costoCalice = 3; // Fisso
-      const costoCibo = parseFloat(document.getElementById('costoCibo').value) || 0;
-      const totale = costoArmatura + costoArmi + costoFrecce + costoPozioni + costiFissi;
+      const costoTotale = costoTotPatch + costoCotiTot + costoFrecce + costoPozioni + costiFissi;
 
-      // Aggiorna risultati compatti
-      document.getElementById('costoArmatura').textContent = `${costoArmatura.toFixed(1)} br`;
-      document.getElementById('costoArmi').textContent = `${costoArmi.toFixed(1)} br`;
-      document.getElementById('costoFrecce').textContent = `${costoFrecce.toFixed(1)} br`;
-      document.getElementById('costoPozioni').textContent = `${costoPozioni.toFixed(1)} br`;
-      document.getElementById('costoCalice').textContent = `${costoCalice.toFixed(1)} br`;
-      document.getElementById('costoCibo').textContent = `${costoCibo.toFixed(1)} br`;
-      
-      document.getElementById('costoTotaleGiorno').textContent = `${totale.toFixed(1)} br`;
-      const res = document.getElementById('risultatiCostiCompatti');
-      res.style.display = 'block';
-      const resTot = document.getElementById('risultatiCostiTotali');
-      resTot.style.display = 'block';
+      document.getElementById('totaleLingotti').textContent = totaleLingotti;
+      document.getElementById('totaleWoolen').textContent = totaleWoolen;
+      document.getElementById('totaleHilt').textContent = totaleHilt;
+      document.getElementById('totaleStick').textContent = totaleStick;
+      document.getElementById('totalePiume').textContent = totalePiume;
+      document.getElementById('costoTotaleRiparazioni').textContent = `${costoTotale.toFixed(1)} br`;
+      document.getElementById('risultatiTotali').style.display = 'block';
 
-      // salva stock rimanente
-      const stock = window.__stockPartial || {};
-      const toSave = {
-        patch: Number(stock.patch || 0),
-        coti: Number(stock.coti || 0),
-        frecce: Number(stock.frecce || 0)
-      };
-      setCookie(STORAGE_KEY_STOCK, JSON.stringify(toSave), 365);
+      // Scroll all'inizio dei risultati
+      document.getElementById('risultatiArmatura').scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 
     function calcolaCostoArmatura() {
@@ -891,12 +847,6 @@
       const costoPiumaTot = lotti * costoPiuma;
       return costoNugget + costoStickTot + costoPiumaTot;
     }
-    const STORAGE_KEY_GUADAGNO = 'hunter_calc_guadagno_v1';
-    const STORAGE_KEY_STOCK = 'hunter_calc_stock_v1';
-    const STORAGE_KEY_POZIONI = 'hunter_calc_pozioni_v1';
-    const STORAGE_KEY_GUADAGNI_GIORNO = 'hunter_calc_guadagni_giorno_v1';
-    const BR_LABEL = ' br';
-    
     let pozioniLista = [];
     let guadagniLista = [];
 
@@ -934,170 +884,6 @@
       document.getElementById('resultsGuadagno').scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 
-    function salvaGiornataCompleta() {
-      // Calcola guadagni totali dalle card dinamiche
-      const guadagniTotali = guadagniLista.reduce((totale, guadagno) => totale + guadagno.importo, 0);
-      const causale = guadagniLista.length > 0 ? guadagniLista.map(g => g.causale).join(', ') : 'Nessuna causale';
-      
-      const fattaSfida = document.getElementById('fattaSfida').checked;
-      const fase = fattaSfida ? Number(document.getElementById('faseSfida').value) : 0;
-      const bronzini = fattaSfida ? calcolaBronziniPerFase(fase) : 0;
-
-      // Calcola costi totali
-      const costoArmatura = calcolaCostoArmatura();
-      const costoArmi = calcolaCostoArmi();
-      const costoFrecce = calcolaCostoFrecce();
-      const costoPozioni = calcolaCostoTotalePozioni();
-      const costiFissi = calcolaCostiFissi();
-      const costiTotali = costoArmatura + costoArmi + costoFrecce + costoPozioni + costiFissi;
-
-      const guadagnoTotale = guadagniTotali + bronzini;
-      const bilancio = guadagnoTotale - costiTotali;
-      const rapporto = costiTotali > 0 ? (guadagnoTotale / costiTotali).toFixed(2) : '∞';
-
-      const entry = {
-        id: Date.now(),
-        date: new Date().toISOString(),
-        guadagno: guadagniTotali,
-        causale,
-        fattaSfida,
-        fase,
-        bronzini,
-        costi: costiTotali,
-        bilancio: bilancio,
-        rapporto: rapporto
-      };
-
-      const existing = JSON.parse(getCookie(STORAGE_KEY_GUADAGNO) || '[]');
-      existing.push(entry);
-      setCookie(STORAGE_KEY_GUADAGNO, JSON.stringify(existing), 365);
-
-      // Controlla se è il momento di esportare (1 mese di dati)
-      controllaEsportazioneMensile(existing);
-
-      renderStoricoGuadagno();
-      alert('Giornata completa salvata con successo!');
-    }
-
-    function cancellaStoricoGuadagno() {
-      if (!confirm('Sei sicuro di voler cancellare lo storico del guadagno?')) return;
-      deleteCookie(STORAGE_KEY_GUADAGNO);
-      renderStoricoGuadagno();
-    }
-
-    function formatDate(d) {
-      try {
-        const date = new Date(d);
-        return date.toLocaleString();
-      } catch (_) { return d; }
-    }
-
-    function renderStoricoGuadagno() {
-      const container = document.getElementById('listaStorico');
-      const wrapper = document.getElementById('storicoGuadagno');
-      const riepilogoGiorni = document.getElementById('riepilogoGiorni');
-      const riepilogoSettimane = document.getElementById('riepilogoSettimane');
-      if (!container || !wrapper) return;
-
-      const entries = JSON.parse(getCookie(STORAGE_KEY_GUADAGNO) || '[]');
-      if (entries.length === 0) {
-        wrapper.style.display = 'none';
-        container.innerHTML = '';
-        if (riepilogoGiorni) riepilogoGiorni.innerHTML = '';
-        if (riepilogoSettimane) riepilogoSettimane.innerHTML = '';
-        return;
-      }
-
-      wrapper.style.display = 'block';
-      container.innerHTML = entries
-        .sort((a, b) => b.id - a.id)
-        .map(e => {
-          const labelFase = e.fattaSfida && e.fase ? `Fase ${e.fase}` : 'Nessuna sfida';
-          return `
-            <div class="feature-card" style="background: rgba(45,55,72,0.5); border:1px solid rgba(255,255,255,0.08);">
-              <h3>🗓️ ${formatDate(e.date)}</h3>
-              <ul>
-                <li>Guadagno: <strong>${e.guadagno.toFixed(2)} br</strong></li>
-                <li>Sfida: <strong>${labelFase}</strong></li>
-                <li>Bronzini: <strong>${e.bronzini} br</strong></li>
-              </ul>
-              <div style="margin-top:10px; display:flex; gap:10px;">
-                <button class="back-link" onclick="eliminaEntryGuadagno(${e.id})">Elimina</button>
-              </div>
-            </div>
-          `;
-        }).join('');
-
-      // Riepilogo giornaliero compatto
-      if (riepilogoGiorni) {
-        riepilogoGiorni.innerHTML = entries
-          .sort((a, b) => b.id - a.id)
-          .map(e => {
-            const guadagnoBr = e.guadagno + e.bronzini; // guadagno totale (giornaliero + sfida)
-            const costiBr = e.costi || 0; // usa i costi salvati se disponibili
-            const totale = e.bilancio !== undefined ? e.bilancio : (guadagnoBr - costiBr);
-            const rapporto = e.rapporto || (costiBr > 0 ? (guadagnoBr / costiBr).toFixed(2) : '∞');
-            const sign = totale >= 0 ? '+' : '-';
-            const colore = totale >= 0 ? 'positive' : 'negative';
-            return `
-              <div class="summary-compact">
-                <div class="date">${formatDate(e.date)}</div>
-                <div class="details">
-                  <div>💰 Guadagno: <strong>${guadagnoBr.toFixed(1)}${BR_LABEL}</strong></div>
-                  <div>💸 Costi: <strong>${costiBr.toFixed(1)}${BR_LABEL}</strong></div>
-                  <div>📊 Rapporto: <strong>${rapporto}:1</strong></div>
-                  <div>⚖️ Bilancio: <strong class="${colore}">${sign}${Math.abs(totale).toFixed(1)}${BR_LABEL}</strong></div>
-                </div>
-              </div>
-            `;
-          }).join('');
-      }
-
-      // Aggregazione settimanale (ISO week)
-      if (riepilogoSettimane) {
-        const byWeek = {};
-        entries.forEach(e => {
-          const d = new Date(e.date);
-          const year = d.getFullYear();
-          const week = getISOWeekNumber(d);
-          const key = `${year}-W${week}`;
-          if (!byWeek[key]) byWeek[key] = { dates: [], guadagnoBr: 0, costiBr: 0 };
-          byWeek[key].dates.push(d);
-          byWeek[key].guadagnoBr += (e.guadagno + e.bronzini);
-          byWeek[key].costiBr += (e.costi || 0);
-        });
-
-        const cards = Object.entries(byWeek).sort(([a], [b]) => a < b ? 1 : -1).map(([key, val]) => {
-          const minDate = new Date(Math.min.apply(null, val.dates));
-          const maxDate = new Date(Math.max.apply(null, val.dates));
-          const range = `${minDate.toLocaleDateString()} → ${maxDate.toLocaleDateString()}`;
-          const totale = val.guadagnoBr - val.costiBr;
-          const rapporto = val.costiBr > 0 ? (val.guadagnoBr / val.costiBr).toFixed(2) : '∞';
-          const sign = totale >= 0 ? '+' : '-';
-          const colore = totale >= 0 ? 'positive' : 'negative';
-          return `
-            <div class="summary-compact">
-              <div class="date">Settimana ${key} (${range})</div>
-              <div class="details">
-                <div>💰 Guadagno: <strong>${val.guadagnoBr.toFixed(1)}${BR_LABEL}</strong></div>
-                <div>💸 Costi: <strong>${val.costiBr.toFixed(1)}${BR_LABEL}</strong></div>
-                <div>📊 Rapporto: <strong>${rapporto}:1</strong></div>
-                <div>⚖️ Bilancio: <strong class="${colore}">${sign}${Math.abs(totale).toFixed(1)}${BR_LABEL}</strong></div>
-              </div>
-            </div>
-          `;
-        }).join('');
-
-        riepilogoSettimane.innerHTML = cards;
-      }
-    }
-
-    function eliminaEntryGuadagno(id) {
-      const entries = JSON.parse(getCookie(STORAGE_KEY_GUADAGNO) || '[]');
-      const filtered = entries.filter(e => e.id !== id);
-      setCookie(STORAGE_KEY_GUADAGNO, JSON.stringify(filtered), 365);
-      renderStoricoGuadagno();
-    }
 
     // placeholder: la sezione spedizione verrà reintrodotta in seguito
 
@@ -1117,27 +903,9 @@
         fattaSfida.addEventListener('change', toggleFaseVisibility);
         toggleFaseVisibility();
       }
-      // Precompila stock da cookie
-      try {
-        const savedStock = JSON.parse(getCookie(STORAGE_KEY_STOCK) || '{}');
-        if (savedStock && typeof savedStock === 'object') {
-          if (typeof savedStock.patch === 'number') document.getElementById('patchDisponibili').value = savedStock.patch;
-          if (typeof savedStock.coti === 'number') document.getElementById('cotiDisponibili').value = savedStock.coti;
-        }
-      } catch (e) {}
-
-      // Carica e renderizza pozioni (solo se non ci sono già)
-      if (pozioniLista.length === 0) {
-        caricaPozioni();
-      }
+      // Renderizza pozioni e guadagni all'avvio
       renderPozioni();
-
-      // Carica e renderizza guadagni
-      caricaGuadagni();
       renderGuadagni();
-
-      // Render iniziale storico
-      renderStoricoGuadagno();
     });
 
     // Animazione di benvenuto
@@ -1157,14 +925,6 @@
       });
     });
 
-    function getISOWeekNumber(date) {
-      const tmp = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
-      const dayNum = tmp.getUTCDay() || 7;
-      tmp.setUTCDate(tmp.getUTCDate() + 4 - dayNum);
-      const yearStart = new Date(Date.UTC(tmp.getUTCFullYear(),0,1));
-      const weekNo = Math.ceil((((tmp - yearStart) / 86400000) + 1)/7);
-      return weekNo;
-    }
 
     // Funzioni per gestire le pozioni
     function apriFinestraPozione() {
@@ -1208,57 +968,16 @@
       };
 
       pozioniLista.push(pozione);
-      salvaPozioni();
       renderPozioni();
       chiudiFinestraPozione();
     }
 
     function rimuoviPozione(id) {
       pozioniLista = pozioniLista.filter(p => p.id !== id);
-      salvaPozioni();
       renderPozioni();
     }
 
-    // Funzioni per gestire i cookie persistenti
-    function setCookie(name, value, days = 365) {
-      const expires = new Date();
-      expires.setTime(expires.getTime() + (days * 24 * 60 * 60 * 1000));
-      document.cookie = `${name}=${encodeURIComponent(value)};expires=${expires.toUTCString()};path=/;SameSite=Strict`;
-    }
 
-    function getCookie(name) {
-      const nameEQ = name + "=";
-      const ca = document.cookie.split(';');
-      for (let i = 0; i < ca.length; i++) {
-        let c = ca[i];
-        while (c.charAt(0) === ' ') c = c.substring(1, c.length);
-        if (c.indexOf(nameEQ) === 0) {
-          return decodeURIComponent(c.substring(nameEQ.length, c.length));
-        }
-      }
-      return null;
-    }
-
-    function deleteCookie(name) {
-      document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/;`;
-    }
-
-    function salvaPozioni() {
-      setCookie(STORAGE_KEY_POZIONI, JSON.stringify(pozioniLista), 365);
-    }
-
-    function caricaPozioni() {
-      const saved = getCookie(STORAGE_KEY_POZIONI);
-      if (saved) {
-        try {
-          pozioniLista = JSON.parse(saved);
-        } catch (e) {
-          pozioniLista = [];
-        }
-      } else {
-        pozioniLista = [];
-      }
-    }
 
     function renderPozioni() {
       const container = document.getElementById('listaPozioni');
@@ -1327,33 +1046,15 @@
       };
 
       guadagniLista.push(guadagno);
-      salvaGuadagni();
       renderGuadagni();
       chiudiFinestraGuadagno();
     }
 
     function rimuoviGuadagno(id) {
       guadagniLista = guadagniLista.filter(g => g.id !== id);
-      salvaGuadagni();
       renderGuadagni();
     }
 
-    function salvaGuadagni() {
-      setCookie(STORAGE_KEY_GUADAGNI_GIORNO, JSON.stringify(guadagniLista), 365);
-    }
-
-    function caricaGuadagni() {
-      const saved = getCookie(STORAGE_KEY_GUADAGNI_GIORNO);
-      if (saved) {
-        try {
-          guadagniLista = JSON.parse(saved);
-        } catch (e) {
-          guadagniLista = [];
-        }
-      } else {
-        guadagniLista = [];
-      }
-    }
 
     function renderGuadagni() {
       const container = document.getElementById('listaGuadagni');
@@ -1379,155 +1080,7 @@
       `).join('');
     }
 
-    // Funzioni per esportazione mensile automatica
-    function controllaEsportazioneMensile(entries) {
-      if (entries.length < 2) return; // Almeno 2 giorni per considerare un mese
 
-      // Ordina per data
-      const sortedEntries = entries.sort((a, b) => new Date(a.date) - new Date(b.date));
-      const firstDate = new Date(sortedEntries[0].date);
-      const lastDate = new Date(sortedEntries[sortedEntries.length - 1].date);
-      
-      // Calcola differenza in giorni
-      const diffTime = Math.abs(lastDate - firstDate);
-      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-      
-      // Se sono passati 30+ giorni, suggerisci esportazione
-      if (diffDays >= 30) {
-        const shouldExport = confirm(
-          `📊 Hai raccolto dati per ${diffDays} giorni!\n\n` +
-          `È il momento di esportare i tuoi rapporti mensili.\n` +
-          `Vuoi scaricare un file Excel con tutti i dati?`
-        );
-        
-        if (shouldExport) {
-          esportaExcelMensile(sortedEntries);
-        }
-      }
-    }
-
-    function esportaExcelMensile(entries) {
-      try {
-        // Prepara i dati per Excel
-        const excelData = entries.map(entry => {
-          const date = new Date(entry.date);
-          return {
-            'Data': date.toLocaleDateString('it-IT'),
-            'Ora': date.toLocaleTimeString('it-IT'),
-            'Guadagno Giornaliero (br)': entry.guadagno.toFixed(2),
-            'Bronzini Sfida (br)': entry.bronzini,
-            'Guadagno Totale (br)': (entry.guadagno + entry.bronzini).toFixed(2),
-            'Costi Totali (br)': entry.costi ? entry.costi.toFixed(2) : '0.00',
-            'Bilancio (br)': entry.bilancio ? entry.bilancio.toFixed(2) : '0.00',
-            'Rapporto': entry.rapporto || '∞',
-            'Causale': entry.causale || 'Nessuna',
-            'Sfida Completata': entry.fattaSfida ? 'Sì' : 'No',
-            'Fase Sfida': entry.fase || 'N/A',
-            'Tipo Giorno': entry.causale === 'Giorno vuoto' ? 'Vuoto' : 'Normale'
-          };
-        });
-
-        // Aggiungi riga di totali
-        const totali = {
-          'Data': 'TOTALI',
-          'Ora': '',
-          'Guadagno Giornaliero (br)': entries.reduce((sum, e) => sum + e.guadagno, 0).toFixed(2),
-          'Bronzini Sfida (br)': entries.reduce((sum, e) => sum + e.bronzini, 0),
-          'Guadagno Totale (br)': entries.reduce((sum, e) => sum + e.guadagno + e.bronzini, 0).toFixed(2),
-          'Costi Totali (br)': entries.reduce((sum, e) => sum + (e.costi || 0), 0).toFixed(2),
-          'Bilancio (br)': entries.reduce((sum, e) => sum + (e.bilancio || 0), 0).toFixed(2),
-          'Rapporto': 'N/A',
-          'Causale': '',
-          'Sfida Completata': '',
-          'Fase Sfida': '',
-          'Tipo Giorno': ''
-        };
-
-        excelData.push(totali);
-
-        // Crea workbook Excel
-        const wb = XLSX.utils.book_new();
-        const ws = XLSX.utils.json_to_sheet(excelData);
-        
-        // Imposta larghezza colonne
-        ws['!cols'] = [
-          { wch: 12 }, // Data
-          { wch: 10 }, // Ora
-          { wch: 18 }, // Guadagno Giornaliero
-          { wch: 15 }, // Bronzini Sfida
-          { wch: 16 }, // Guadagno Totale
-          { wch: 15 }, // Costi Totali
-          { wch: 12 }, // Bilancio
-          { wch: 10 }, // Rapporto
-          { wch: 25 }, // Causale
-          { wch: 15 }, // Sfida Completata
-          { wch: 12 }, // Fase Sfida
-          { wch: 12 }  // Tipo Giorno
-        ];
-
-        XLSX.utils.book_append_sheet(wb, ws, 'Rapporti Cacciatore');
-
-        // Genera nome file con data
-        const now = new Date();
-        const fileName = `rapporti_cacciatore_${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}.xlsx`;
-
-        // Scarica il file
-        XLSX.writeFile(wb, fileName);
-
-        alert('📊 File Excel esportato con successo!\n\n' + fileName);
-        
-      } catch (error) {
-        console.error('Errore durante esportazione Excel:', error);
-        alert('❌ Errore durante l\'esportazione. Riprova più tardi.');
-      }
-    }
-
-    function esportaExcelManuale() {
-      const entries = JSON.parse(getCookie(STORAGE_KEY_GUADAGNO) || '[]');
-      if (entries.length === 0) {
-        alert('❌ Nessun dato da esportare. Salva prima alcune giornate!');
-        return;
-      }
-      
-      const sortedEntries = entries.sort((a, b) => new Date(a.date) - new Date(b.date));
-      esportaExcelMensile(sortedEntries);
-    }
-
-    function segnaGiornoVuoto() {
-      const costoCalice = 3; // Fisso
-      const confirmed = confirm(
-        '📅 Vuoi segnare questo come un giorno vuoto?\n\n' +
-        'Questo salverà una giornata con:\n' +
-        '• Guadagno: 0 br\n' +
-        '• Costi: ' + costoCalice + ' br (solo calice)\n' +
-        '• Causale: "Giorno vuoto"'
-      );
-      
-      if (!confirmed) return;
-
-      const entry = {
-        id: Date.now(),
-        date: new Date().toISOString(),
-        guadagno: 0,
-        causale: 'Giorno vuoto',
-        fattaSfida: false,
-        fase: 0,
-        bronzini: 0,
-        costi: costoCalice,
-        bilancio: -costoCalice,
-        rapporto: '0'
-      };
-
-      const existing = JSON.parse(getCookie(STORAGE_KEY_GUADAGNO) || '[]');
-      existing.push(entry);
-      setCookie(STORAGE_KEY_GUADAGNO, JSON.stringify(existing), 365);
-
-      // Controlla se è il momento di esportare (1 mese di dati)
-      controllaEsportazioneMensile(existing);
-
-      renderStoricoGuadagno();
-      alert('📅 Giorno vuoto salvato con successo!');
-    }
 
     function calcolaRapporto() {
       // Prima assicurati che i costi siano stati calcolati

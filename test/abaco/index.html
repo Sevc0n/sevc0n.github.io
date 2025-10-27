@@ -201,6 +201,42 @@
       flex: 1;
       min-width: 0;
       overflow: hidden;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .item-image {
+      width: 32px;
+      height: 32px;
+      border-radius: 6px;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      color: #a0aec0;
+      flex-shrink: 0;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .item-image:hover {
+      background: rgba(99, 179, 237, 0.2);
+      border-color: rgba(99, 179, 237, 0.5);
+    }
+
+    .item-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 4px;
+    }
+
+    .product-details {
+      flex: 1;
+      min-width: 0;
     }
 
     .product-name {
@@ -293,32 +329,6 @@
       box-shadow: 0 0 0 3px rgba(99, 179, 237, 0.2);
     }
 
-    .product input, #participants {
-      padding: 12px;
-      border: 2px solid rgba(99, 179, 237, 0.3);
-      border-radius: 8px;
-      font-size: 1rem;
-      text-align: center;
-      transition: all 0.3s ease;
-      background: rgba(45, 55, 72, 0.8);
-      color: #ffffff;
-      -moz-appearance: textfield;
-      overflow: hidden;
-    }
-
-    .product input::-webkit-outer-spin-button,
-    .product input::-webkit-inner-spin-button {
-      -webkit-appearance: none;
-      margin: 0;
-    }
-
-    .product input:focus, #participants:focus {
-      outline: none;
-      border-color: #63b3ed;
-      box-shadow: 0 0 0 3px rgba(99, 179, 237, 0.2);
-      transform: scale(1.02);
-    }
-
     .participants-section {
       text-align: center;
     }
@@ -335,117 +345,28 @@
       width: 120px;
       font-size: 1.2rem;
       font-weight: 600;
-    }
-
-    .participant-controls {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 15px;
-      flex-wrap: wrap;
-      justify-content: center;
-    }
-
-    .participant-label {
-      font-weight: bold;
-      color: #ffffff;
-      min-width: 100px;
-    }
-
-    .class-select {
-      padding: 8px 12px;
+      padding: 12px;
       border: 2px solid rgba(99, 179, 237, 0.3);
       border-radius: 8px;
-      font-size: 14px;
+      font-size: 1rem;
+      text-align: center;
+      transition: all 0.3s ease;
       background: rgba(45, 55, 72, 0.8);
       color: #ffffff;
-      min-width: 100px;
+      -moz-appearance: textfield;
     }
 
-    .class-select:focus {
+    #participants::-webkit-outer-spin-button,
+    #participants::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+
+    #participants:focus {
       outline: none;
       border-color: #63b3ed;
       box-shadow: 0 0 0 3px rgba(99, 179, 237, 0.2);
-    }
-
-    .division-method-btn {
-      padding: 10px 20px;
-      border: 2px solid rgba(99, 179, 237, 0.3);
-      border-radius: 8px;
-      background: rgba(45, 55, 72, 0.8);
-      color: #ffffff;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      font-size: 14px;
-      font-weight: 500;
-    }
-
-    .division-method-btn:hover {
-      background: rgba(99, 179, 237, 0.1);
-      border-color: rgba(99, 179, 237, 0.5);
-      transform: translateY(-2px);
-    }
-
-    .division-method-btn.active {
-      background: linear-gradient(135deg, #63b3ed, #4299e1);
-      border-color: #63b3ed;
-      color: white;
-    }
-
-    .division-method-btn.active:hover {
-      background: linear-gradient(135deg, #4299e1, #3182ce);
-    }
-
-    .advanced-options {
-      transition: all 0.3s ease;
-    }
-
-    .advanced-options.hidden {
-      display: none;
-    }
-
-
-    .priority-info {
-      background: rgba(99, 179, 237, 0.1);
-      border: 1px solid rgba(99, 179, 237, 0.3);
-      border-radius: 8px;
-      padding: 15px;
-      margin-top: 15px;
-      text-align: left;
-    }
-
-    .priority-info h4 {
-      color: #63b3ed;
-      margin-bottom: 10px;
-    }
-
-    .priority-list {
-      font-size: 0.9rem;
-      color: #a0aec0;
-    }
-
-    .priority-list ul {
-      margin-left: 20px;
-    }
-
-    .priority-list li {
-      margin-bottom: 5px;
-    }
-
-    #calculate-btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(99, 179, 237, 0.4);
-    }
-
-    #calculate-btn:active {
-      transform: translateY(0);
-    }
-
-    #calculate-btn:disabled {
-      background: #a0aec0;
-      cursor: not-allowed;
-      transform: none;
-      box-shadow: none;
+      transform: scale(1.02);
     }
 
     .results-card {
@@ -605,7 +526,7 @@
      .contact-item strong {
        color: #63b3ed;
      }
- 
+
     .fractional-display {
       color: #fbb6ce;
       font-size: 0.9em;
@@ -613,6 +534,71 @@
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
+    }
+
+    /* Modal per caricare immagini */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(5px);
+    }
+
+    .modal-content {
+      background: rgba(26, 26, 46, 0.95);
+      backdrop-filter: blur(15px);
+      margin: 10% auto;
+      padding: 30px;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 20px;
+      width: 90%;
+      max-width: 500px;
+      box-shadow: 0 25px 50px rgba(0, 0, 0, 0.6);
+    }
+
+    .close {
+      color: #aaa;
+      float: right;
+      font-size: 28px;
+      font-weight: bold;
+      cursor: pointer;
+      line-height: 1;
+    }
+
+    .close:hover {
+      color: #fff;
+    }
+
+    .image-upload-area {
+      border: 2px dashed rgba(99, 179, 237, 0.3);
+      border-radius: 10px;
+      padding: 30px;
+      text-align: center;
+      margin: 20px 0;
+      background: rgba(99, 179, 237, 0.05);
+      transition: all 0.3s ease;
+    }
+
+    .image-upload-area:hover {
+      border-color: rgba(99, 179, 237, 0.5);
+      background: rgba(99, 179, 237, 0.1);
+    }
+
+    .image-upload-area.dragover {
+      border-color: #63b3ed;
+      background: rgba(99, 179, 237, 0.2);
+    }
+
+    .image-preview {
+      max-width: 100%;
+      max-height: 200px;
+      border-radius: 8px;
+      margin: 10px 0;
     }
 
     /* Responsive Design */
@@ -625,27 +611,12 @@
       }
       
       .product-info {
+        flex-direction: column;
         text-align: center;
       }
       
       .quantity-container {
         justify-content: center;
-      }
-      
-      .participant-controls {
-        flex-direction: column;
-        align-items: stretch;
-        gap: 8px;
-      }
-      
-      .participant-label {
-        min-width: auto;
-        text-align: center;
-      }
-      
-      .class-select {
-        min-width: auto;
-        width: 100%;
       }
     }
 
@@ -723,11 +694,6 @@
         font-size: 16px;
         padding: 8px;
       }
-      
-      .class-select {
-        padding: 12px;
-        font-size: 16px;
-      }
     }
 
    </style>
@@ -738,8 +704,8 @@
                  <h1><img src="../../logo.png" alt="Abaco Logo" class="logo" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline';">Abaco per Divisione Abisso - TEST</h1>
         <p class="subtitle">Divisore intelligente per bottini di abisso - Test</p>
         <div style="position: absolute; top: 20px; left: 20px; background: rgba(255, 193, 7, 0.2); border: 1px solid rgba(255, 193, 7, 0.5); border-radius: 6px; padding: 4px 8px; font-size: 0.7rem; color: #ffc107; font-weight: 600;">
-          🔧 DEV v0.9.5<br>
-          <small>21/09/2025 00:44</small>
+          🔧 TEST v1.0.0<br>
+          <small>02/10/2025 23:44</small>
         </div>
                  <a href="../../" style="position: absolute; top: 20px; right: 20px; color: #63b3ed; text-decoration: none; font-size: 0.9rem; padding: 8px 12px; border: 1px solid rgba(99, 179, 237, 0.3); border-radius: 8px; transition: all 0.3s ease; cursor: pointer; display: block; width: auto; height: auto; z-index: 10;" onmouseover="this.style.background='rgba(99, 179, 237, 0.1)'" onmouseout="this.style.background='transparent'">🏠 Homepage</a>
       </header>
@@ -760,79 +726,6 @@
              <h2>Partecipanti</h2>
              <label class="participants-label">Numero di partecipanti:</label>
              <input type="number" id="participants" min="1" value="4">
-             
-             <div style="margin: 20px 0; text-align: center;">
-               <label class="participants-label">Metodo di Divisione:</label>
-               <div style="display: flex; gap: 10px; justify-content: center; margin-top: 10px;">
-                 <button id="simple-division-btn" class="division-method-btn active" onclick="setDivisionMethod('simple')">
-                   📊 Divisione Semplice
-                 </button>
-                 <button id="advanced-division-btn" class="division-method-btn" onclick="setDivisionMethod('advanced')">
-                   ⚙️ Divisione Avanzata
-                 </button>
-               </div>
-             </div>
-             
-             <div class="advanced-options" style="margin: 20px 0; text-align: center;">
-               <label class="participants-label">Tier Abisso (imposta per tutti):</label>
-               <select id="abyss-tier" style="padding: 8px 12px; border: 2px solid rgba(99, 179, 237, 0.3); border-radius: 8px; font-size: 14px; background: rgba(45, 55, 72, 0.8); color: #ffffff; min-width: 120px; margin-left: 10px;">
-                 <option value="">Seleziona Tier</option>
-                 <option value="Novizio">Novizio</option>
-                 <option value="Avanzato">Avanzato</option>
-                 <option value="Esperto">Esperto</option>
-                 <option value="Custode">Custode</option>
-                 <option value="Maestro">Maestro</option>
-               </select>
-               <div id="abyss-tier-info" style="margin-top: 10px; font-size: 0.9rem; color: #a0aec0; display: none;">
-                 ⚡ Tier dell'abisso attivo - tutti i partecipanti sono impostati a questo livello (puoi modificare individualmente)
-               </div>
-             </div>
-             
-             <div id="participant-classes" class="advanced-options"></div>
-             
-             <div style="text-align: center; margin: 20px 0;">
-               <button id="calculate-btn" style="background: linear-gradient(135deg, #63b3ed, #4299e1); color: white; border: none; padding: 15px 30px; border-radius: 10px; font-size: 1.1rem; font-weight: bold; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(99, 179, 237, 0.3);">
-                 🧮 Calcola Divisione
-               </button>
-             </div>
-             
-             <div id="simple-legend" class="priority-info">
-               <h4>Divisione Semplice (Algoritmo Abaco Principale)</h4>
-               <div class="priority-list">
-                 <p><strong>Come funziona:</strong></p>
-                 <ul>
-                   <li>Distribuisce <strong>equamente</strong> gli oggetti interi per tipo</li>
-                   <li>Ogni partecipante riceve la <strong>stessa quantità</strong> di ogni oggetto</li>
-                   <li>L'<strong>esubero</strong> viene distribuito in modo <strong>bilanciato</strong></li>
-                   <li>Gli oggetti dell'esubero vanno al partecipante con <strong>valore più basso</strong></li>
-                   <li><strong>Nessuna priorità</strong> per classi o tier</li>
-                   <li>Distribuzione <strong>equa e bilanciata</strong> per valore</li>
-                   <li>Usa lo <strong>stesso algoritmo</strong> dell'abaco principale</li>
-                 </ul>
-                 <p><strong>Esempio:</strong> Con 4 partecipanti e 10 Brim: ogni partecipante riceve 2 Brim (8 totali), poi i 2 rimanenti vanno al partecipante con valore più basso</p>
-               </div>
-             </div>
-
-             <div id="advanced-legend" class="priority-info advanced-options">
-               <h4>Divisione Avanzata (Sistema Stelline e Priorità)</h4>
-               <div class="priority-list">
-                 <p><strong>Classi e Maestranze disponibili:</strong></p>
-                 <ul>
-                   <li><strong>Guerriero/Ombra:</strong> Bassa priorità (prendono l'equivalente)</li>
-                   <li><strong>Bardo:</strong> Priorità su Stagno</li>
-                   <li><strong>Mago:</strong> Priorità su Brim, Occhio di ragno, Membrana, Prismarine Shard, Lost Soul</li>
-                   <li><strong>Cacciatore:</strong> Priorità su Ametista, Membrana, Prismarine Shard</li>
-                   <li><strong>Raccoglitore:</strong> Priorità su Occhio di ragno, Membrana, Prismarine Shard, Lost Soul</li>
-                 </ul>
-                 <p><strong>Sistema Stelle per Pozioni:</strong> Ogni reagente ha un valore in stelle per le pozioni di cura. Il sistema bilancia le stelle tra tutti i partecipanti.</p>
-                 <p><strong>Valore Stelle:</strong></p>
-                 <ul>
-                   <li><strong>1★:</strong> Brim, Carne marcia, Quarzo, Therium, Occhio di ragno, Ametista</li>
-                   <li><strong>2★:</strong> Blaze Powder, Membrana, Slime Ball, Prismarine Shard</li>
-                   <li><strong>3★:</strong> Lost Soul, Demon Heart</li>
-                 </ul>
-               </div>
-             </div>
            </div>
  
            <div class="card results-card">
@@ -859,128 +752,37 @@
         </div>
       </div>
    </div>
+
+   <!-- Modal per caricare immagini -->
+   <div id="imageModal" class="modal">
+     <div class="modal-content">
+       <span class="close" onclick="closeImageModal()">&times;</span>
+       <h3 style="color: #63b3ed; margin-bottom: 20px; text-align: center;">🖼️ Carica Immagine Item</h3>
+       
+       <div class="image-upload-area" id="imageUploadArea">
+         <p style="color: #a0aec0; margin-bottom: 15px;">Trascina un'immagine qui o clicca per selezionare</p>
+         <input type="file" id="imageInput" accept="image/*" style="display: none;">
+         <button onclick="document.getElementById('imageInput').click()" style="background: linear-gradient(135deg, #63b3ed, #4299e1); color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-size: 14px;">
+           📁 Seleziona File
+         </button>
+       </div>
+       
+       <div id="imagePreview" style="text-align: center; margin: 20px 0;"></div>
+       
+       <div style="text-align: center; margin-top: 25px;">
+         <button onclick="saveImage()" style="background: linear-gradient(135deg, #10b981, #059669); color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-size: 14px; margin-right: 10px;">✅ Salva</button>
+         <button onclick="closeImageModal()" style="background: linear-gradient(135deg, #6b7280, #4b5563); color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-size: 14px;">❌ Annulla</button>
+       </div>
+     </div>
+   </div>
  
    <script>
-     // Sistema di priorità per riparazione equipaggiamento e stelline per pozioni
-     const prioritySystem = {
-       'Guerriero': {
-         'Brim': 1,
-         'Carne marcia': 1,
-         'Quarzo': 1,
-         'Therium': 1,
-         'Occhio di ragno': 1,
-         'Ametista': 1,
-         'Blaze Powder': 1,
-         'Membrana': 1,
-         'Slime Ball': 1,
-         'Prismarine Shard': 1,
-         'Lost Soul': 1,
-         'Demon Heart': 1,
-         'Stagno': 1
-       },
-       'Ombra': {
-         'Brim': 1,
-         'Carne marcia': 1,
-         'Quarzo': 1,
-         'Therium': 1,
-         'Occhio di ragno': 1,
-         'Ametista': 1,
-         'Blaze Powder': 1,
-         'Membrana': 1,
-         'Slime Ball': 1,
-         'Prismarine Shard': 1,
-         'Lost Soul': 1,
-         'Demon Heart': 1,
-         'Stagno': 1
-       },
-       'Mago': {
-         'Brim': 3, // Novizio
-         'Carne marcia': 1,
-         'Quarzo': 1,
-         'Therium': 1,
-         'Occhio di ragno': 3, // Avanzato
-         'Ametista': 1,
-         'Blaze Powder': 1,
-         'Membrana': 3, // Esperto
-         'Slime Ball': 1,
-         'Prismarine Shard': 3, // Custode
-         'Lost Soul': 3, // Maestro
-         'Demon Heart': 1,
-         'Stagno': 1
-       },
-       'Bardo': {
-         'Brim': 1,
-         'Carne marcia': 1,
-         'Quarzo': 1,
-         'Therium': 1,
-         'Occhio di ragno': 1,
-         'Ametista': 1,
-         'Blaze Powder': 1,
-         'Membrana': 1,
-         'Slime Ball': 1,
-         'Prismarine Shard': 1,
-         'Lost Soul': 1,
-         'Demon Heart': 1,
-         'Stagno': 3 // Priorità Stagno
-       },
-       'Cacciatore': {
-         'Brim': 1,
-         'Carne marcia': 1,
-         'Quarzo': 1,
-         'Therium': 1,
-         'Occhio di ragno': 1,
-         'Ametista': 3, // Avanzato
-         'Blaze Powder': 1,
-         'Membrana': 3, // Esperto
-         'Slime Ball': 1,
-         'Prismarine Shard': 3, // Custode
-         'Lost Soul': 1,
-         'Demon Heart': 1,
-         'Stagno': 1
-       },
-       'Raccoglitore': {
-         'Brim': 1,
-         'Carne marcia': 1,
-         'Quarzo': 1,
-         'Therium': 1,
-         'Occhio di ragno': 3, // Avanzato
-         'Ametista': 1,
-         'Blaze Powder': 1,
-         'Membrana': 3, // Esperto
-         'Slime Ball': 1,
-         'Prismarine Shard': 3, // Custode
-         'Lost Soul': 3, // Maestro
-         'Demon Heart': 1,
-         'Stagno': 1
-       }
-     };
-
-     // Sistema stelline per pozioni di cura
-     const starSystem = {
-       'Brim': 1,
-       'Carne marcia': 1,
-       'Quarzo': 1,
-       'Therium': 1,
-       'Occhio di ragno': 1,
-       'Ametista': 1,
-       'Blaze Powder': 2,
-       'Membrana': 2,
-       'Slime Ball': 2,
-       'Prismarine Shard': 2,
-       'Lost Soul': 3,
-       'Demon Heart': 3
-     };
-
-     const availableClasses = ['Guerriero', 'Ombra', 'Mago', 'Bardo', 'Cacciatore', 'Raccoglitore'];
-     const availableTiers = ['Novizio', 'Avanzato', 'Esperto', 'Custode', 'Maestro'];
-     let participantClasses = [];
-     let participantTiers = [];
      let defaultProducts = [];
      let products = [];
-     let divisionMethod = 'simple'; // 'simple' o 'advanced'
+     let currentImageItem = null;
      const distributionResults = document.getElementById("distribution-results");
      const participantsInput = document.getElementById("participants");
- 
+
      // Carica i prodotti dal file JSON
      async function loadProducts() {
        const productList = document.getElementById("product-list");
@@ -1015,9 +817,8 @@
          console.log('JSON caricato con successo:', data);
          
          defaultProducts = data;
-         products = [...defaultProducts.map(p => ({ ...p, qty: 0 }))];
+         products = [...defaultProducts.map(p => ({ ...p, qty: 0, image: null }))];
          renderMain();
-         updateParticipantClasses();
                    jsonLoaded = true;
          
        } catch (error) {
@@ -1076,9 +877,8 @@
          { name: "Stagno", price: 30, category: "Metalli", subcategory: "Base", tier: "Base" }
        ];
           
-          products = [...defaultProducts.map(p => ({ ...p, qty: 0 }))];
+          products = [...defaultProducts.map(p => ({ ...p, qty: 0, image: null }))];
           renderMain();
-       updateParticipantClasses();
           
        // Mostra messaggio di successo
           setTimeout(() => {
@@ -1098,126 +898,7 @@
        return `tier-${tier.toLowerCase()}`;
      }
 
-     function setDivisionMethod(method) {
-       divisionMethod = method;
-       
-       // Aggiorna i tasti
-       document.getElementById('simple-division-btn').classList.toggle('active', method === 'simple');
-       document.getElementById('advanced-division-btn').classList.toggle('active', method === 'advanced');
-       
-       // Mostra/nascondi opzioni avanzate
-       const advancedOptions = document.querySelectorAll('.advanced-options');
-       advancedOptions.forEach(option => {
-         option.classList.toggle('hidden', method === 'simple');
-       });
-       
-       // Mostra/nascondi legende appropriate
-       const simpleLegend = document.getElementById('simple-legend');
-       const advancedLegend = document.getElementById('advanced-legend');
-       
-       if (simpleLegend && advancedLegend) {
-         simpleLegend.style.display = method === 'simple' ? 'block' : 'none';
-         advancedLegend.style.display = method === 'advanced' ? 'block' : 'none';
-       }
-       
-       // Se è divisione semplice, inizializza con valori di default
-       if (method === 'simple') {
-         const numParticipants = parseInt(document.getElementById('participants').value);
-         participantClasses = new Array(numParticipants).fill('Guerriero');
-         participantTiers = new Array(numParticipants).fill('Novizio');
-       } else {
-         // Se è avanzata, aggiorna le classi
-         updateParticipantClasses();
-       }
-       
-       // Aggiorna la distribuzione
-       updateDistribution();
-     }
-
-     function updateParticipantClasses() {
-       const numParticipants = parseInt(document.getElementById('participants').value);
-       const container = document.getElementById('participant-classes');
-       const abyssTierSelect = document.getElementById('abyss-tier');
-       
-       // Inizializza array se necessario
-       if (participantClasses.length !== numParticipants) {
-         participantClasses = new Array(numParticipants).fill('Guerriero');
-         participantTiers = new Array(numParticipants).fill('Novizio');
-       }
-       
-       // Se è selezionato un tier dell'abisso, imposta tutti i partecipanti a quel tier
-       if (abyssTierSelect.value) {
-         participantTiers = new Array(numParticipants).fill(abyssTierSelect.value);
-       }
-       
-       let html = '';
-       for (let i = 0; i < numParticipants; i++) {
-         html += `
-           <div class="participant-controls">
-             <label class="participant-label">Partecipante ${i + 1}:</label>
-             <select class="class-select" data-index="${i}" data-type="class">
-               ${availableClasses.map(cls => 
-                 `<option value="${cls}" ${participantClasses[i] === cls ? 'selected' : ''}>${cls}</option>`
-               ).join('')}
-             </select>
-             <select class="class-select" data-index="${i}" data-type="tier">
-               ${availableTiers.map(tier => 
-                 `<option value="${tier}" ${participantTiers[i] === tier ? 'selected' : ''}>${tier}</option>`
-               ).join('')}
-             </select>
-           </div>
-         `;
-       }
-       
-       container.innerHTML = html;
-       
-       // Aggiungi event listeners
-       container.querySelectorAll('.class-select').forEach(select => {
-         select.addEventListener('change', (e) => {
-           const index = parseInt(e.target.dataset.index);
-           const type = e.target.dataset.type;
-           if (type === 'class') {
-             participantClasses[index] = e.target.value;
-           } else if (type === 'tier') {
-             participantTiers[index] = e.target.value;
-           }
-           // Non aggiornare automaticamente la distribuzione
-         });
-       });
-     }
-
-     function calculatePriority(item, participantClass) {
-       // Usa il nome dell'oggetto per trovare la priorità
-       return prioritySystem[participantClass]?.[item.name] || 1;
-     }
-
-     function getItemStars(item) {
-       // Usa il nome dell'oggetto per trovare le stelle per pozioni
-       return starSystem[item.name] || 1;
-     }
-
-     function findEquivalentItems(targetStars, availableItems) {
-       const equivalents = [];
-       let currentStars = 0;
-       
-       // Ordina per priorità (più stelle = più priorità)
-       const sortedItems = availableItems.sort((a, b) => getItemStars(b) - getItemStars(a));
-       
-       for (const item of sortedItems) {
-         if (currentStars + getItemStars(item) <= targetStars) {
-           equivalents.push(item);
-           currentStars += getItemStars(item);
-         }
-       }
-       
-       return equivalents;
-     }
-
-     function calculateStarValue(items) {
-       return items.reduce((total, item) => total + getItemStars(item), 0);
-     }
- 
-     // Funzione per formattare la valuta (conversione automatica g -> a)
+     // Funzione per formattare la valuta (conversione automatica br -> a)
      function formatCurrency(value) {
        if (value >= 100) {
          const argenti = Math.floor(value / 100);
@@ -1227,14 +908,14 @@
            return `${argenti}a`;
          } else {
            const bronziniDisplay = (bronzini % 1 === 0) ? bronzini.toString() : bronzini.toFixed(1);
-           return `${argenti}a ${bronziniDisplay}g`;
+           return `${argenti}a ${bronziniDisplay}br`;
          }
        } else {
          const display = (value % 1 === 0) ? value.toString() : value.toFixed(1);
-         return `${display}g`;
+         return `${display}br`;
        }
      }
- 
+
      // Funzione per applicare la classe CSS corretta in base al valore
      function getCurrencyClass(value) {
        if (value >= 100) {
@@ -1243,11 +924,11 @@
          return 'currency-br';
        }
      }
- 
+
      function renderMain() {
        const productList = document.getElementById("product-list");
        productList.innerHTML = "";
- 
+
        const categories = [...new Set(products.map(p => p.category))];
        
        categories.forEach(category => {
@@ -1258,7 +939,7 @@
          categoryTitle.className = "category-title";
          categoryTitle.textContent = category === "Cristalli" ? `Materiali dai ${category}` : category;
          categoryDiv.appendChild(categoryTitle);
- 
+
          if (category === "Cristalli") {
            // Per i cristalli, raggruppa per sottocategorie
            const subcategories = [...new Set(products.filter(p => p.category === category).map(p => p.subcategory))];
@@ -1296,16 +977,34 @@
          
          productList.appendChild(categoryDiv);
        });
- 
+
        updateDistribution();
      }
- 
+
      function createProductElement(p, globalIndex) {
        const div = document.createElement("div");
        div.className = "product";
- 
+
        const productInfo = document.createElement("div");
        productInfo.className = "product-info";
+       
+       // Slot per l'immagine
+       const imageSlot = document.createElement("div");
+       imageSlot.className = "item-image";
+       imageSlot.title = "Clicca per caricare un'immagine";
+       imageSlot.onclick = () => openImageModal(globalIndex);
+       
+       if (p.image) {
+         const img = document.createElement("img");
+         img.src = p.image;
+         img.alt = p.name;
+         imageSlot.appendChild(img);
+       } else {
+         imageSlot.textContent = "📷";
+       }
+       
+       const productDetails = document.createElement("div");
+       productDetails.className = "product-details";
        
        const name = document.createElement("div");
        name.className = "product-name";
@@ -1320,8 +1019,11 @@
        price.className = `product-price ${getCurrencyClass(p.price)}`;
        price.textContent = formatCurrency(p.price);
        
-       productInfo.appendChild(name);
-       productInfo.appendChild(price);
+       productDetails.appendChild(name);
+       productDetails.appendChild(price);
+       
+       productInfo.appendChild(imageSlot);
+       productInfo.appendChild(productDetails);
 
        const quantityContainer = document.createElement("div");
        quantityContainer.className = "quantity-container";
@@ -1334,10 +1036,10 @@
          if (currentValue > 0) {
            qty.value = currentValue - 1;
            products[globalIndex].qty = currentValue - 1;
-           // Non aggiornare automaticamente la distribuzione
+           updateDistribution();
          }
        });
- 
+
                const qty = document.createElement("input");
         qty.type = "number";
        qty.className = "quantity-input";
@@ -1346,9 +1048,9 @@
        qty.placeholder = "0";
        qty.addEventListener("input", () => {
          products[globalIndex].qty = parseInt(qty.value) || 0;
-         // Non aggiornare automaticamente la distribuzione
+         updateDistribution();
        });
- 
+
        const plusBtn = document.createElement("button");
        plusBtn.className = "quantity-btn plus-btn";
        plusBtn.textContent = "+";
@@ -1356,7 +1058,7 @@
          const currentValue = parseInt(qty.value) || 0;
          qty.value = currentValue + 1;
          products[globalIndex].qty = currentValue + 1;
-         // Non aggiornare automaticamente la distribuzione
+         updateDistribution();
        });
 
        quantityContainer.appendChild(minusBtn);
@@ -1368,214 +1070,29 @@
        
        return div;
      }
- 
-     function updateDistribution() {
-       // Funzione vuota - ora la divisione viene calcolata solo quando si preme il pulsante
-       const container = document.getElementById('distribution-results');
-       container.innerHTML = '<div class="empty-state">Inserisci le quantità dei materiali e premi "Calcola Divisione"</div>';
-     }
 
-     function calculateDistribution() {
-       console.log('calculateDistribution called');
-       const numParticipants = parseInt(participantsInput.value) || 1;
-       const container = document.getElementById('distribution-results');
-       const calculateBtn = document.getElementById('calculate-btn');
+     function updateDistribution() {
+       const participants = parseInt(participantsInput.value) || 1;
+       const activeItems = products.filter(p => p.qty > 0);
        
-       if (numParticipants <= 0) {
-         container.innerHTML = '<div class="empty-state">Inserisci un numero valido di partecipanti</div>';
+       if (activeItems.length === 0) {
+         distributionResults.innerHTML = '<div class="empty-state">Seleziona alcuni materiali per vedere la distribuzione</div>';
          return;
        }
 
-       // Disabilita il pulsante durante il calcolo
-       calculateBtn.disabled = true;
-       calculateBtn.innerHTML = '⏳ Calcolando...';
-
-       // Simula un piccolo delay per mostrare il feedback
-       setTimeout(() => {
-         console.log('Starting item collection...');
-         // Raccogli tutti gli oggetti con quantità > 0
-         const selectedItems = [];
-         const quantityInputs = document.querySelectorAll('.quantity-input');
-         console.log('Found quantity inputs:', quantityInputs.length);
-         
-         quantityInputs.forEach((input, index) => {
-           const quantity = parseInt(input.value) || 0;
-           console.log(`Input ${index}: quantity = ${quantity}`);
-           if (quantity > 0) {
-             const productNameElement = input.closest('.product').querySelector('.product-name');
-             const fullText = productNameElement.textContent;
-             const productName = fullText.replace(/\s*(Novizio|Avanzato|Esperto|Custode|Maestro|Tutti|Base)\s*$/, '').trim();
-             console.log(`Full text: "${fullText}"`);
-             console.log(`Product name: "${productName}"`);
-             const product = products.find(p => p.name === productName);
-             console.log(`Found product:`, product);
-             if (product) {
-               for (let i = 0; i < quantity; i++) {
-                 selectedItems.push({...product});
-               }
-             }
-           }
-         });
-
-         console.log('Total selected items:', selectedItems.length);
-         
-         if (selectedItems.length === 0) {
-           console.log('No items selected, showing empty state');
-           container.innerHTML = '<div class="empty-state">Inserisci le quantità dei materiali per vedere la divisione</div>';
-           calculateBtn.disabled = false;
-           calculateBtn.innerHTML = '🧮 Calcola Divisione';
-           return;
-         }
-
-         // Calcola la distribuzione
-         console.log('Selected items:', selectedItems);
-         console.log('Number of participants:', numParticipants);
-         console.log('Calling performDistribution...');
-         const distribution = performDistribution(selectedItems, numParticipants);
-         console.log('Distribution result:', distribution);
-         console.log('Calling renderDistribution...');
-         renderDistribution(distribution);
-         console.log('renderDistribution completed');
-         
-         // Riabilita il pulsante
-         calculateBtn.disabled = false;
-         calculateBtn.innerHTML = '✅ Calcolato!';
-         
-         // Torna al testo originale dopo 2 secondi
-         setTimeout(() => {
-           calculateBtn.innerHTML = '🧮 Calcola Divisione';
-         }, 2000);
-       }, 500);
-     }
-
-     function performDistribution(items, numParticipants) {
-       console.log('performDistribution called with', items.length, 'items and', numParticipants, 'participants');
-       const participants = [];
-       for (let i = 0; i < numParticipants; i++) {
-         participants.push({
-           index: i,
-           class: participantClasses[i] || 'Guerriero',
-           tier: participantTiers[i] || 'Novizio',
-           items: [],
-           totalValue: 0,
-           starValue: 0
-         });
-       }
-
-       // Se è divisione semplice, usa solo distribuzione equa
-       if (divisionMethod === 'simple') {
-         return performSimpleDistribution(items, participants);
-       }
-
-       // Fase 1: Distribuzione base (1 oggetto per partecipante)
-       const baseItems = [...items];
-       let itemIndex = 0;
-       
-       for (let round = 0; round < Math.floor(baseItems.length / numParticipants); round++) {
-         for (let p = 0; p < numParticipants; p++) {
-           if (itemIndex < baseItems.length) {
-             const item = baseItems[itemIndex++];
-             participants[p].items.push(item);
-             participants[p].totalValue += item.price;
-             participants[p].starValue += getItemStars(item);
-           }
-         }
-       }
-
-       // Fase 2: Distribuzione per priorità degli oggetti rimanenti
-       const remainingItems = baseItems.slice(itemIndex);
-       if (remainingItems.length > 0) {
-         // Ordina i partecipanti per priorità media
-         const sortedParticipants = participants.sort((a, b) => {
-           const aAvgPriority = a.items.length > 0 ? 
-             a.items.reduce((sum, item) => sum + calculatePriority(item, a.class), 0) / a.items.length : 0;
-           const bAvgPriority = b.items.length > 0 ? 
-             b.items.reduce((sum, item) => sum + calculatePriority(item, b.class), 0) / b.items.length : 0;
-           return bAvgPriority - aAvgPriority;
-         });
-
-         for (const item of remainingItems) {
-           // Trova il partecipante con la priorità più alta per questo oggetto
-           let bestParticipant = sortedParticipants[0];
-           let bestPriority = calculatePriority(item, bestParticipant.class);
-           
-           for (const participant of sortedParticipants) {
-             const priority = calculatePriority(item, participant.class);
-             if (priority > bestPriority) {
-               bestPriority = priority;
-               bestParticipant = participant;
-             }
-           }
-           
-           bestParticipant.items.push(item);
-           bestParticipant.totalValue += item.price;
-           bestParticipant.starValue += getItemStars(item);
-         }
-       }
-
-       // Fase 3: Bilanciamento per stelle
-       const avgStarValue = participants.reduce((sum, p) => sum + p.starValue, 0) / participants.length;
-       const highStarParticipants = participants.filter(p => p.starValue > avgStarValue * 1.2);
-       const lowStarParticipants = participants.filter(p => p.starValue < avgStarValue * 0.8);
-
-       for (const highStar of highStarParticipants) {
-         const excessStars = highStar.starValue - avgStarValue;
-         const itemsToCompensate = highStar.items.filter(item => getItemStars(item) > 1);
-         
-         for (const lowStar of lowStarParticipants) {
-           if (lowStar.starValue < avgStarValue * 0.8) {
-             const neededStars = Math.ceil(avgStarValue - lowStar.starValue);
-             const compensation = findEquivalentItems(neededStars, itemsToCompensate);
-             
-             for (const item of compensation) {
-               const itemIndex = highStar.items.indexOf(item);
-               if (itemIndex > -1) {
-                 highStar.items.splice(itemIndex, 1);
-                 highStar.totalValue -= item.price;
-                 highStar.starValue -= getItemStars(item);
-                 
-                 lowStar.items.push(item);
-                 lowStar.totalValue += item.price;
-                 lowStar.starValue += getItemStars(item);
-               }
-             }
-           }
-         }
-       }
-
-       return participants;
-     }
-
-     function performSimpleDistribution(items, participants) {
-       console.log('Using simple distribution method (main abaco algorithm)');
-       
-       // Raggruppa gli oggetti per tipo e quantità (come nell'abaco principale)
-       const itemGroups = {};
-       items.forEach(item => {
-         if (!itemGroups[item.name]) {
-           itemGroups[item.name] = {
-             name: item.name,
-             price: item.price,
-             qty: 0
-           };
-         }
-         itemGroups[item.name].qty++;
-       });
-       
-       const activeItems = Object.values(itemGroups).filter(item => item.qty > 0);
-       const numParticipants = participants.length;
+       distributionResults.innerHTML = "";
        
        // Array per tenere traccia dei valori di ogni partecipante
-       const participantValues = new Array(numParticipants).fill(0);
-       const participantItems = new Array(numParticipants).fill().map(() => []);
+       const participantValues = new Array(participants).fill(0);
+       const participantItems = new Array(participants).fill().map(() => []);
        
        // Distribuzione base: divide equamente gli oggetti interi
        activeItems.forEach(item => {
-         const itemsPerParticipant = Math.floor(item.qty / numParticipants);
-         const totalDistributed = itemsPerParticipant * numParticipants;
+         const itemsPerParticipant = Math.floor(item.qty / participants);
+         const totalDistributed = itemsPerParticipant * participants;
          
          if (itemsPerParticipant > 0) {
-           for (let i = 0; i < numParticipants; i++) {
+           for (let i = 0; i < participants; i++) {
              participantItems[i].push({
                name: item.name,
                qty: itemsPerParticipant,
@@ -1589,8 +1106,8 @@
        // Calcola l'esubero (oggetti rimanenti)
        const esuberoItems = [];
        activeItems.forEach(item => {
-         const itemsPerParticipant = Math.floor(item.qty / numParticipants);
-         const totalDistributed = itemsPerParticipant * numParticipants;
+         const itemsPerParticipant = Math.floor(item.qty / participants);
+         const totalDistributed = itemsPerParticipant * participants;
          const remaining = item.qty - totalDistributed;
          
          if (remaining > 0) {
@@ -1602,298 +1119,274 @@
          }
        });
        
-       // Se c'è esubero, lo distribuisce in modo bilanciato tra i partecipanti
-       if (esuberoItems.length > 0) {
-         const totalEsuberoValue = esuberoItems.reduce((total, item) => total + (item.qty * item.price), 0);
-         
-         // Ordina gli oggetti dell'esubero per valore (dal più alto al più basso)
-         esuberoItems.sort((a, b) => b.price - a.price);
-         
-         // Distribuisce gli oggetti in modo bilanciato
-         esuberoItems.forEach(item => {
-           let remainingQty = item.qty;
-           
-           // Distribuisce gli oggetti uno per uno, sempre al partecipante con valore più basso
-           while (remainingQty > 0) {
-             const qtyToGive = Math.min(1, remainingQty);
-             
-             // Trova il partecipante con il valore più basso
-             let minValueIndex = 0;
-             let minValue = participantValues[0];
-             
-             for (let i = 1; i < numParticipants; i++) {
-               if (participantValues[i] < minValue) {
-                 minValue = participantValues[i];
-                 minValueIndex = i;
-               }
-             }
-             
-             // Aggiunge l'oggetto al partecipante con valore più basso
-             participantItems[minValueIndex].push({
-               name: item.name,
-               qty: qtyToGive,
-               price: item.price,
-               isEsubero: true // Marca come oggetto dell'esubero
-             });
-             
-             // Aggiorna il valore del partecipante
-             participantValues[minValueIndex] += qtyToGive * item.price;
-             
-             remainingQty -= qtyToGive;
-           }
-         });
-       }
+               // Se c'è esubero, lo distribuisce in modo bilanciato tra i partecipanti
+        if (esuberoItems.length > 0) {
+          const totalEsuberoValue = esuberoItems.reduce((total, item) => total + (item.qty * item.price), 0);
+          
+          // Ordina gli oggetti dell'esubero per valore (dal più alto al più basso)
+          esuberoItems.sort((a, b) => b.price - a.price);
+          
+          // Distribuisce gli oggetti in modo bilanciato
+          esuberoItems.forEach(item => {
+            let remainingQty = item.qty;
+            
+            // Distribuisce gli oggetti uno per uno, sempre al partecipante con valore più basso
+            while (remainingQty > 0) {
+              const qtyToGive = Math.min(1, remainingQty);
+              
+              // Trova il partecipante con il valore più basso
+              let minValueIndex = 0;
+              let minValue = participantValues[0];
+              
+              for (let i = 1; i < participants; i++) {
+                if (participantValues[i] < minValue) {
+                  minValue = participantValues[i];
+                  minValueIndex = i;
+                }
+              }
+              
+              // Aggiunge l'oggetto al partecipante con valore più basso
+              participantItems[minValueIndex].push({
+                name: item.name,
+                qty: qtyToGive,
+                price: item.price,
+                isEsubero: true // Marca come oggetto dell'esubero
+              });
+              
+              // Aggiorna il valore del partecipante
+              participantValues[minValueIndex] += qtyToGive * item.price;
+              
+              remainingQty -= qtyToGive;
+            }
+          });
+          
+          // Mostra messaggio informativo
+          const infoDiv = document.createElement("div");
+          infoDiv.style.textAlign = "center";
+          infoDiv.style.marginTop = "20px";
+          infoDiv.style.padding = "15px";
+          infoDiv.style.background = "rgba(99, 179, 237, 0.1)";
+          infoDiv.style.borderRadius = "8px";
+          infoDiv.style.border = "1px solid rgba(99, 179, 237, 0.3)";
+          infoDiv.style.color = "#63b3ed";
+          infoDiv.style.fontSize = "0.9rem";
+          infoDiv.innerHTML = `📦 <strong>Esubero distribuito:</strong> ${formatCurrency(totalEsuberoValue)} distribuito in modo bilanciato tra i partecipanti`;
+          
+          distributionResults.appendChild(infoDiv);
+        }
        
-       // Aggiorna i partecipanti con i risultati
-       participants.forEach((participant, index) => {
-         participant.items = participantItems[index];
-         participant.totalValue = participantValues[index];
-         participant.starValue = participantItems[index].reduce((sum, item) => sum + getItemStars(item), 0);
-       });
-
-       return participants;
+               // Mostra cosa prende ogni partecipante (parte normale, non esubero)
+        const baseDistributionDiv = document.createElement("div");
+        baseDistributionDiv.style.marginBottom = "30px";
+        baseDistributionDiv.style.padding = "20px";
+        baseDistributionDiv.style.background = "rgba(72, 187, 120, 0.1)";
+        baseDistributionDiv.style.borderRadius = "12px";
+        baseDistributionDiv.style.border = "1px solid rgba(72, 187, 120, 0.3)";
+        
+        const baseTitle = document.createElement("h3");
+        baseTitle.style.color = "#68d391";
+        baseTitle.style.fontSize = "1.2rem";
+        baseTitle.style.marginBottom = "15px";
+        baseTitle.style.textAlign = "center";
+        baseTitle.textContent = "🎯 Ogni partecipante prende:";
+        baseDistributionDiv.appendChild(baseTitle);
+        
+        // Raggruppa gli oggetti normali (non esubero) per nome
+        const baseItems = {};
+        for (let i = 0; i < participants; i++) {
+          participantItems[i].forEach(item => {
+            if (!item.isEsubero) {
+              if (!baseItems[item.name]) {
+                baseItems[item.name] = {
+                  name: item.name,
+                  qty: item.qty,
+                  price: item.price
+                };
+              }
+            }
+          });
+        }
+        
+        // Mostra gli oggetti base distribuiti
+        Object.values(baseItems).forEach(item => {
+          const itemDiv = document.createElement("div");
+          itemDiv.style.display = "flex";
+          itemDiv.style.justifyContent = "space-between";
+          itemDiv.style.alignItems = "center";
+          itemDiv.style.padding = "8px 12px";
+          itemDiv.style.margin = "5px 0";
+          itemDiv.style.background = "rgba(255, 255, 255, 0.05)";
+          itemDiv.style.borderRadius = "6px";
+          
+          const itemName = document.createElement("span");
+          itemName.textContent = `${item.name} x${item.qty}`;
+          itemName.style.color = "#ffffff";
+          
+          const itemCost = document.createElement("span");
+          const cost = item.qty * item.price;
+          itemCost.className = getCurrencyClass(cost);
+          itemCost.textContent = formatCurrency(cost);
+          
+          itemDiv.appendChild(itemName);
+          itemDiv.appendChild(itemCost);
+          baseDistributionDiv.appendChild(itemDiv);
+        });
+        
+        distributionResults.appendChild(baseDistributionDiv);
+        
+        // Mostra i risultati per ogni partecipante (solo esubero e totali)
+        for (let i = 0; i < participants; i++) {
+          const participantDiv = document.createElement("div");
+          participantDiv.className = "participant-result";
+          
+          const title = document.createElement("div");
+          title.className = "participant-title";
+          title.textContent = `Partecipante ${i + 1}`;
+          participantDiv.appendChild(title);
+          
+          // Mostra solo gli oggetti dell'esubero per questo partecipante
+          const esuberoItems = participantItems[i].filter(item => item.isEsubero);
+          
+          if (esuberoItems.length > 0) {
+            // Raggruppa gli oggetti dell'esubero per nome
+            const groupedEsuberoItems = {};
+            esuberoItems.forEach(item => {
+              if (!groupedEsuberoItems[item.name]) {
+                groupedEsuberoItems[item.name] = {
+                  name: item.name,
+                  qty: 0,
+                  price: item.price
+                };
+              }
+              groupedEsuberoItems[item.name].qty += item.qty;
+            });
+            
+            // Mostra gli oggetti dell'esubero raggruppati
+            Object.values(groupedEsuberoItems).forEach(item => {
+              const itemDiv = document.createElement("div");
+              itemDiv.className = "item-distribution";
+              itemDiv.style.background = "rgba(237, 137, 54, 0.2)";
+              itemDiv.style.borderColor = "rgba(237, 137, 54, 0.3)";
+              itemDiv.style.border = "1px solid rgba(237, 137, 54, 0.3)";
+              
+              const itemName = document.createElement("span");
+              itemName.innerHTML = `📦 ${item.name} x${item.qty}`;
+              
+              const itemCost = document.createElement("span");
+              const cost = item.qty * item.price;
+              itemCost.className = getCurrencyClass(cost);
+              itemCost.textContent = formatCurrency(cost);
+              
+              itemDiv.appendChild(itemName);
+              itemDiv.appendChild(itemCost);
+              participantDiv.appendChild(itemDiv);
+            });
+          } else {
+            // Se non ha oggetti dell'esubero, mostra un messaggio
+            const noEsuberoDiv = document.createElement("div");
+            noEsuberoDiv.style.textAlign = "center";
+            noEsuberoDiv.style.padding = "15px";
+            noEsuberoDiv.style.color = "#a0aec0";
+            noEsuberoDiv.style.fontStyle = "italic";
+            noEsuberoDiv.textContent = "Nessun oggetto dell'esubero";
+            participantDiv.appendChild(noEsuberoDiv);
+          }
+          
+          // Mostra il totale (incluso esubero)
+          const totalDiv = document.createElement("div");
+          totalDiv.className = "total-cost";
+          const formattedTotal = formatCurrency(participantValues[i]);
+          totalDiv.innerHTML = `Totale: <span class="${getCurrencyClass(participantValues[i])}">${formattedTotal}</span>`;
+          participantDiv.appendChild(totalDiv);
+          
+          distributionResults.appendChild(participantDiv);
+        }
+       
+               // Non serve più mostrare una sezione esubero separata
+        // Tutti gli oggetti sono stati distribuiti tra i partecipanti
      }
 
-     function renderDistribution(participants) {
-       console.log('renderDistribution called with:', participants);
-       const container = document.getElementById('distribution-results');
+     // Funzioni per gestire le immagini
+     function openImageModal(itemIndex) {
+       currentImageItem = itemIndex;
+       document.getElementById('imageModal').style.display = 'block';
        
-       if (!container) {
-         console.error('Distribution results container not found');
-         return;
-       }
+       // Pulisci il preview
+       document.getElementById('imagePreview').innerHTML = '';
        
-       container.innerHTML = '';
-       
-       if (!participants || participants.length === 0) {
-         container.innerHTML = '<div class="empty-state">Nessun partecipante selezionato</div>';
-         return;
-       }
-       
-       // Se è divisione semplice, usa il formato dell'abaco principale
-       if (divisionMethod === 'simple') {
-         renderSimpleDistribution(participants, container);
-         return;
-       }
-       
-       // Altrimenti usa il formato avanzato con classi e stelle
-       renderAdvancedDistribution(participants, container);
+       // Reset del file input
+       document.getElementById('imageInput').value = '';
      }
-     
-     function renderSimpleDistribution(participants, container) {
-       console.log('Rendering simple distribution like main abaco');
+
+     function closeImageModal() {
+       document.getElementById('imageModal').style.display = 'none';
+       currentImageItem = null;
+     }
+
+     function saveImage() {
+       const fileInput = document.getElementById('imageInput');
+       const file = fileInput.files[0];
        
-       // Raggruppa gli oggetti per tipo per calcolare l'esubero
-       const itemGroups = {};
-       participants.forEach(participant => {
-         participant.items.forEach(item => {
-           if (!itemGroups[item.name]) {
-             itemGroups[item.name] = {
-               name: item.name,
-               price: item.price,
-               qty: 0,
-               esuberoQty: 0
-             };
-           }
-           if (item.isEsubero) {
-             itemGroups[item.name].esuberoQty += item.qty;
-           } else {
-             // Per la distribuzione base, prendi solo la quantità di un partecipante (tutti hanno la stessa quantità)
-             if (itemGroups[item.name].qty === 0) {
-               itemGroups[item.name].qty = item.qty;
-             }
-           }
-         });
+       if (file && currentImageItem !== null) {
+         const reader = new FileReader();
+         reader.onload = function(e) {
+           products[currentImageItem].image = e.target.result;
+           // Ricarica la vista per mostrare la nuova immagine
+           renderMain();
+           closeImageModal();
+         };
+         reader.readAsDataURL(file);
+       } else {
+         alert('Seleziona un\'immagine prima di salvare');
+       }
+     }
+
+     // Event listeners per drag & drop
+     document.addEventListener('DOMContentLoaded', function() {
+       const uploadArea = document.getElementById('imageUploadArea');
+       const fileInput = document.getElementById('imageInput');
+       
+       // Drag & drop events
+       uploadArea.addEventListener('dragover', function(e) {
+         e.preventDefault();
+         uploadArea.classList.add('dragover');
        });
        
-       // Calcola il valore totale dell'esubero
-       const totalEsuberoValue = Object.values(itemGroups).reduce((total, item) => {
-         return total + (item.esuberoQty * item.price);
-       }, 0);
+       uploadArea.addEventListener('dragleave', function(e) {
+         e.preventDefault();
+         uploadArea.classList.remove('dragover');
+       });
        
-       // Mostra il messaggio dell'esubero se presente
-       if (totalEsuberoValue > 0) {
-         const infoDiv = document.createElement("div");
-         infoDiv.style.textAlign = "center";
-         infoDiv.style.marginTop = "20px";
-         infoDiv.style.padding = "15px";
-         infoDiv.style.background = "rgba(99, 179, 237, 0.1)";
-         infoDiv.style.borderRadius = "8px";
-         infoDiv.style.border = "1px solid rgba(99, 179, 237, 0.3)";
-         infoDiv.style.color = "#63b3ed";
-         infoDiv.style.fontSize = "0.9rem";
-         infoDiv.innerHTML = `📦 <strong>Esubero distribuito:</strong> ${formatCurrency(totalEsuberoValue)} distribuito in modo bilanciato tra i partecipanti`;
-         container.appendChild(infoDiv);
-       }
-       
-       // Mostra "Ogni partecipante prende"
-       const baseDistributionDiv = document.createElement("div");
-       baseDistributionDiv.style.marginBottom = "30px";
-       baseDistributionDiv.style.padding = "20px";
-       baseDistributionDiv.style.background = "rgba(72, 187, 120, 0.1)";
-       baseDistributionDiv.style.borderRadius = "12px";
-       baseDistributionDiv.style.border = "1px solid rgba(72, 187, 120, 0.3)";
-       
-       const baseTitle = document.createElement("h3");
-       baseTitle.style.color = "#68d391";
-       baseTitle.style.fontSize = "1.2rem";
-       baseTitle.style.marginBottom = "15px";
-       baseTitle.style.textAlign = "center";
-       baseTitle.textContent = "🎯 Ogni partecipante prende:";
-       baseDistributionDiv.appendChild(baseTitle);
-       
-       // Mostra gli oggetti base (non esubero)
-       Object.values(itemGroups).forEach(item => {
-         if (item.qty > 0) {
-           const itemDiv = document.createElement("div");
-           itemDiv.style.display = "flex";
-           itemDiv.style.justifyContent = "space-between";
-           itemDiv.style.alignItems = "center";
-           itemDiv.style.padding = "8px 12px";
-           itemDiv.style.margin = "5px 0";
-           itemDiv.style.background = "rgba(255, 255, 255, 0.05)";
-           itemDiv.style.borderRadius = "6px";
-           
-           const itemName = document.createElement("span");
-           itemName.textContent = `${item.name} x${item.qty}`;
-           itemName.style.color = "#ffffff";
-           
-           const itemCost = document.createElement("span");
-           const cost = item.qty * item.price;
-           itemCost.className = getCurrencyClass(cost);
-           itemCost.textContent = formatCurrency(cost);
-           
-           itemDiv.appendChild(itemName);
-           itemDiv.appendChild(itemCost);
-           baseDistributionDiv.appendChild(itemDiv);
+       uploadArea.addEventListener('drop', function(e) {
+         e.preventDefault();
+         uploadArea.classList.remove('dragover');
+         
+         const files = e.dataTransfer.files;
+         if (files.length > 0) {
+           fileInput.files = files;
+           previewImage(files[0]);
          }
        });
        
-       container.appendChild(baseDistributionDiv);
-       
-       // Mostra i risultati per ogni partecipante (solo esubero e totali)
-       participants.forEach((participant, index) => {
-         const participantDiv = document.createElement("div");
-         participantDiv.className = "participant-result";
-         
-         const title = document.createElement("div");
-         title.className = "participant-title";
-         title.textContent = `Partecipante ${index + 1}`;
-         participantDiv.appendChild(title);
-         
-         // Mostra solo gli oggetti dell'esubero per questo partecipante
-         const esuberoItems = participant.items.filter(item => item.isEsubero);
-         
-         if (esuberoItems.length > 0) {
-           // Raggruppa gli oggetti dell'esubero per nome
-           const groupedEsuberoItems = {};
-           esuberoItems.forEach(item => {
-             if (!groupedEsuberoItems[item.name]) {
-               groupedEsuberoItems[item.name] = {
-                 name: item.name,
-                 qty: 0,
-                 price: item.price
-               };
-             }
-             groupedEsuberoItems[item.name].qty += item.qty;
-           });
-           
-           // Mostra gli oggetti dell'esubero raggruppati
-           Object.values(groupedEsuberoItems).forEach(item => {
-             const itemDiv = document.createElement("div");
-             itemDiv.className = "esubero-item";
-             itemDiv.style.display = "flex";
-             itemDiv.style.justifyContent = "space-between";
-             itemDiv.style.alignItems = "center";
-             itemDiv.style.padding = "6px 10px";
-             itemDiv.style.margin = "3px 0";
-             itemDiv.style.background = "rgba(255, 193, 7, 0.1)";
-             itemDiv.style.borderRadius = "4px";
-             itemDiv.style.border = "1px solid rgba(255, 193, 7, 0.3)";
-             
-             const itemName = document.createElement("span");
-             itemName.textContent = `${item.name} x${item.qty}`;
-             itemName.style.color = "#ffc107";
-             
-             const itemCost = document.createElement("span");
-             const cost = item.qty * item.price;
-             itemCost.className = getCurrencyClass(cost);
-             itemCost.textContent = formatCurrency(cost);
-             
-             itemDiv.appendChild(itemName);
-             itemDiv.appendChild(itemCost);
-             participantDiv.appendChild(itemDiv);
-           });
+       // File input change
+       fileInput.addEventListener('change', function(e) {
+         if (e.target.files.length > 0) {
+           previewImage(e.target.files[0]);
          }
-         
-         // Mostra il totale
-         const totalDiv = document.createElement("div");
-         totalDiv.className = "total-cost";
-         const formattedTotal = formatCurrency(participant.totalValue);
-         totalDiv.innerHTML = `Totale: <span class="${getCurrencyClass(participant.totalValue)}">${formattedTotal}</span>`;
-         participantDiv.appendChild(totalDiv);
-         
-         container.appendChild(participantDiv);
        });
-     }
-     
-     function renderAdvancedDistribution(participants, container) {
-       console.log('Rendering advanced distribution with classes and stars');
-       
-       // Raggruppa i partecipanti per classe
-       const classGroups = {};
-       participants.forEach(participant => {
-         if (!classGroups[participant.class]) {
-           classGroups[participant.class] = [];
-         }
-         classGroups[participant.class].push(participant);
-       });
-       
-       let html = '';
-       for (const [className, classParticipants] of Object.entries(classGroups)) {
-         // Conta gli oggetti per tipo per questa classe
-         const itemCounts = {};
-         let totalValue = 0;
-         let totalStars = 0;
-         
-         classParticipants.forEach(participant => {
-           participant.items.forEach(item => {
-             if (!itemCounts[item.name]) {
-               itemCounts[item.name] = 0;
-             }
-             itemCounts[item.name]++;
-             });
-           totalValue += participant.totalValue;
-           totalStars += participant.starValue;
-         });
-         
-         // Calcola stelline per persona
-         const starsPerPerson = classParticipants.length > 0 ? Math.round(totalStars / classParticipants.length) : 0;
-         const starsRemainder = totalStars % classParticipants.length;
-         
-         html += `
-           <div class="participant-result">
-             <div class="participant-title">
-               ${className}${classParticipants.length > 1 ? ` (${classParticipants.length} partecipanti)` : ''}
-               ${totalStars > 0 ? `<span style="float: right; font-size: 0.9rem; color: #a0aec0;">⭐ ${starsPerPerson}${starsRemainder > 0 ? `+${starsRemainder}` : ''} a testa</span>` : ''}
-             </div>
-             <div class="item-distribution">
-               ${Object.entries(itemCounts).map(([itemName, count]) => `
-                 <div class="item-row">
-                   <span class="item-name">${itemName} x${count}</span>
-                 </div>
-               `).join('')}
-             </div>
-             <div class="total-cost">
-               Totale: ${formatCurrency(totalValue)}
-             </div>
-           </div>
-         `;
+     });
+
+     function previewImage(file) {
+       if (file && file.type.startsWith('image/')) {
+         const reader = new FileReader();
+         reader.onload = function(e) {
+           const preview = document.getElementById('imagePreview');
+           preview.innerHTML = `<img src="${e.target.result}" class="image-preview" alt="Preview">`;
+         };
+         reader.readAsDataURL(file);
        }
-       
-       container.innerHTML = html;
      }
- 
+
          // Funzione per ricaricare i dati manualmente
     async function reloadData() {
       const reloadButton = document.getElementById('reload-data');
@@ -1925,49 +1418,10 @@
     }
 
     // Event listeners
-    participantsInput.addEventListener("input", () => {
-      updateParticipantClasses();
-      updateDistribution();
-    });
+    participantsInput.addEventListener("input", updateDistribution);
 
-    // Event listener per il tier dell'abisso
-    document.addEventListener('DOMContentLoaded', () => {
-      const abyssTierSelect = document.getElementById('abyss-tier');
-      const abyssTierInfo = document.getElementById('abyss-tier-info');
-      if (abyssTierSelect) {
-        abyssTierSelect.addEventListener('change', () => {
-          updateParticipantClasses();
-          // Mostra/nascondi il messaggio informativo
-          if (abyssTierInfo) {
-            if (abyssTierSelect.value) {
-              abyssTierInfo.style.display = 'block';
-            } else {
-              abyssTierInfo.style.display = 'none';
-            }
-          }
-        });
-      }
-    });
-
-     // Inizializzazione
-     loadProducts();
-     
-     // Inizializza con divisione semplice
-     setDivisionMethod('simple');
-    
-    // Event listener per il pulsante Calcola (dopo che tutte le funzioni sono definite)
-    document.addEventListener('DOMContentLoaded', () => {
-      const calculateBtn = document.getElementById('calculate-btn');
-      if (calculateBtn) {
-        calculateBtn.addEventListener('click', () => {
-          console.log('Button clicked, calling calculateDistribution');
-          calculateDistribution();
-        });
-        console.log('Event listener added to calculate button');
-      } else {
-        console.log('Calculate button not found');
-      }
-    });
+    // Inizializzazione
+    loadProducts();
    </script>
  </body>
 </html>
