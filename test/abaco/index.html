@@ -28,15 +28,14 @@
     }
 
     .container {
-      max-width: 1200px;
+      max-width: 1000px;
       margin: 0 auto;
-      background: rgba(20, 25, 45, 0.95);
-      backdrop-filter: blur(10px);
-      border-radius: 20px;
-      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+      background: rgba(26, 26, 46, 0.95);
+      backdrop-filter: blur(15px);
+      border-radius: 25px;
+      box-shadow: 0 25px 50px rgba(0, 0, 0, 0.6);
       overflow: hidden;
-      animation: slideIn 0.6s ease-out;
-      border: 1px solid rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.15);
     }
 
     @keyframes slideIn {
@@ -51,44 +50,28 @@
     }
 
     header {
-      background: linear-gradient(135deg, #2d3748, #4a5568);
+      background: linear-gradient(135deg, #1a1a2e, #16213e);
       color: white;
-      padding: 30px;
+      padding: 35px;
       text-align: center;
-      position: relative;
-      overflow: hidden;
       border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    }
-
-    header::before {
-      content: '';
-      position: absolute;
-      top: -50%;
-      left: -50%;
-      width: 200%;
-      height: 200%;
-      background: radial-gradient(circle, rgba(255, 255, 255, 0.05) 0%, transparent 70%);
-      animation: pulse 4s ease-in-out infinite;
-    }
-
-    @keyframes pulse {
-      0%, 100% { transform: scale(1); opacity: 0.3; }
-      50% { transform: scale(1.1); opacity: 0.6; }
+      position: relative;
     }
 
     h1 {
       font-size: 2.5rem;
-      font-weight: 700;
+      font-weight: 800;
       margin-bottom: 10px;
-      position: relative;
-      z-index: 1;
+      background: linear-gradient(45deg, #ff6b6b, #ffd93d);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
     }
 
     .subtitle {
-      font-size: 1.1rem;
-      opacity: 0.8;
-      position: relative;
-      z-index: 1;
+      font-size: 1.2rem;
+      opacity: 0.9;
+      font-weight: 300;
     }
 
     main {
@@ -110,40 +93,26 @@
     }
 
     .card {
-      background: rgba(45, 55, 72, 0.6);
-      border-radius: 15px;
-      padding: 30px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-      border: 1px solid rgba(255, 255, 255, 0.1);
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      border-radius: 20px;
+      padding: 35px;
+      margin-bottom: 35px;
+      box-shadow: 0 8px 25px rgba(16, 185, 129, 0.2);
       transition: all 0.3s ease;
-      overflow: hidden;
     }
 
     .card:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
-      border-color: rgba(99, 179, 237, 0.3);
+      transform: translateY(-3px);
+      box-shadow: 0 12px 35px rgba(16, 185, 129, 0.3);
     }
 
     .card h2 {
-      color: #ffffff;
-      font-size: 1.5rem;
-      margin-bottom: 25px;
-      font-weight: 600;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-
-    .card h2::before {
-      content: '';
-      width: 4px;
-      height: 25px;
-      background: linear-gradient(135deg, #63b3ed, #4299e1);
-      border-radius: 2px;
+      color: #10b981;
+      margin-bottom: 20px;
+      font-size: 1.8rem;
+      font-weight: 700;
+      text-align: center;
     }
 
     .category-section {
@@ -184,17 +153,16 @@
       justify-content: space-between;
       margin: 12px 0;
       padding: 15px;
-      background: rgba(99, 179, 237, 0.05);
-      border-radius: 10px;
+      background: rgba(50, 130, 184, 0.1);
+      border: 1px solid rgba(50, 130, 184, 0.3);
+      border-radius: 12px;
       transition: all 0.3s ease;
-      border: 1px solid rgba(99, 179, 237, 0.1);
-      overflow: hidden;
     }
 
     .product:hover {
-      background: rgba(99, 179, 237, 0.1);
+      background: rgba(50, 130, 184, 0.15);
       transform: translateX(5px);
-      border-color: rgba(99, 179, 237, 0.3);
+      box-shadow: 0 5px 15px rgba(50, 130, 184, 0.3);
     }
 
     .product-info {
@@ -281,11 +249,11 @@
     }
 
     .quantity-btn {
-      width: 30px;
-      height: 30px;
-      border: 2px solid #63b3ed;
-      background: rgba(45, 55, 72, 0.8);
-      color: #63b3ed;
+      width: 32px;
+      height: 32px;
+      border: 2px solid #3282b8;
+      background: rgba(50, 130, 184, 0.2);
+      color: #3282b8;
       border-radius: 50%;
       cursor: pointer;
       display: flex;
@@ -293,12 +261,13 @@
       justify-content: center;
       font-weight: bold;
       font-size: 16px;
-      transition: all 0.2s ease;
+      transition: all 0.3s ease;
     }
 
     .quantity-btn:hover {
-      background: #63b3ed;
+      background: #3282b8;
       color: white;
+      transform: scale(1.1);
     }
 
     .quantity-btn:active {
@@ -307,14 +276,15 @@
 
     .quantity-input {
       width: 60px;
-      padding: 5px;
+      padding: 8px;
       text-align: center;
-      border: 2px solid rgba(99, 179, 237, 0.3);
-      border-radius: 6px;
+      border: 2px solid rgba(255, 255, 255, 0.2);
+      border-radius: 8px;
       font-size: 14px;
-      background: rgba(45, 55, 72, 0.8);
+      background: rgba(255, 255, 255, 0.1);
       color: #ffffff;
       -moz-appearance: textfield;
+      transition: all 0.3s ease;
     }
 
     .quantity-input::-webkit-outer-spin-button,
@@ -325,8 +295,9 @@
 
     .quantity-input:focus {
       outline: none;
-      border-color: #63b3ed;
-      box-shadow: 0 0 0 3px rgba(99, 179, 237, 0.2);
+      border-color: #3282b8;
+      background: rgba(255, 255, 255, 0.15);
+      box-shadow: 0 0 0 3px rgba(50, 130, 184, 0.2);
     }
 
     .participants-section {
@@ -341,19 +312,26 @@
       font-size: 1.1rem;
     }
 
+    .participants-controls {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
     #participants {
       width: 120px;
+      padding: 12px 15px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.1);
+      color: #ffffff;
       font-size: 1.2rem;
       font-weight: 600;
-      padding: 12px;
-      border: 2px solid rgba(99, 179, 237, 0.3);
-      border-radius: 8px;
-      font-size: 1rem;
       text-align: center;
-      transition: all 0.3s ease;
-      background: rgba(45, 55, 72, 0.8);
-      color: #ffffff;
       -moz-appearance: textfield;
+      transition: all 0.3s ease;
     }
 
     #participants::-webkit-outer-spin-button,
@@ -364,26 +342,26 @@
 
     #participants:focus {
       outline: none;
-      border-color: #63b3ed;
-      box-shadow: 0 0 0 3px rgba(99, 179, 237, 0.2);
-      transform: scale(1.02);
+      border-color: #3282b8;
+      background: rgba(255, 255, 255, 0.15);
+      box-shadow: 0 0 0 3px rgba(50, 130, 184, 0.2);
     }
 
     .results-card {
-      background: linear-gradient(135deg, rgba(72, 187, 120, 0.2), rgba(56, 178, 172, 0.2));
-      color: white;
-      border: 1px solid rgba(72, 187, 120, 0.3);
-      max-height: none;
-      overflow: visible;
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      border-radius: 20px;
+      padding: 35px;
+      margin-bottom: 35px;
+      box-shadow: 0 8px 25px rgba(16, 185, 129, 0.2);
     }
 
     .results-card h2 {
-      color: white;
+      color: #10b981;
       margin-bottom: 20px;
-    }
-
-    .results-card h2::before {
-      background: rgba(72, 187, 120, 0.6);
+      font-size: 1.8rem;
+      font-weight: 700;
+      text-align: center;
     }
 
     .participant-result {
@@ -526,7 +504,7 @@
      .contact-item strong {
        color: #63b3ed;
      }
-
+ 
     .fractional-display {
       color: #fbb6ce;
       font-size: 0.9em;
@@ -725,7 +703,11 @@
            <div class="card participants-section">
              <h2>Partecipanti</h2>
              <label class="participants-label">Numero di partecipanti:</label>
+             <div class="participants-controls">
+               <button class="quantity-btn minus-btn" onclick="decreaseParticipants()">-</button>
              <input type="number" id="participants" min="1" value="4">
+               <button class="quantity-btn plus-btn" onclick="increaseParticipants()">+</button>
+             </div>
            </div>
  
            <div class="card results-card">
@@ -752,7 +734,7 @@
         </div>
       </div>
    </div>
-
+ 
    <!-- Modal per caricare immagini -->
    <div id="imageModal" class="modal">
      <div class="modal-content">
@@ -782,7 +764,7 @@
      let currentImageItem = null;
      const distributionResults = document.getElementById("distribution-results");
      const participantsInput = document.getElementById("participants");
-
+ 
      // Carica i prodotti dal file JSON
      async function loadProducts() {
        const productList = document.getElementById("product-list");
@@ -915,7 +897,7 @@
          return `${display}br`;
        }
      }
-
+ 
      // Funzione per applicare la classe CSS corretta in base al valore
      function getCurrencyClass(value) {
        if (value >= 100) {
@@ -924,11 +906,11 @@
          return 'currency-br';
        }
      }
-
+ 
      function renderMain() {
        const productList = document.getElementById("product-list");
        productList.innerHTML = "";
-
+ 
        const categories = [...new Set(products.map(p => p.category))];
        
        categories.forEach(category => {
@@ -939,7 +921,7 @@
          categoryTitle.className = "category-title";
          categoryTitle.textContent = category === "Cristalli" ? `Materiali dai ${category}` : category;
          categoryDiv.appendChild(categoryTitle);
-
+ 
          if (category === "Cristalli") {
            // Per i cristalli, raggruppa per sottocategorie
            const subcategories = [...new Set(products.filter(p => p.category === category).map(p => p.subcategory))];
@@ -977,14 +959,14 @@
          
          productList.appendChild(categoryDiv);
        });
-
+ 
        updateDistribution();
      }
-
+ 
      function createProductElement(p, globalIndex) {
        const div = document.createElement("div");
        div.className = "product";
-
+ 
        const productInfo = document.createElement("div");
        productInfo.className = "product-info";
        
@@ -1039,7 +1021,7 @@
            updateDistribution();
          }
        });
-
+ 
                const qty = document.createElement("input");
         qty.type = "number";
        qty.className = "quantity-input";
@@ -1050,7 +1032,7 @@
          products[globalIndex].qty = parseInt(qty.value) || 0;
          updateDistribution();
        });
-
+ 
        const plusBtn = document.createElement("button");
        plusBtn.className = "quantity-btn plus-btn";
        plusBtn.textContent = "+";
@@ -1070,7 +1052,7 @@
        
        return div;
      }
-
+ 
      function updateDistribution() {
        const participants = parseInt(participantsInput.value) || 1;
        const activeItems = products.filter(p => p.qty > 0);
@@ -1119,78 +1101,78 @@
          }
        });
        
-               // Se c'è esubero, lo distribuisce in modo bilanciato tra i partecipanti
-        if (esuberoItems.length > 0) {
-          const totalEsuberoValue = esuberoItems.reduce((total, item) => total + (item.qty * item.price), 0);
-          
-          // Ordina gli oggetti dell'esubero per valore (dal più alto al più basso)
-          esuberoItems.sort((a, b) => b.price - a.price);
-          
-          // Distribuisce gli oggetti in modo bilanciato
-          esuberoItems.forEach(item => {
-            let remainingQty = item.qty;
-            
-            // Distribuisce gli oggetti uno per uno, sempre al partecipante con valore più basso
-            while (remainingQty > 0) {
-              const qtyToGive = Math.min(1, remainingQty);
-              
-              // Trova il partecipante con il valore più basso
-              let minValueIndex = 0;
-              let minValue = participantValues[0];
-              
+       // Se c'è esubero, lo distribuisce in modo bilanciato tra i partecipanti
+       if (esuberoItems.length > 0) {
+         const totalEsuberoValue = esuberoItems.reduce((total, item) => total + (item.qty * item.price), 0);
+         
+         // Ordina gli oggetti dell'esubero per valore (dal più alto al più basso)
+         esuberoItems.sort((a, b) => b.price - a.price);
+         
+         // Distribuisce gli oggetti in modo bilanciato
+         esuberoItems.forEach(item => {
+           let remainingQty = item.qty;
+           
+           // Distribuisce gli oggetti uno per uno, sempre al partecipante con valore più basso
+           while (remainingQty > 0) {
+             const qtyToGive = Math.min(1, remainingQty);
+             
+             // Trova il partecipante con il valore più basso
+             let minValueIndex = 0;
+             let minValue = participantValues[0];
+             
               for (let i = 1; i < participants; i++) {
-                if (participantValues[i] < minValue) {
-                  minValue = participantValues[i];
-                  minValueIndex = i;
-                }
-              }
-              
-              // Aggiunge l'oggetto al partecipante con valore più basso
-              participantItems[minValueIndex].push({
-                name: item.name,
-                qty: qtyToGive,
-                price: item.price,
-                isEsubero: true // Marca come oggetto dell'esubero
-              });
-              
-              // Aggiorna il valore del partecipante
-              participantValues[minValueIndex] += qtyToGive * item.price;
-              
-              remainingQty -= qtyToGive;
-            }
-          });
+               if (participantValues[i] < minValue) {
+                 minValue = participantValues[i];
+                 minValueIndex = i;
+               }
+             }
+             
+             // Aggiunge l'oggetto al partecipante con valore più basso
+             participantItems[minValueIndex].push({
+               name: item.name,
+               qty: qtyToGive,
+               price: item.price,
+               isEsubero: true // Marca come oggetto dell'esubero
+             });
+             
+             // Aggiorna il valore del partecipante
+             participantValues[minValueIndex] += qtyToGive * item.price;
+             
+             remainingQty -= qtyToGive;
+           }
+         });
           
           // Mostra messaggio informativo
-          const infoDiv = document.createElement("div");
-          infoDiv.style.textAlign = "center";
-          infoDiv.style.marginTop = "20px";
-          infoDiv.style.padding = "15px";
-          infoDiv.style.background = "rgba(99, 179, 237, 0.1)";
-          infoDiv.style.borderRadius = "8px";
-          infoDiv.style.border = "1px solid rgba(99, 179, 237, 0.3)";
-          infoDiv.style.color = "#63b3ed";
-          infoDiv.style.fontSize = "0.9rem";
-          infoDiv.innerHTML = `📦 <strong>Esubero distribuito:</strong> ${formatCurrency(totalEsuberoValue)} distribuito in modo bilanciato tra i partecipanti`;
+         const infoDiv = document.createElement("div");
+         infoDiv.style.textAlign = "center";
+         infoDiv.style.marginTop = "20px";
+         infoDiv.style.padding = "15px";
+         infoDiv.style.background = "rgba(99, 179, 237, 0.1)";
+         infoDiv.style.borderRadius = "8px";
+         infoDiv.style.border = "1px solid rgba(99, 179, 237, 0.3)";
+         infoDiv.style.color = "#63b3ed";
+         infoDiv.style.fontSize = "0.9rem";
+         infoDiv.innerHTML = `📦 <strong>Esubero distribuito:</strong> ${formatCurrency(totalEsuberoValue)} distribuito in modo bilanciato tra i partecipanti`;
           
           distributionResults.appendChild(infoDiv);
-        }
+       }
        
                // Mostra cosa prende ogni partecipante (parte normale, non esubero)
-        const baseDistributionDiv = document.createElement("div");
-        baseDistributionDiv.style.marginBottom = "30px";
-        baseDistributionDiv.style.padding = "20px";
-        baseDistributionDiv.style.background = "rgba(72, 187, 120, 0.1)";
-        baseDistributionDiv.style.borderRadius = "12px";
-        baseDistributionDiv.style.border = "1px solid rgba(72, 187, 120, 0.3)";
-        
-        const baseTitle = document.createElement("h3");
-        baseTitle.style.color = "#68d391";
-        baseTitle.style.fontSize = "1.2rem";
-        baseTitle.style.marginBottom = "15px";
-        baseTitle.style.textAlign = "center";
-        baseTitle.textContent = "🎯 Ogni partecipante prende:";
-        baseDistributionDiv.appendChild(baseTitle);
-        
+       const baseDistributionDiv = document.createElement("div");
+       baseDistributionDiv.style.marginBottom = "30px";
+       baseDistributionDiv.style.padding = "20px";
+       baseDistributionDiv.style.background = "rgba(72, 187, 120, 0.1)";
+       baseDistributionDiv.style.borderRadius = "12px";
+       baseDistributionDiv.style.border = "1px solid rgba(72, 187, 120, 0.3)";
+       
+       const baseTitle = document.createElement("h3");
+       baseTitle.style.color = "#68d391";
+       baseTitle.style.fontSize = "1.2rem";
+       baseTitle.style.marginBottom = "15px";
+       baseTitle.style.textAlign = "center";
+       baseTitle.textContent = "🎯 Ogni partecipante prende:";
+       baseDistributionDiv.appendChild(baseTitle);
+       
         // Raggruppa gli oggetti normali (non esubero) per nome
         const baseItems = {};
         for (let i = 0; i < participants; i++) {
@@ -1209,78 +1191,78 @@
         
         // Mostra gli oggetti base distribuiti
         Object.values(baseItems).forEach(item => {
-          const itemDiv = document.createElement("div");
-          itemDiv.style.display = "flex";
-          itemDiv.style.justifyContent = "space-between";
-          itemDiv.style.alignItems = "center";
-          itemDiv.style.padding = "8px 12px";
-          itemDiv.style.margin = "5px 0";
-          itemDiv.style.background = "rgba(255, 255, 255, 0.05)";
-          itemDiv.style.borderRadius = "6px";
-          
-          const itemName = document.createElement("span");
-          itemName.textContent = `${item.name} x${item.qty}`;
-          itemName.style.color = "#ffffff";
-          
-          const itemCost = document.createElement("span");
-          const cost = item.qty * item.price;
-          itemCost.className = getCurrencyClass(cost);
-          itemCost.textContent = formatCurrency(cost);
-          
-          itemDiv.appendChild(itemName);
-          itemDiv.appendChild(itemCost);
-          baseDistributionDiv.appendChild(itemDiv);
-        });
-        
+           const itemDiv = document.createElement("div");
+           itemDiv.style.display = "flex";
+           itemDiv.style.justifyContent = "space-between";
+           itemDiv.style.alignItems = "center";
+           itemDiv.style.padding = "8px 12px";
+           itemDiv.style.margin = "5px 0";
+           itemDiv.style.background = "rgba(255, 255, 255, 0.05)";
+           itemDiv.style.borderRadius = "6px";
+           
+           const itemName = document.createElement("span");
+           itemName.textContent = `${item.name} x${item.qty}`;
+           itemName.style.color = "#ffffff";
+           
+           const itemCost = document.createElement("span");
+           const cost = item.qty * item.price;
+           itemCost.className = getCurrencyClass(cost);
+           itemCost.textContent = formatCurrency(cost);
+           
+           itemDiv.appendChild(itemName);
+           itemDiv.appendChild(itemCost);
+           baseDistributionDiv.appendChild(itemDiv);
+       });
+       
         distributionResults.appendChild(baseDistributionDiv);
-        
-        // Mostra i risultati per ogni partecipante (solo esubero e totali)
+       
+       // Mostra i risultati per ogni partecipante (solo esubero e totali)
         for (let i = 0; i < participants; i++) {
-          const participantDiv = document.createElement("div");
-          participantDiv.className = "participant-result";
-          
-          const title = document.createElement("div");
-          title.className = "participant-title";
+         const participantDiv = document.createElement("div");
+         participantDiv.className = "participant-result";
+         
+         const title = document.createElement("div");
+         title.className = "participant-title";
           title.textContent = `Partecipante ${i + 1}`;
-          participantDiv.appendChild(title);
-          
-          // Mostra solo gli oggetti dell'esubero per questo partecipante
+         participantDiv.appendChild(title);
+         
+         // Mostra solo gli oggetti dell'esubero per questo partecipante
           const esuberoItems = participantItems[i].filter(item => item.isEsubero);
-          
-          if (esuberoItems.length > 0) {
-            // Raggruppa gli oggetti dell'esubero per nome
-            const groupedEsuberoItems = {};
-            esuberoItems.forEach(item => {
-              if (!groupedEsuberoItems[item.name]) {
-                groupedEsuberoItems[item.name] = {
-                  name: item.name,
-                  qty: 0,
-                  price: item.price
-                };
-              }
-              groupedEsuberoItems[item.name].qty += item.qty;
-            });
-            
-            // Mostra gli oggetti dell'esubero raggruppati
-            Object.values(groupedEsuberoItems).forEach(item => {
-              const itemDiv = document.createElement("div");
+         
+         if (esuberoItems.length > 0) {
+           // Raggruppa gli oggetti dell'esubero per nome
+           const groupedEsuberoItems = {};
+           esuberoItems.forEach(item => {
+             if (!groupedEsuberoItems[item.name]) {
+               groupedEsuberoItems[item.name] = {
+                 name: item.name,
+                 qty: 0,
+                 price: item.price
+               };
+             }
+             groupedEsuberoItems[item.name].qty += item.qty;
+           });
+           
+           // Mostra gli oggetti dell'esubero raggruppati
+           Object.values(groupedEsuberoItems).forEach(item => {
+             const itemDiv = document.createElement("div");
               itemDiv.className = "item-distribution";
               itemDiv.style.background = "rgba(237, 137, 54, 0.2)";
               itemDiv.style.borderColor = "rgba(237, 137, 54, 0.3)";
               itemDiv.style.border = "1px solid rgba(237, 137, 54, 0.3)";
-              
-              const itemName = document.createElement("span");
+             
+             const itemName = document.createElement("span");
               itemName.innerHTML = `📦 ${item.name} x${item.qty}`;
-              
-              const itemCost = document.createElement("span");
-              const cost = item.qty * item.price;
-              itemCost.className = getCurrencyClass(cost);
-              itemCost.textContent = formatCurrency(cost);
-              
-              itemDiv.appendChild(itemName);
-              itemDiv.appendChild(itemCost);
-              participantDiv.appendChild(itemDiv);
-            });
+             
+             const itemCost = document.createElement("span");
+             const cost = item.qty * item.price;
+             itemCost.className = getCurrencyClass(cost);
+             itemCost.textContent = formatCurrency(cost);
+             
+             itemDiv.appendChild(itemName);
+             itemDiv.appendChild(itemCost);
+             participantDiv.appendChild(itemDiv);
+           });
           } else {
             // Se non ha oggetti dell'esubero, mostra un messaggio
             const noEsuberoDiv = document.createElement("div");
@@ -1293,12 +1275,12 @@
           }
           
           // Mostra il totale (incluso esubero)
-          const totalDiv = document.createElement("div");
-          totalDiv.className = "total-cost";
+         const totalDiv = document.createElement("div");
+         totalDiv.className = "total-cost";
           const formattedTotal = formatCurrency(participantValues[i]);
           totalDiv.innerHTML = `Totale: <span class="${getCurrencyClass(participantValues[i])}">${formattedTotal}</span>`;
-          participantDiv.appendChild(totalDiv);
-          
+         participantDiv.appendChild(totalDiv);
+         
           distributionResults.appendChild(participantDiv);
         }
        
@@ -1386,7 +1368,7 @@
          reader.readAsDataURL(file);
        }
      }
-
+ 
          // Funzione per ricaricare i dati manualmente
     async function reloadData() {
       const reloadButton = document.getElementById('reload-data');
@@ -1417,11 +1399,26 @@
       }
     }
 
+    // Funzioni per gestire i partecipanti
+    function increaseParticipants() {
+      const currentValue = parseInt(participantsInput.value) || 1;
+      participantsInput.value = currentValue + 1;
+      updateDistribution();
+    }
+
+    function decreaseParticipants() {
+      const currentValue = parseInt(participantsInput.value) || 1;
+      if (currentValue > 1) {
+        participantsInput.value = currentValue - 1;
+        updateDistribution();
+      }
+    }
+
     // Event listeners
     participantsInput.addEventListener("input", updateDistribution);
 
-    // Inizializzazione
-    loadProducts();
+     // Inizializzazione
+     loadProducts();
    </script>
  </body>
 </html>
