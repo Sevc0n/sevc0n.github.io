@@ -431,36 +431,73 @@
 
     .pricebook-switch {
       display: flex;
+      align-items: center;
       justify-content: center;
       gap: 15px;
-      flex-wrap: wrap;
     }
 
-    .pricebook-option {
-      flex: 1;
-      min-width: 150px;
-      padding: 12px 20px;
-      background: rgba(50, 130, 184, 0.1);
-      border: 2px solid rgba(50, 130, 184, 0.3);
-      border-radius: 10px;
-      color: #ffffff;
+    .toggle-switch {
+      position: relative;
+      display: inline-block;
+      width: 120px;
+      height: 50px;
+    }
+
+    .toggle-switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .toggle-slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: rgba(50, 130, 184, 0.2);
+      border: 2px solid rgba(50, 130, 184, 0.5);
+      transition: 0.4s;
+      border-radius: 50px;
+    }
+
+    .toggle-slider:before {
+      position: absolute;
+      content: "";
+      height: 38px;
+      width: 38px;
+      left: 4px;
+      bottom: 4px;
+      background-color: #ffffff;
+      transition: 0.4s;
+      border-radius: 50%;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    }
+
+    .toggle-switch input:checked + .toggle-slider {
+      background-color: rgba(50, 130, 184, 0.4);
+      border-color: #3282b8;
+    }
+
+    .toggle-switch input:checked + .toggle-slider:before {
+      transform: translateX(70px);
+    }
+
+    .toggle-label {
       font-size: 1rem;
       font-weight: 600;
-      cursor: pointer;
-      transition: all 0.3s ease;
+      color: #ffffff;
+      min-width: 80px;
       text-align: center;
     }
 
-    .pricebook-option:hover {
-      background: rgba(50, 130, 184, 0.2);
-      border-color: rgba(50, 130, 184, 0.5);
-      transform: translateY(-2px);
+    .toggle-label-left {
+      color: #a0aec0;
     }
 
-    .pricebook-option.active {
-      background: rgba(50, 130, 184, 0.3);
-      border-color: #3282b8;
-      box-shadow: 0 4px 12px rgba(50, 130, 184, 0.4);
+    .toggle-label-right {
+      color: #63b3ed;
     }
 
     /* Responsive Design */
@@ -527,12 +564,12 @@
         <div class="pricebook-selector">
           <label class="pricebook-label">📋 Seleziona Prezziario:</label>
           <div class="pricebook-switch">
-            <div class="pricebook-option active" id="option-borgo" onclick="switchPricebook('borgo')">
-              🏘️ Borgo
-            </div>
-            <div class="pricebook-option" id="option-esterno" onclick="switchPricebook('esterno')">
-              🌍 Esterno
-            </div>
+            <span class="toggle-label toggle-label-left" id="label-borgo">🏘️ Borgo</span>
+            <label class="toggle-switch">
+              <input type="checkbox" id="pricebook-toggle" onchange="togglePricebook()">
+              <span class="toggle-slider"></span>
+            </label>
+            <span class="toggle-label toggle-label-right" id="label-esterno">🌍 Esterno</span>
           </div>
         </div>
         <h2>💰 Totale</h2>
@@ -541,8 +578,9 @@
       </div>
 
       <div class="card">
-        <h2>Lista Materiali
-          <button id="reload-data" style="float: right; background: rgba(99, 179, 237, 0.2); border: 1px solid rgba(99, 179, 237, 0.5); color: #63b3ed; padding: 5px 10px; border-radius: 5px; cursor: pointer; font-size: 0.8rem;" onclick="reloadData()">🔄 Ricarica Dati</button>
+        <h2 style="text-align: center; position: relative;">
+          Lista Materiali
+          <button id="reload-data" style="position: absolute; right: 0; top: 50%; transform: translateY(-50%); background: rgba(99, 179, 237, 0.2); border: 1px solid rgba(99, 179, 237, 0.5); color: #63b3ed; padding: 5px 10px; border-radius: 5px; cursor: pointer; font-size: 0.8rem;" onclick="reloadData()">🔄 Ricarica Dati</button>
         </h2>
         <div id="product-list">
           <div class="loading">Caricamento materiali in corso...</div>
@@ -606,6 +644,14 @@
         defaultProducts = data;
         products = [...defaultProducts.map(p => ({ ...p, qty: 0 }))];
         currentPricebook = pricebook;
+        
+        // Aggiorna lo stato visivo del toggle e delle etichette
+        const toggle = document.getElementById('pricebook-toggle');
+        if (toggle) {
+          toggle.checked = (pricebook === 'esterno');
+          updateToggleLabels(pricebook);
+        }
+        
         renderMain();
         jsonLoaded = true;
         
@@ -884,18 +930,44 @@
       }
     }
 
-    // Funzione per cambiare il prezziario
-    async function switchPricebook(pricebook) {
-      // Aggiorna lo stato visivo degli switch
-      document.getElementById('option-borgo').classList.remove('active');
-      document.getElementById('option-esterno').classList.remove('active');
-      document.getElementById(`option-${pricebook}`).classList.add('active');
+    // Funzione per aggiornare le etichette del toggle
+    function updateToggleLabels(pricebook) {
+      const labelBorgo = document.getElementById('label-borgo');
+      const labelEsterno = document.getElementById('label-esterno');
+      
+      if (pricebook === 'borgo') {
+        labelBorgo.classList.remove('toggle-label-left');
+        labelBorgo.classList.add('toggle-label-right');
+        labelEsterno.classList.remove('toggle-label-right');
+        labelEsterno.classList.add('toggle-label-left');
+      } else {
+        labelEsterno.classList.remove('toggle-label-left');
+        labelEsterno.classList.add('toggle-label-right');
+        labelBorgo.classList.remove('toggle-label-right');
+        labelBorgo.classList.add('toggle-label-left');
+      }
+    }
+
+    // Funzione per cambiare il prezziario tramite toggle
+    async function togglePricebook() {
+      const toggle = document.getElementById('pricebook-toggle');
+      const pricebook = toggle.checked ? 'esterno' : 'borgo';
+      
+      // Aggiorna lo stato visivo delle etichette
+      updateToggleLabels(pricebook);
       
       // Reset delle quantità prima di cambiare
       products.forEach(p => p.qty = 0);
       
       // Carica il nuovo prezziario
       await loadProducts(pricebook);
+    }
+
+    // Funzione per cambiare il prezziario (mantenuta per compatibilità)
+    async function switchPricebook(pricebook) {
+      const toggle = document.getElementById('pricebook-toggle');
+      toggle.checked = (pricebook === 'esterno');
+      await togglePricebook();
     }
 
     // Inizializzazione
