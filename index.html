@@ -23,17 +23,246 @@
     }
 
     .container {
-      max-width: 1200px;
+      max-width: 1000px;
       margin: 0 auto;
-      background: rgba(20, 25, 45, 0.95);
-      backdrop-filter: blur(10px);
-      border-radius: 20px;
-      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+      background: rgba(26, 26, 46, 0.95);
+      backdrop-filter: blur(15px);
+      border-radius: 25px;
+      box-shadow: 0 25px 50px rgba(0, 0, 0, 0.6);
       overflow: hidden;
-      animation: slideIn 0.6s ease-out;
-      border: 1px solid rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.15);
     }
 
+    header {
+      background: linear-gradient(135deg, #1a1a2e, #16213e);
+      color: white;
+      padding: 35px;
+      text-align: center;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      position: relative;
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      font-weight: 800;
+      margin-bottom: 10px;
+      background: linear-gradient(45deg, #ff6b6b, #ffd93d);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .subtitle {
+      font-size: 1.2rem;
+      opacity: 0.9;
+      font-weight: 300;
+    }
+
+    .logo {
+      width: 60px;
+      height: 60px;
+      margin-right: 20px;
+      vertical-align: middle;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .logo:hover {
+      transform: scale(1.1);
+    }
+
+    .logo:active {
+      transform: scale(0.95);
+    }
+
+    main {
+      padding: 40px;
+    }
+
+    .tools-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 25px;
+      margin-bottom: 35px;
+    }
+
+    .tool-card {
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      border-radius: 20px;
+      padding: 35px;
+      box-shadow: 0 8px 25px rgba(16, 185, 129, 0.2);
+      transition: all 0.3s ease;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .tool-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(16, 185, 129, 0.1), transparent);
+      transition: left 0.5s ease;
+    }
+
+    .tool-card:hover::before {
+      left: 100%;
+    }
+
+    .tool-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 15px 35px rgba(16, 185, 129, 0.4);
+      border-color: rgba(16, 185, 129, 0.5);
+    }
+
+    .tool-card.available {
+      background: rgba(16, 185, 129, 0.1);
+      border-color: rgba(16, 185, 129, 0.3);
+    }
+
+    .tool-card.coming-soon {
+      background: rgba(50, 130, 184, 0.1);
+      border-color: rgba(50, 130, 184, 0.3);
+      opacity: 0.7;
+      cursor: pointer;
+    }
+
+    .tool-icon {
+      font-size: 3rem;
+      margin-bottom: 20px;
+      display: block;
+      text-align: center;
+    }
+
+    .tool-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: 15px;
+      color: #10b981;
+      text-align: center;
+    }
+
+    .tool-description {
+      color: #bbe1fa;
+      line-height: 1.6;
+      margin-bottom: 20px;
+      text-align: center;
+      font-size: 1.05rem;
+    }
+
+    .tool-status {
+      display: inline-block;
+      padding: 8px 16px;
+      border-radius: 12px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      text-align: center;
+      width: 100%;
+      margin-top: 10px;
+    }
+
+    .status-available {
+      background: rgba(16, 185, 129, 0.2);
+      color: #10b981;
+      border: 1px solid rgba(16, 185, 129, 0.5);
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+    }
+
+    .status-coming-soon {
+      background: rgba(50, 130, 184, 0.2);
+      color: #3282b8;
+      border: 1px solid rgba(50, 130, 184, 0.5);
+      box-shadow: 0 4px 12px rgba(50, 130, 184, 0.3);
+    }
+
+    .contacts-section {
+      background: rgba(50, 130, 184, 0.1);
+      border: 1px solid rgba(50, 130, 184, 0.3);
+      border-radius: 20px;
+      padding: 35px;
+      text-align: center;
+      margin-top: 35px;
+      box-shadow: 0 8px 25px rgba(50, 130, 184, 0.2);
+    }
+
+    .contacts-title {
+      color: #3282b8;
+      font-size: 1.5rem;
+      margin-bottom: 25px;
+      font-weight: 700;
+    }
+
+    .contact-item {
+      display: inline-block;
+      margin: 0 15px 15px 0;
+      padding: 15px 25px;
+      background: rgba(50, 130, 184, 0.1);
+      border: 1px solid rgba(50, 130, 184, 0.3);
+      border-radius: 15px;
+      color: #ffffff;
+      text-decoration: none;
+      transition: all 0.3s ease;
+      font-weight: 500;
+      font-size: 1rem;
+      box-shadow: 0 4px 12px rgba(50, 130, 184, 0.2);
+    }
+
+    .contact-item:hover {
+      background: rgba(50, 130, 184, 0.2);
+      border-color: rgba(50, 130, 184, 0.5);
+      transform: translateY(-3px);
+      box-shadow: 0 8px 20px rgba(50, 130, 184, 0.4);
+    }
+
+    .contact-item strong {
+      color: #3282b8;
+    }
+
+    .footer {
+      text-align: center;
+      padding: 30px;
+      color: #bbe1fa;
+      font-size: 1rem;
+      background: rgba(45, 55, 72, 0.3);
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .github-button {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 20px;
+      background: rgba(50, 130, 184, 0.1);
+      color: #ffffff;
+      text-decoration: none;
+      border-radius: 12px;
+      font-size: 0.9rem;
+      border: 1px solid rgba(50, 130, 184, 0.3);
+      transition: all 0.3s ease;
+      font-weight: 500;
+      margin-top: 15px;
+      box-shadow: 0 4px 12px rgba(50, 130, 184, 0.2);
+    }
+
+    .github-button:hover {
+      background: rgba(50, 130, 184, 0.2);
+      border-color: rgba(50, 130, 184, 0.5);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(50, 130, 184, 0.4);
+    }
+
+    .github-button svg {
+      flex-shrink: 0;
+    }
+
+    /* Animazioni di caricamento */
     @keyframes slideIn {
       from {
         opacity: 0;
@@ -50,236 +279,11 @@
       50% { transform: scale(1.1); }
     }
 
-    header {
-      background: linear-gradient(135deg, #2d3748, #4a5568);
-      color: white;
-      padding: 40px 30px;
-      text-align: center;
-      position: relative;
-      overflow: hidden;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    .container {
+      animation: slideIn 0.8s ease-out;
     }
 
-    header::before {
-      content: '';
-      position: absolute;
-      top: -50%;
-      left: -50%;
-      width: 200%;
-      height: 200%;
-      background: radial-gradient(circle, rgba(255, 255, 255, 0.05) 0%, transparent 70%);
-      animation: pulse 4s ease-in-out infinite;
-    }
-
-    @keyframes pulse {
-      0%, 100% { transform: scale(1); opacity: 0.3; }
-      50% { transform: scale(1.1); opacity: 0.6; }
-    }
-
-    h1 {
-      font-size: 3rem;
-      font-weight: 700;
-      margin-bottom: 10px;
-      position: relative;
-      z-index: 1;
-    }
-
-    .subtitle {
-      font-size: 1.3rem;
-      opacity: 0.8;
-      position: relative;
-      z-index: 1;
-      margin-bottom: 20px;
-    }
-
-    .logo {
-      width: 60px;
-      height: 60px;
-      margin-right: 20px;
-      vertical-align: middle;
-      border-radius: 12px;
-      cursor: pointer;
-      transition: all 0.3s ease;
-    }
-
-    .logo:hover {
-      transform: scale(1);
-      box-shadow: none;
-    }
-
-    .logo:active {
-      transform: scale(0.95);
-    }
-
-    main {
-      padding: 40px;
-    }
-
-    .tools-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 30px;
-      margin-bottom: 40px;
-    }
-
-    .tool-card {
-      background: rgba(45, 55, 72, 0.6);
-      border-radius: 15px;
-      padding: 30px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      transition: all 0.3s ease;
-      cursor: pointer;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .tool-card::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: -100%;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(99, 179, 237, 0.1), transparent);
-      transition: left 0.5s ease;
-    }
-
-    .tool-card:hover::before {
-      left: 100%;
-    }
-
-    .tool-card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
-      border-color: rgba(99, 179, 237, 0.5);
-    }
-
-    .tool-card.available {
-      background: linear-gradient(135deg, rgba(72, 187, 120, 0.2), rgba(56, 178, 172, 0.2));
-      border-color: rgba(72, 187, 120, 0.3);
-    }
-
-    .tool-card.coming-soon {
-      background: linear-gradient(135deg, rgba(156, 163, 175, 0.2), rgba(107, 114, 128, 0.2));
-      border-color: rgba(156, 163, 175, 0.3);
-      opacity: 0.7;
-      cursor: pointer;
-    }
-
-    .tool-icon {
-      font-size: 3rem;
-      margin-bottom: 20px;
-      display: block;
-    }
-
-    .tool-title {
-      font-size: 1.5rem;
-      font-weight: 600;
-      margin-bottom: 15px;
-      color: #ffffff;
-    }
-
-    .tool-description {
-      color: #a0aec0;
-      line-height: 1.6;
-      margin-bottom: 20px;
-    }
-
-    .tool-status {
-      display: inline-block;
-      padding: 5px 12px;
-      border-radius: 20px;
-      font-size: 0.8rem;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-
-    .status-available {
-      background: rgba(72, 187, 120, 0.3);
-      color: #68d391;
-      border: 1px solid rgba(72, 187, 120, 0.5);
-    }
-
-    .status-coming-soon {
-      background: rgba(156, 163, 175, 0.3);
-      color: #a0aec0;
-      border: 1px solid rgba(156, 163, 175, 0.5);
-    }
-
-    .contacts-section {
-      background: rgba(30, 35, 55, 0.8);
-      border-top: 1px solid rgba(255, 255, 255, 0.1);
-      padding: 30px 40px;
-      text-align: center;
-      margin-top: 40px;
-    }
-
-    .contacts-title {
-      color: #63b3ed;
-      font-size: 1.2rem;
-      margin-bottom: 20px;
-      font-weight: 600;
-    }
-
-    .contact-item {
-      display: inline-block;
-      margin: 0 20px 10px 0;
-      padding: 10px 20px;
-      background: rgba(99, 179, 237, 0.1);
-      border: 1px solid rgba(99, 179, 237, 0.3);
-      border-radius: 25px;
-      color: #ffffff;
-      text-decoration: none;
-      transition: all 0.3s ease;
-      font-weight: 500;
-      font-size: 1rem;
-    }
-
-    .contact-item:hover {
-      background: rgba(99, 179, 237, 0.2);
-      border-color: rgba(99, 179, 237, 0.5);
-      transform: translateY(-2px);
-    }
-
-    .contact-item strong {
-      color: #63b3ed;
-    }
-
-    .footer {
-      text-align: center;
-      padding: 20px;
-      color: #a0aec0;
-      font-size: 0.9rem;
-    }
-
-    .github-button {
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-      padding: 6px 12px;
-      background: rgba(36, 41, 46, 0.8);
-      color: #ffffff;
-      text-decoration: none;
-      border-radius: 6px;
-      font-size: 0.8rem;
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      transition: all 0.3s ease;
-      font-family: 'Courier New', monospace;
-    }
-
-    .github-button:hover {
-      background: rgba(36, 41, 46, 1);
-      border-color: rgba(255, 255, 255, 0.3);
-      transform: translateY(-1px);
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    }
-
-    .github-button svg {
-      flex-shrink: 0;
-    }
-
+    /* Responsive */
     @media (max-width: 768px) {
       h1 {
         font-size: 2rem;
@@ -295,7 +299,11 @@
       }
       
       .tool-card {
-        padding: 20px;
+        padding: 25px;
+      }
+
+      .contacts-section {
+        padding: 25px;
       }
     }
   </style>
@@ -312,8 +320,8 @@
 
     <main>
       <div class="tools-grid">
-                 <!-- Abaco Divisore -->
-         <div class="tool-card available" onclick="window.location.href='abaco/'">
+        <!-- Abaco Divisore -->
+        <div class="tool-card available" onclick="window.location.href='abaco/'">
           <span class="tool-icon">⚒️</span>
           <h3 class="tool-title">Abaco Divisore</h3>
           <p class="tool-description">
@@ -322,46 +330,45 @@
           <span class="tool-status status-available">Disponibile</span>
         </div>
 
+        <!-- Placeholder 2 -->
+        <div class="tool-card coming-soon" onclick="window.location.href='altro-tool/'">
+          <span class="tool-icon">⚡</span>
+          <h3 class="tool-title">[REDACTED]</h3>
+          <p class="tool-description">
+            prossimamente...
+          </p>
+          <span class="tool-status status-coming-soon">In Progettazione</span>
+        </div>
 
-         <!-- Placeholder 2 -->
-         <div class="tool-card coming-soon" onclick="window.location.href='altro-tool/'">
-           <span class="tool-icon">⚡</span>
-           <h3 class="tool-title">[REDACTED]</h3>
-           <p class="tool-description">
-             prossimamente...
-           </p>
-           <span class="tool-status status-coming-soon">In Progettazione</span>
-         </div>
+        <!-- Placeholder 3 -->
+        <div class="tool-card coming-soon" onclick="window.location.href='nuovo-tool/'">
+          <span class="tool-icon">🌟</span>
+          <h3 class="tool-title">[REDACTED]</h3>
+          <p class="tool-description">
+            prossimamente...
+          </p>
+          <span class="tool-status status-coming-soon">In Progettazione</span>
+        </div>
 
-         <!-- Placeholder 3 -->
-         <div class="tool-card coming-soon" onclick="window.location.href='nuovo-tool/'">
-           <span class="tool-icon">🌟</span>
-           <h3 class="tool-title">[REDACTED]</h3>
-           <p class="tool-description">
-             prossimamente...
-           </p>
-           <span class="tool-status status-coming-soon">In Progettazione</span>
-         </div>
+        <!-- Placeholder 4 -->
+        <div class="tool-card coming-soon" onclick="window.location.href='strumento/'">
+          <span class="tool-icon">🎯</span>
+          <h3 class="tool-title">[REDACTED]</h3>
+          <p class="tool-description">
+            prossimamente...
+          </p>
+          <span class="tool-status status-coming-soon">In Progettazione</span>
+        </div>
 
-         <!-- Placeholder 4 -->
-         <div class="tool-card coming-soon" onclick="window.location.href='strumento/'">
-           <span class="tool-icon">🎯</span>
-           <h3 class="tool-title">[REDACTED]</h3>
-           <p class="tool-description">
-             prossimamente...
-           </p>
-           <span class="tool-status status-coming-soon">In Progettazione</span>
-         </div>
-
-         <!-- Placeholder 5 -->
-         <div class="tool-card coming-soon" onclick="window.location.href='ultimo-tool/'">
-           <span class="tool-icon">🚀</span>
-           <h3 class="tool-title">[REDACTED]</h3>
-           <p class="tool-description">
-             prossimamente...
-           </p>
-           <span class="tool-status status-coming-soon">In Progettazione</span>
-         </div>
+        <!-- Placeholder 5 -->
+        <div class="tool-card coming-soon" onclick="window.location.href='ultimo-tool/'">
+          <span class="tool-icon">🚀</span>
+          <h3 class="tool-title">[REDACTED]</h3>
+          <p class="tool-description">
+            prossimamente...
+          </p>
+          <span class="tool-status status-coming-soon">In Progettazione</span>
+        </div>
       </div>
     </main>
 
@@ -382,9 +389,9 @@
         <img src="logo.png" alt="Sevcon Logo" id="copyrightLogo" style="width: 20px; height: 20px; border-radius: 4px; cursor: pointer; transition: all 0.3s ease;" onerror="this.style.display='none';" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
         © 2025 Sevcon by piccionenberg - Creato con ❤️ e per noia
       </p>
-      <div style="text-align: center; margin-top: 15px;">
+      <div style="text-align: center;">
         <a href="https://github.com/sevc0n/sevc0n.github.io" target="_blank" rel="noopener noreferrer" class="github-button">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
             <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
           </svg>
           GitHub

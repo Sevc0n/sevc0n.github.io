@@ -116,10 +116,7 @@
       position: relative;
       overflow: visible;
       clear: both;
-      min-height: 50px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      padding-right: 200px;
     }
 
     .category-section {
@@ -754,10 +751,10 @@
      <main>
        <div class="grid">
                    <div class="card">
-            <h2>
-              <span>Lista Materiali</span>
-              <div style="position: absolute; right: 0; top: 0; bottom: 0; display: flex; gap: 8px; align-items: center; height: 100%;">
-                <button class="list-btn" onclick="generateAbyssList()">📋 Lista</button>
+            <h2 style="text-align: center; position: relative;">
+              Lista Materiali
+              <div style="position: absolute; right: 0; top: 50%; transform: translateY(-50%); display: flex; gap: 8px; align-items: center;">
+                <button class="list-btn" style="margin: 0; font-size: 0.8rem; padding: 5px 10px;" onclick="generateAbyssList()">📋 Lista</button>
                 <button id="reload-data" style="background: rgba(99, 179, 237, 0.2); border: 1px solid rgba(99, 179, 237, 0.5); color: #63b3ed; padding: 5px 10px; border-radius: 5px; cursor: pointer; font-size: 0.8rem;" onclick="reloadData()">🔄 Ricarica Dati</button>
               </div>
             </h2>
