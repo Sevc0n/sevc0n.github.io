@@ -439,8 +439,8 @@
     .toggle-switch {
       position: relative;
       display: inline-block;
-      width: 120px;
-      height: 50px;
+      width: 80px;
+      height: 36px;
     }
 
     .toggle-switch input {
@@ -459,16 +459,16 @@
       background-color: rgba(50, 130, 184, 0.2);
       border: 2px solid rgba(50, 130, 184, 0.5);
       transition: 0.4s;
-      border-radius: 50px;
+      border-radius: 36px;
     }
 
     .toggle-slider:before {
       position: absolute;
       content: "";
-      height: 38px;
-      width: 38px;
-      left: 4px;
-      bottom: 4px;
+      height: 28px;
+      width: 28px;
+      left: 3px;
+      bottom: 3px;
       background-color: #ffffff;
       transition: 0.4s;
       border-radius: 50%;
@@ -481,14 +481,14 @@
     }
 
     .toggle-switch input:checked + .toggle-slider:before {
-      transform: translateX(70px);
+      transform: translateX(44px);
     }
 
     .toggle-label {
-      font-size: 1rem;
+      font-size: 0.9rem;
       font-weight: 600;
       color: #ffffff;
-      min-width: 80px;
+      min-width: 70px;
       text-align: center;
     }
 
@@ -498,6 +498,97 @@
 
     .toggle-label-right {
       color: #63b3ed;
+    }
+
+    .potions-section {
+      margin-top: 25px;
+      padding: 20px;
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      border-radius: 12px;
+      display: none;
+    }
+
+    .potions-section.visible {
+      display: block;
+    }
+
+    .potions-title {
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: #10b981;
+      margin-bottom: 15px;
+      text-align: center;
+    }
+
+    .potion-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin: 10px 0;
+      padding: 12px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 8px;
+    }
+
+    .potion-name {
+      font-weight: 500;
+      color: #ffffff;
+      flex: 1;
+    }
+
+    .potion-price {
+      font-weight: 600;
+      color: #68d391;
+      font-size: 0.9rem;
+      margin-right: 15px;
+    }
+
+    .potion-quantity {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .potion-qty-input {
+      width: 60px;
+      padding: 6px;
+      text-align: center;
+      border: 2px solid rgba(255, 255, 255, 0.2);
+      border-radius: 6px;
+      font-size: 14px;
+      background: rgba(255, 255, 255, 0.1);
+      color: #ffffff;
+      -moz-appearance: textfield;
+      appearance: textfield;
+    }
+
+    .potion-qty-input::-webkit-outer-spin-button,
+    .potion-qty-input::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+
+    .potion-qty-btn {
+      width: 28px;
+      height: 28px;
+      border: 2px solid #3282b8;
+      background: rgba(50, 130, 184, 0.2);
+      color: #3282b8;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      font-size: 14px;
+      transition: all 0.3s ease;
+    }
+
+    .potion-qty-btn:hover {
+      background: #3282b8;
+      color: white;
+      transform: scale(1.1);
     }
 
     /* Responsive Design */
@@ -572,6 +663,10 @@
             <span class="toggle-label toggle-label-right" id="label-esterno">🌍 Esterno</span>
           </div>
         </div>
+        <div id="potions-section" class="potions-section">
+          <h3 class="potions-title">🧪 Pozioni</h3>
+          <div id="potions-list"></div>
+        </div>
         <h2>💰 Totale</h2>
         <div id="total-display" class="total-amount currency-mixed">0br</div>
         <button class="reset-btn" onclick="resetAll()">🔄 Reset Tutto</button>
@@ -609,6 +704,17 @@
     let defaultProducts = [];
     let products = [];
     let currentPricebook = 'borgo'; // 'borgo' o 'esterno'
+    
+    // Prezzi delle pozioni in argenti (convertiti in bronzini: 1a = 100br)
+    const potions = [
+      { name: 'Cura 1', price: 200 }, // 2a
+      { name: 'Cura 2', price: 400 }, // 4a
+      { name: 'Antidoto', price: 250 }, // 2.5a
+      { name: 'Revivify', price: 300 }, // 3a
+      { name: 'Extinguish', price: 400 } // 4a
+    ];
+    
+    let potionsQuantities = potions.map(() => 0);
 
     // Carica i prodotti dal file JSON
     async function loadProducts(pricebook = 'borgo') {
@@ -650,6 +756,7 @@
         if (toggle) {
           toggle.checked = (pricebook === 'esterno');
           updateToggleLabels(pricebook);
+          togglePotionsSection();
         }
         
         renderMain();
@@ -893,15 +1000,100 @@
     }
 
     function updateTotal() {
-      const total = products.reduce((sum, p) => sum + (p.qty * p.price), 0);
+      const materialsTotal = products.reduce((sum, p) => sum + (p.qty * p.price), 0);
+      const potionsTotal = potionsQuantities.reduce((sum, qty, index) => sum + (qty * potions[index].price), 0);
+      const total = materialsTotal - potionsTotal; // Sottrai le pozioni dal totale
       const totalDisplay = document.getElementById("total-display");
       totalDisplay.textContent = formatCurrency(total);
       totalDisplay.className = `total-amount ${getCurrencyClass(total)}`;
     }
+    
+    function renderPotions() {
+      const potionsList = document.getElementById("potions-list");
+      potionsList.innerHTML = "";
+      
+      potions.forEach((potion, index) => {
+        const div = document.createElement("div");
+        div.className = "potion-item";
+        
+        const name = document.createElement("div");
+        name.className = "potion-name";
+        name.textContent = potion.name;
+        
+        const price = document.createElement("div");
+        price.className = "potion-price";
+        price.textContent = formatCurrency(potion.price);
+        
+        const quantityContainer = document.createElement("div");
+        quantityContainer.className = "potion-quantity";
+        
+        const minusBtn = document.createElement("button");
+        minusBtn.className = "potion-qty-btn";
+        minusBtn.textContent = "-";
+        minusBtn.addEventListener("click", () => {
+          if (potionsQuantities[index] > 0) {
+            potionsQuantities[index]--;
+            qty.value = potionsQuantities[index] || "";
+            updateTotal();
+          }
+        });
+        
+        const qty = document.createElement("input");
+        qty.type = "number";
+        qty.className = "potion-qty-input";
+        qty.min = "0";
+        qty.value = potionsQuantities[index] > 0 ? potionsQuantities[index] : "";
+        qty.placeholder = "0";
+        qty.addEventListener("input", () => {
+          potionsQuantities[index] = parseInt(qty.value) || 0;
+          updateTotal();
+        });
+        
+        const plusBtn = document.createElement("button");
+        plusBtn.className = "potion-qty-btn";
+        plusBtn.textContent = "+";
+        plusBtn.addEventListener("click", () => {
+          const currentValue = parseInt(qty.value) || 0;
+          potionsQuantities[index] = currentValue + 1;
+          qty.value = potionsQuantities[index];
+          updateTotal();
+        });
+        
+        quantityContainer.appendChild(minusBtn);
+        quantityContainer.appendChild(qty);
+        quantityContainer.appendChild(plusBtn);
+        
+        div.appendChild(name);
+        div.appendChild(price);
+        div.appendChild(quantityContainer);
+        
+        potionsList.appendChild(div);
+      });
+    }
+    
+    function togglePotionsSection() {
+      const potionsSection = document.getElementById("potions-section");
+      const toggle = document.getElementById("pricebook-toggle");
+      
+      if (!toggle.checked) { // Se borgo è selezionato (toggle non checked)
+        potionsSection.classList.add("visible");
+        renderPotions();
+      } else {
+        potionsSection.classList.remove("visible");
+        // Reset delle quantità pozioni quando si cambia a esterno
+        potionsQuantities = potions.map(() => 0);
+        updateTotal();
+      }
+    }
 
     function resetAll() {
       products.forEach(p => p.qty = 0);
+      potionsQuantities = potions.map(() => 0);
       renderMain();
+      if (document.getElementById("potions-section").classList.contains("visible")) {
+        renderPotions();
+      }
+      updateTotal();
     }
 
     async function reloadData() {
@@ -959,6 +1151,9 @@
       // Reset delle quantità prima di cambiare
       products.forEach(p => p.qty = 0);
       
+      // Mostra/nascondi sezione pozioni
+      togglePotionsSection();
+      
       // Carica il nuovo prezziario
       await loadProducts(pricebook);
     }
@@ -971,7 +1166,10 @@
     }
 
     // Inizializzazione
-    loadProducts('borgo');
+    loadProducts('borgo').then(() => {
+      // Mostra la sezione pozioni se borgo è selezionato
+      togglePotionsSection();
+    });
   </script>
 </body>
 </html>
