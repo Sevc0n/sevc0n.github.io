@@ -123,6 +123,18 @@
       overflow: hidden;
     }
 
+    .products-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+    }
+
+    @media (min-width: 1024px) {
+      .products-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
     .subcategoryTitle {
       font-size: 1rem;
       color: #a0aec0;
@@ -137,7 +149,6 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin: 12px 0;
       padding: 15px;
       background: rgba(50, 130, 184, 0.1);
       border: 1px solid rgba(50, 130, 184, 0.3);
@@ -726,24 +737,33 @@
             subcategoryTitle.textContent = subcategory;
             subcategoryDiv.appendChild(subcategoryTitle);
             
+            const productsGrid = document.createElement("div");
+            productsGrid.className = "products-grid";
+            
             const subcategoryProducts = products.filter(p => p.category === category && p.subcategory === subcategory);
             
             subcategoryProducts.forEach((p) => {
               const globalIndex = products.indexOf(p);
               const div = createProductElement(p, globalIndex);
-              subcategoryDiv.appendChild(div);
+              productsGrid.appendChild(div);
             });
             
+            subcategoryDiv.appendChild(productsGrid);
             categoryDiv.appendChild(subcategoryDiv);
           });
         } else {
+          const productsGrid = document.createElement("div");
+          productsGrid.className = "products-grid";
+          
           const categoryProducts = products.filter(p => p.category === category);
           
           categoryProducts.forEach((p) => {
             const globalIndex = products.indexOf(p);
             const div = createProductElement(p, globalIndex);
-            categoryDiv.appendChild(div);
+            productsGrid.appendChild(div);
           });
+          
+          categoryDiv.appendChild(productsGrid);
         }
         
         productList.appendChild(categoryDiv);
