@@ -1302,6 +1302,10 @@
         listText += `${item.qty}x ${item.name}\n`;
       });
       
+      // Calcola il totale dei reagenti
+      const materialsTotal = products.reduce((sum, p) => sum + (p.qty * p.price), 0);
+      listText += `\nTotale: ${formatCurrency(materialsTotal)}`;
+      
       showListModal('Lista Materiali', listText.trim());
     }
     
@@ -1320,6 +1324,18 @@
       activePotions.forEach(item => {
         listText += `${item.qty}x ${item.potion.name}\n`;
       });
+      
+      // Calcola i totali
+      const materialsTotal = products.reduce((sum, p) => sum + (p.qty * p.price), 0);
+      const potionsTotal = potionsQuantities.reduce((sum, qty, index) => sum + (qty * potions[index].price), 0);
+      const finalTotal = materialsTotal - potionsTotal; // Totale materiali - totale pozioni
+      
+      // Formatta i numeri senza decimali se sono interi
+      const potionsTotalFormatted = potionsTotal % 1 === 0 ? potionsTotal : potionsTotal.toFixed(1);
+      const materialsTotalFormatted = materialsTotal % 1 === 0 ? materialsTotal : materialsTotal.toFixed(1);
+      const finalTotalFormatted = finalTotal % 1 === 0 ? finalTotal : finalTotal.toFixed(1);
+      
+      listText += `\nTotale: ${materialsTotalFormatted} - ${potionsTotalFormatted} = ${finalTotalFormatted}`;
       
       showListModal('Lista Pozioni', listText.trim());
     }
