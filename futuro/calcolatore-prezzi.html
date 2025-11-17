@@ -705,13 +705,13 @@
     let products = [];
     let currentPricebook = 'borgo'; // 'borgo' o 'esterno'
     
-    // Prezzi delle pozioni in argenti (convertiti in bronzini: 1a = 100br)
+    // Prezzi delle pozioni in bronzini
     const potions = [
-      { name: 'Cura 1', price: 200 }, // 2a
-      { name: 'Cura 2', price: 400 }, // 4a
-      { name: 'Antidoto', price: 250 }, // 2.5a
-      { name: 'Revivify', price: 300 }, // 3a
-      { name: 'Extinguish', price: 400 } // 4a
+      { name: 'Cura 1', price: 2 },
+      { name: 'Cura 2', price: 4 },
+      { name: 'Antidoto', price: 2.5 },
+      { name: 'Revivify', price: 3 },
+      { name: 'Extinguish', price: 4 }
     ];
     
     let potionsQuantities = potions.map(() => 0);
