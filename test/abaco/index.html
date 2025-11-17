@@ -134,7 +134,8 @@
 
     .subcategoryDiv {
       margin-bottom: 20px;
-      overflow: hidden;
+      width: 100%;
+      clear: both;
     }
 
     .subcategoryTitle {
@@ -145,6 +146,7 @@
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
+      width: 100%;
     }
 
     .product {
@@ -965,40 +967,52 @@
          categoryTitle.textContent = category === "Cristalli" ? `Materiali dai ${category}` : category;
          categoryDiv.appendChild(categoryTitle);
  
-         if (category === "Cristalli") {
-           // Per i cristalli, raggruppa per sottocategorie
-           const subcategories = [...new Set(products.filter(p => p.category === category).map(p => p.subcategory))];
-           
-           subcategories.forEach(subcategory => {
-             const subcategoryDiv = document.createElement("div");
-             subcategoryDiv.className = "subcategoryDiv";
-             subcategoryDiv.style.marginBottom = "20px";
-             
-             const subcategoryTitle = document.createElement("h4");
-             subcategoryTitle.className = "subcategoryTitle";
-             subcategoryTitle.textContent = subcategory;
-             subcategoryDiv.appendChild(subcategoryTitle);
-             
-             const subcategoryProducts = products.filter(p => p.category === category && p.subcategory === subcategory);
-             
-             subcategoryProducts.forEach((p) => {
-               const globalIndex = products.indexOf(p);
-               const div = createProductElement(p, globalIndex);
-               subcategoryDiv.appendChild(div);
-             });
-             
-             categoryDiv.appendChild(subcategoryDiv);
-           });
-         } else {
-           // Per altre categorie, mostra direttamente i prodotti
-           const categoryProducts = products.filter(p => p.category === category);
-           
-           categoryProducts.forEach((p) => {
-             const globalIndex = products.indexOf(p);
-             const div = createProductElement(p, globalIndex);
-             categoryDiv.appendChild(div);
-           });
-         }
+        if (category === "Cristalli") {
+          // Per i cristalli, raggruppa per sottocategorie
+          const subcategories = [...new Set(products.filter(p => p.category === category).map(p => p.subcategory))];
+          
+          subcategories.forEach(subcategory => {
+            // Container per la sottocategoria
+            const subcategoryDiv = document.createElement("div");
+            subcategoryDiv.className = "subcategoryDiv";
+            
+            // Titolo della sottocategoria
+            const subcategoryTitle = document.createElement("h4");
+            subcategoryTitle.className = "subcategoryTitle";
+            subcategoryTitle.textContent = subcategory;
+            subcategoryDiv.appendChild(subcategoryTitle);
+            
+            // Container per i prodotti della sottocategoria
+            const productsContainer = document.createElement("div");
+            productsContainer.style.width = "100%";
+            productsContainer.style.clear = "both";
+            
+            // Filtra i prodotti per questa sottocategoria
+            const subcategoryProducts = products.filter(p => p.category === category && p.subcategory === subcategory);
+            
+            // Aggiungi ogni prodotto al container
+            subcategoryProducts.forEach((p) => {
+              const globalIndex = products.indexOf(p);
+              const productDiv = createProductElement(p, globalIndex);
+              productsContainer.appendChild(productDiv);
+            });
+            
+            // Aggiungi il container dei prodotti alla sottocategoria
+            subcategoryDiv.appendChild(productsContainer);
+            
+            // Aggiungi la sottocategoria alla categoria
+            categoryDiv.appendChild(subcategoryDiv);
+          });
+        } else {
+          // Per altre categorie, mostra direttamente i prodotti
+          const categoryProducts = products.filter(p => p.category === category);
+          
+          categoryProducts.forEach((p) => {
+            const globalIndex = products.indexOf(p);
+            const productDiv = createProductElement(p, globalIndex);
+            categoryDiv.appendChild(productDiv);
+          });
+        }
          
          productList.appendChild(categoryDiv);
        });
