@@ -1335,7 +1335,7 @@
       const materialsTotalFormatted = materialsTotal % 1 === 0 ? materialsTotal : materialsTotal.toFixed(1);
       const finalTotalFormatted = finalTotal % 1 === 0 ? finalTotal : finalTotal.toFixed(1);
       
-      listText += `\nTotale: ${materialsTotalFormatted} - ${potionsTotalFormatted} = ${finalTotalFormatted}`;
+      listText += `\nTotale: ${potionsTotalFormatted} - ${materialsTotalFormatted} = ${finalTotalFormatted}`;
       
       showListModal('Lista Pozioni', listText.trim());
     }
