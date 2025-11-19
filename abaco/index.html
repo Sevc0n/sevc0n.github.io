@@ -1556,11 +1556,20 @@
       const year = today.getFullYear();
       const dateStr = `${day}/${month}/${year}`;
       
+      // Calcola il valore totale del bottino
+      let totalValue = 0;
+      activeItems.forEach(item => {
+        totalValue += item.qty * item.price;
+      });
+      
       let listText = `Oggetti presi in abisso - ${dateStr}\n\n`;
       
       activeItems.forEach(item => {
         listText += `${item.qty}x ${item.name}\n`;
       });
+      
+      listText += `\n━━━━━━━━━━━━━━━━━━━━\n`;
+      listText += `Valore totale: ${formatCurrency(totalValue)}\n`;
       
       showListModal('Lista Abisso', listText.trim());
     }
