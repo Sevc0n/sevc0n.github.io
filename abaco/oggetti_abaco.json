@@ -8,56 +8,56 @@
   },
   {
     "name": "Rame grezzo",
-    "price": 20,
+    "price": 25,
     "category": "Cristalli",
     "subcategory": "Metalli",
     "tier": "Avanzato"
   },
   {
     "name": "Ferro grezzo",
-    "price": 27,
+    "price": 34,
     "category": "Cristalli",
     "subcategory": "Metalli",
     "tier": "Esperto"
   },
   {
     "name": "Oro grezzo",
-    "price": 50,
+    "price": 55,
     "category": "Cristalli",
     "subcategory": "Metalli",
     "tier": "Custode"
   },
   {
     "name": "Diamante grezzo",
-    "price": 500,
+    "price": 100,
     "category": "Cristalli",
     "subcategory": "Metalli",
     "tier": "Maestro"
   },
   {
     "name": "Argento grezzo",
-    "price": 500,
+    "price": 100,
     "category": "Cristalli",
     "subcategory": "Metalli",
     "tier": "Maestro"
   },
   {
     "name": "Carbone",
-    "price": 2,
+    "price": 2.5,
     "category": "Cristalli",
     "subcategory": "Carburanti",
     "tier": "Novizio"
   },
   {
     "name": "Antracite",
-    "price": 4,
+    "price": 5,
     "category": "Cristalli",
     "subcategory": "Carburanti",
     "tier": "Esperto"
   },
   {
     "name": "Fire Stone",
-    "price": 6,
+    "price": 7,
     "category": "Cristalli",
     "subcategory": "Carburanti",
     "tier": "Maestro"
@@ -85,7 +85,7 @@
   },
   {
     "name": "Withering Dust",
-    "price": 2,
+    "price": 1,
     "category": "Cristalli",
     "subcategory": "Misto",
     "tier": "Custode"
