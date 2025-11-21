@@ -283,14 +283,43 @@
       animation: slideIn 0.8s ease-out;
     }
 
-    /* Responsive */
+    /* Responsive Mobile */
     @media (max-width: 768px) {
+      body {
+        padding: 10px;
+      }
+      
+      .container {
+        border-radius: 15px;
+        margin: 0;
+      }
+      
+      header {
+        padding: 25px 20px;
+      }
+      
       h1 {
-        font-size: 2rem;
+        font-size: 1.8rem;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+      }
+      
+      .logo {
+        width: 50px;
+        height: 50px;
+        margin-right: 0;
+        margin-bottom: 0;
       }
       
       .subtitle {
-        font-size: 1.1rem;
+        font-size: 1rem;
+        padding: 0 10px;
+      }
+      
+      main {
+        padding: 25px 20px;
       }
       
       .tools-grid {
@@ -299,11 +328,143 @@
       }
       
       .tool-card {
-        padding: 25px;
+        padding: 25px 20px;
+      }
+      
+      .tool-icon {
+        font-size: 2.5rem;
+        margin-bottom: 15px;
+      }
+      
+      .tool-title {
+        font-size: 1.3rem;
+        margin-bottom: 12px;
+      }
+      
+      .tool-description {
+        font-size: 0.95rem;
+        margin-bottom: 15px;
+      }
+      
+      .tool-status {
+        font-size: 0.85rem;
+        padding: 6px 12px;
       }
 
       .contacts-section {
-        padding: 25px;
+        padding: 25px 20px;
+        margin-top: 25px;
+      }
+      
+      .contacts-title {
+        font-size: 1.3rem;
+        margin-bottom: 20px;
+      }
+      
+      .contact-item {
+        display: block;
+        margin: 0 0 12px 0;
+        padding: 12px 20px;
+        font-size: 0.9rem;
+      }
+      
+      .footer {
+        padding: 25px 20px;
+        font-size: 0.9rem;
+      }
+      
+      .footer p {
+        flex-direction: column;
+        gap: 10px;
+      }
+      
+      .github-button {
+        padding: 10px 18px;
+        font-size: 0.85rem;
+        margin-top: 12px;
+      }
+    }
+    
+    @media (max-width: 480px) {
+      body {
+        padding: 8px;
+      }
+      
+      header {
+        padding: 20px 15px;
+      }
+      
+      h1 {
+        font-size: 1.5rem;
+      }
+      
+      .logo {
+        width: 45px;
+        height: 45px;
+      }
+      
+      .subtitle {
+        font-size: 0.9rem;
+      }
+      
+      main {
+        padding: 20px 15px;
+      }
+      
+      .tool-card {
+        padding: 20px 15px;
+      }
+      
+      .tool-icon {
+        font-size: 2rem;
+      }
+      
+      .tool-title {
+        font-size: 1.1rem;
+      }
+      
+      .tool-description {
+        font-size: 0.9rem;
+      }
+      
+      .contacts-section {
+        padding: 20px 15px;
+      }
+      
+      .contacts-title {
+        font-size: 1.1rem;
+      }
+      
+      .contact-item {
+        padding: 10px 16px;
+        font-size: 0.85rem;
+      }
+      
+      .footer {
+        padding: 20px 15px;
+        font-size: 0.85rem;
+      }
+    }
+    
+    /* Touch device optimizations */
+    @media (hover: none) and (pointer: coarse) {
+      .tool-card {
+        padding: 28px 22px;
+      }
+      
+      .contact-item {
+        padding: 14px 24px;
+        min-height: 48px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      
+      .github-button {
+        min-height: 44px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
       }
     }
   </style>
@@ -331,7 +492,7 @@
         </div>
 
         <!-- Calcolatore Prezzi -->
-        <div class="tool-card available" onclick="window.location.href='futuro/calcolatore-prezzi.html'">
+        <div class="tool-card available" onclick="window.location.href='calcolatore-prezzi/'">
           <span class="tool-icon">💰</span>
           <h3 class="tool-title">Calcolatore Prezzi</h3>
           <p class="tool-description">

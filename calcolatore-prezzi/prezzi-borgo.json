@@ -1,0 +1,103 @@
+[
+  {
+    "name": "Carbone",
+    "price": 2,
+    "category": "Cristalli",
+    "subcategory": "Carburanti",
+    "tier": "Novizio"
+  },
+  {
+    "name": "Antracite",
+    "price": 4,
+    "category": "Cristalli",
+    "subcategory": "Carburanti",
+    "tier": "Esperto"
+  },
+  {
+    "name": "Lapis",
+    "price": 1,
+    "category": "Cristalli",
+    "subcategory": "Misto",
+    "tier": "Novizio"
+  },
+  {
+    "name": "Redstone",
+    "price": 0.5,
+    "category": "Cristalli",
+    "subcategory": "Misto",
+    "tier": "Novizio"
+  },
+  {
+    "name": "Ametista",
+    "price": 1,
+    "category": "Cristalli",
+    "subcategory": "Misto",
+    "tier": "Avanzato"
+  },
+  {
+    "name": "Core Fragment",
+    "price": 1,
+    "category": "Aberrazioni",
+    "tier": "Tutti"
+  },
+  {
+    "name": "Revival star",
+    "price": 1.5,
+    "category": "Aberrazioni",
+    "tier": "Tutti"
+  },
+  {
+    "name": "Brim Powder",
+    "price": 0.5,
+    "category": "Aberrazioni",
+    "tier": "Novizio"
+  },
+  {
+    "name": "Carne Marcia",
+    "price": 0.5,
+    "category": "Aberrazioni",
+    "tier": "Novizio"
+  },
+  {
+    "name": "Occhio di Ragno",
+    "price": 1,
+    "category": "Aberrazioni",
+    "tier": "Avanzato"
+  },
+  {
+    "name": "Quarzo",
+    "price": 0.5,
+    "category": "Aberrazioni",
+    "tier": "Avanzato"
+  },
+  {
+    "name": "Therium",
+    "price": 0.5,
+    "category": "Aberrazioni",
+    "tier": "Avanzato"
+  },
+  {
+    "name": "Blaze Powder",
+    "price": 1.5,
+    "category": "Aberrazioni",
+    "tier": "Esperto"
+  },
+  {
+    "name": "Membrana",
+    "price": 2,
+    "category": "Aberrazioni",
+    "tier": "Esperto"
+  },
+  {
+    "name": "Prismarine Shard",
+    "price": 2,
+    "category": "Aberrazioni",
+    "tier": "Custode"
+  },
+  {
+    "name": "Slime Ball",
+    "price": 1.5,
+    "category": "Aberrazioni",
+    "tier": "Custode"
+  }
+]
