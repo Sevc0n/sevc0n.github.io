@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calici - Gestione Scadenze Discord</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+        }
+
+        h1 {
+            color: #667eea;
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 1.1em;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+            font-size: 1em;
+        }
+
+        input[type="datetime-local"],
+        input[type="text"],
+        textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1em;
+            transition: border-color 0.3s;
+        }
+
+        input[type="datetime-local"]:focus,
+        input[type="text"]:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+            font-family: inherit;
+        }
+
+        .help-text {
+            font-size: 0.85em;
+            color: #888;
+            margin-top: 5px;
+        }
+
+        .help-text a {
+            color: #667eea;
+            text-decoration: none;
+        }
+
+        .help-text a:hover {
+            text-decoration: underline;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin-top: 10px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .alert {
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .alert.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .reminder-list {
+            margin-top: 30px;
+            padding-top: 30px;
+            border-top: 2px solid #e0e0e0;
+        }
+
+        .reminder-item {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            border-left: 4px solid #667eea;
+        }
+
+        .reminder-item h3 {
+            color: #333;
+            margin-bottom: 8px;
+            font-size: 1.1em;
+        }
+
+        .reminder-item p {
+            color: #666;
+            margin: 5px 0;
+            font-size: 0.9em;
+        }
+
+        .reminder-item .time-remaining {
+            color: #667eea;
+            font-weight: 600;
+            margin-top: 10px;
+        }
+
+        .loading {
+            text-align: center;
+            color: #666;
+            padding: 20px;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 25px;
+            }
+
+            h1 {
+                font-size: 2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>⏰ Calici Reminder</h1>
+        <p class="subtitle">Gestione Scadenze con Notifiche Discord</p>
+
+        <div id="alert" class="alert"></div>
+
+        <form id="reminderForm">
+            <div class="form-group">
+                <label for="userId">👤 ID Utente Discord</label>
+                <input type="text" id="userId" name="userId" required 
+                       placeholder="123456789012345678" 
+                       pattern="[0-9]{17,19}">
+                <p class="help-text">
+                    Come trovare l'ID: Attiva la modalità sviluppatore in Discord (Impostazioni > Avanzate > Modalità sviluppatore), 
+                    poi click destro sull'utente > "Copia ID". 
+                    <a href="https://support.discord.com/hc/it/articles/206346498" target="_blank">Guida completa</a>
+                </p>
+            </div>
+
+            <div class="form-group">
+                <label for="scadenza">📅 Data e Ora di Scadenza</label>
+                <input type="datetime-local" id="scadenza" name="scadenza" required>
+                <p class="help-text">
+                    Il bot invierà notifiche 24 ore e 12 ore prima della scadenza
+                </p>
+            </div>
+
+            <div class="form-group">
+                <label for="messaggio">💬 Messaggio Personalizzato (opzionale)</label>
+                <textarea id="messaggio" name="messaggio" 
+                          placeholder="Aggiungi un messaggio personalizzato per il reminder..."></textarea>
+            </div>
+
+            <button type="submit" class="btn" id="submitBtn">
+                ➕ Crea Reminder
+            </button>
+        </form>
+
+        <div class="reminder-list">
+            <h2 style="margin-bottom: 20px; color: #333;">📋 Reminder Attivi</h2>
+            <div id="remindersContainer">
+                <div class="loading">Caricamento reminder...</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Imposta la data minima a oggi
+        const now = new Date();
+        now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+        document.getElementById('scadenza').min = now.toISOString().slice(0, 16);
+
+        const form = document.getElementById('reminderForm');
+        const alertDiv = document.getElementById('alert');
+        const remindersContainer = document.getElementById('remindersContainer');
+
+        // Carica i reminder esistenti
+        loadReminders();
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const submitBtn = document.getElementById('submitBtn');
+            submitBtn.disabled = true;
+            submitBtn.textContent = '⏳ Creazione in corso...';
+
+            const formData = {
+                userId: document.getElementById('userId').value.trim(),
+                scadenza: document.getElementById('scadenza').value,
+                messaggio: document.getElementById('messaggio').value.trim() || 'Reminder scadenza'
+            };
+
+            try {
+                const response = await fetch('/api/reminders', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    showAlert('success', '✅ Reminder creato con successo! Il bot invierà notifiche 24h e 12h prima della scadenza.');
+                    form.reset();
+                    loadReminders();
+                } else {
+                    showAlert('error', `❌ Errore: ${data.error || 'Errore sconosciuto'}`);
+                }
+            } catch (error) {
+                showAlert('error', `❌ Errore di connessione: ${error.message}`);
+                console.error('Errore:', error);
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = '➕ Crea Reminder';
+            }
+        });
+
+        function showAlert(type, message) {
+            alertDiv.className = `alert ${type}`;
+            alertDiv.textContent = message;
+            alertDiv.style.display = 'block';
+            
+            setTimeout(() => {
+                alertDiv.style.display = 'none';
+            }, 5000);
+        }
+
+        async function loadReminders() {
+            try {
+                const response = await fetch('/api/reminders');
+                const reminders = await response.ok ? await response.json() : [];
+
+                if (reminders.length === 0) {
+                    remindersContainer.innerHTML = '<p style="text-align: center; color: #888; padding: 20px;">Nessun reminder attivo</p>';
+                    return;
+                }
+
+                remindersContainer.innerHTML = reminders.map(reminder => {
+                    const scadenza = new Date(reminder.scadenza);
+                    const now = new Date();
+                    const diff = scadenza - now;
+                    
+                    let timeRemaining = '';
+                    if (diff > 0) {
+                        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+                        const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                        const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                        
+                        if (days > 0) {
+                            timeRemaining = `${days} giorni, ${hours} ore`;
+                        } else if (hours > 0) {
+                            timeRemaining = `${hours} ore, ${minutes} minuti`;
+                        } else {
+                            timeRemaining = `${minutes} minuti`;
+                        }
+                    } else {
+                        timeRemaining = 'SCADUTO';
+                    }
+
+                    return `
+                        <div class="reminder-item">
+                            <h3>👤 Utente: ${reminder.userId}</h3>
+                            <p><strong>Scadenza:</strong> ${scadenza.toLocaleString('it-IT')}</p>
+                            <p><strong>Messaggio:</strong> ${reminder.messaggio}</p>
+                            <p class="time-remaining">⏱️ Tempo rimanente: ${timeRemaining}</p>
+                            <p style="font-size: 0.8em; color: #999; margin-top: 5px;">
+                                Notifiche: ${reminder.notificato24h ? '✅ 24h' : '⏳ 24h'} | ${reminder.notificato12h ? '✅ 12h' : '⏳ 12h'}
+                            </p>
+                        </div>
+                    `;
+                }).join('');
+            } catch (error) {
+                console.error('Errore nel caricamento dei reminder:', error);
+                remindersContainer.innerHTML = '<p style="text-align: center; color: #f00; padding: 20px;">Errore nel caricamento dei reminder</p>';
+            }
+        }
+
+        // Aggiorna i reminder ogni 30 secondi
+        setInterval(loadReminders, 30000);
+    </script>
+</body>
+</html>
+
+

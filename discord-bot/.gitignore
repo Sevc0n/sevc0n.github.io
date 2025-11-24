@@ -1,0 +1,21 @@
+# Dipendenze
+node_modules/
+
+# File di configurazione con token
+.env
+
+# Log
+*.log
+npm-debug.log*
+
+# Sistema operativo
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+
