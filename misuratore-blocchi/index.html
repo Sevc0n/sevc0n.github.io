@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Misuratore Blocchi - Sevcon Tools</title>
+  <link rel="icon" type="image/png" href="../logo.png">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+      min-height: 100vh;
+      padding: 20px;
+      color: #ffffff;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      background: rgba(26, 26, 46, 0.95);
+      backdrop-filter: blur(15px);
+      border-radius: 25px;
+      box-shadow: 0 25px 50px rgba(0, 0, 0, 0.6);
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+    }
+
+    header {
+      background: linear-gradient(135deg, #1a1a2e, #16213e);
+      color: white;
+      padding: 25px;
+      text-align: center;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    h1 {
+      font-size: 2rem;
+      font-weight: 800;
+      margin-bottom: 10px;
+      background: linear-gradient(45deg, #ff6b6b, #ffd93d);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .content {
+      display: grid;
+      grid-template-columns: 1fr 400px;
+      gap: 20px;
+      padding: 20px;
+    }
+
+    .image-section {
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 15px;
+      padding: 20px;
+      position: relative;
+    }
+
+    .controls {
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      border-radius: 15px;
+      padding: 20px;
+      height: fit-content;
+    }
+
+    .control-group {
+      margin-bottom: 20px;
+    }
+
+    .control-group label {
+      display: block;
+      margin-bottom: 8px;
+      color: #10b981;
+      font-weight: 600;
+    }
+
+    .control-group input[type="file"] {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      border-radius: 8px;
+      background: rgba(0, 0, 0, 0.3);
+      color: white;
+      cursor: pointer;
+    }
+
+    .control-group input[type="number"] {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      border-radius: 8px;
+      background: rgba(0, 0, 0, 0.3);
+      color: white;
+      font-size: 1rem;
+    }
+
+    .control-group button {
+      width: 100%;
+      padding: 12px;
+      background: rgba(16, 185, 129, 0.2);
+      border: 1px solid rgba(16, 185, 129, 0.5);
+      border-radius: 8px;
+      color: #10b981;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 1rem;
+    }
+
+    .control-group button:hover {
+      background: rgba(16, 185, 129, 0.3);
+      transform: translateY(-2px);
+    }
+
+    .control-group button:active {
+      transform: translateY(0);
+    }
+
+    .canvas-container {
+      position: relative;
+      display: inline-block;
+      border: 2px solid rgba(255, 255, 255, 0.2);
+      border-radius: 10px;
+      overflow: hidden;
+      background: #000;
+      max-width: 100%;
+    }
+
+    #imageCanvas {
+      display: block;
+      max-width: 100%;
+      height: auto;
+      cursor: crosshair;
+    }
+
+    .measurements {
+      background: rgba(50, 130, 184, 0.1);
+      border: 1px solid rgba(50, 130, 184, 0.3);
+      border-radius: 15px;
+      padding: 20px;
+      margin-top: 20px;
+      max-height: 400px;
+      overflow-y: auto;
+    }
+
+    .measurement-item {
+      background: rgba(0, 0, 0, 0.3);
+      padding: 12px;
+      margin-bottom: 10px;
+      border-radius: 8px;
+      border-left: 3px solid #3282b8;
+    }
+
+    .measurement-item h4 {
+      color: #3282b8;
+      margin-bottom: 5px;
+      font-size: 0.9rem;
+    }
+
+    .measurement-item p {
+      color: #bbe1fa;
+      font-size: 0.85rem;
+      margin: 3px 0;
+    }
+
+    .btn-remove {
+      background: rgba(239, 68, 68, 0.2);
+      border: 1px solid rgba(239, 68, 68, 0.5);
+      color: #ef4444;
+      padding: 5px 10px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 0.8rem;
+      margin-top: 5px;
+    }
+
+    .btn-remove:hover {
+      background: rgba(239, 68, 68, 0.3);
+    }
+
+    .info-box {
+      background: rgba(255, 193, 7, 0.1);
+      border: 1px solid rgba(255, 193, 7, 0.3);
+      border-radius: 10px;
+      padding: 15px;
+      margin-bottom: 20px;
+      color: #ffc107;
+    }
+
+    .info-box h3 {
+      margin-bottom: 10px;
+      font-size: 1rem;
+    }
+
+    .info-box ol {
+      margin-left: 20px;
+      font-size: 0.9rem;
+      line-height: 1.6;
+    }
+
+    .info-box li {
+      margin-bottom: 5px;
+    }
+
+    @media (max-width: 1024px) {
+      .content {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>📏 Misuratore Blocchi</h1>
+      <p>Carica un'immagine e misura gli elementi usando il quadrato arancione come riferimento</p>
+    </header>
+
+    <div class="content">
+      <div class="image-section">
+        <div class="canvas-container" id="canvasContainer">
+          <canvas id="imageCanvas"></canvas>
+        </div>
+      </div>
+
+      <div class="controls">
+        <div class="info-box">
+          <h3>📋 Istruzioni</h3>
+          <ol>
+            <li>Carica l'immagine</li>
+            <li>Imposta la dimensione del quadrato arancione (default: 32x32)</li>
+            <li>Clicca e trascina sul quadrato arancione per calibrare</li>
+            <li>Clicca e trascina sugli altri elementi per misurarli</li>
+            <li>Le misure verranno calcolate automaticamente in blocchi</li>
+          </ol>
+        </div>
+
+        <div class="control-group">
+          <label for="imageInput">📷 Carica Immagine</label>
+          <input type="file" id="imageInput" accept="image/*">
+        </div>
+
+        <div class="control-group">
+          <label for="referenceSize">📐 Dimensione Riferimento (blocchi)</label>
+          <input type="number" id="referenceSize" value="32" min="1">
+        </div>
+
+        <div class="control-group">
+          <button id="calibrateBtn">🎯 Calibra (disegna sul quadrato arancione)</button>
+        </div>
+
+        <div class="control-group">
+          <button id="measureBtn">📏 Misura (disegna sugli elementi)</button>
+        </div>
+
+        <div class="control-group">
+          <button id="clearBtn">🗑️ Cancella Tutto</button>
+        </div>
+
+        <div class="measurements" id="measurements">
+          <h3 style="color: #3282b8; margin-bottom: 15px;">📊 Misure</h3>
+          <div id="measurementsList"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const canvas = document.getElementById('imageCanvas');
+    const ctx = canvas.getContext('2d');
+    const imageInput = document.getElementById('imageInput');
+    const referenceSizeInput = document.getElementById('referenceSize');
+    const calibrateBtn = document.getElementById('calibrateBtn');
+    const measureBtn = document.getElementById('measureBtn');
+    const clearBtn = document.getElementById('clearBtn');
+    const measurementsList = document.getElementById('measurementsList');
+
+    let image = null;
+    let isCalibrating = false;
+    let isMeasuring = false;
+    let startX = 0;
+    let startY = 0;
+    let isDrawing = false;
+    let referenceRect = null; // {x, y, width, height} del quadrato di riferimento
+    let measurements = [];
+    let currentRect = null;
+
+    // Carica immagine
+    imageInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          const img = new Image();
+          img.onload = () => {
+            image = img;
+            canvas.width = img.width;
+            canvas.height = img.height;
+            ctx.drawImage(img, 0, 0);
+          };
+          img.src = event.target.result;
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+
+    // Calibrazione
+    calibrateBtn.addEventListener('click', () => {
+      isCalibrating = true;
+      isMeasuring = false;
+      calibrateBtn.style.background = 'rgba(16, 185, 129, 0.4)';
+      measureBtn.style.background = 'rgba(16, 185, 129, 0.2)';
+    });
+
+    // Misurazione
+    measureBtn.addEventListener('click', () => {
+      if (!referenceRect) {
+        alert('Prima calibra il quadrato arancione! Clicca su "Calibra" e disegna un rettangolo sul quadrato arancione.');
+        return;
+      }
+      isMeasuring = true;
+      isCalibrating = false;
+      measureBtn.style.background = 'rgba(16, 185, 129, 0.4)';
+      calibrateBtn.style.background = 'rgba(16, 185, 129, 0.2)';
+    });
+
+    // Cancella tutto
+    clearBtn.addEventListener('click', () => {
+      if (image) {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(image, 0, 0);
+      }
+      referenceRect = null;
+      measurements = [];
+      measurementsList.innerHTML = '';
+      isCalibrating = false;
+      isMeasuring = false;
+      calibrateBtn.style.background = 'rgba(16, 185, 129, 0.2)';
+      measureBtn.style.background = 'rgba(16, 185, 129, 0.2)';
+    });
+
+    function redrawCanvas() {
+      if (!image) return;
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.drawImage(image, 0, 0);
+      
+      // Disegna tutti i rettangoli esistenti
+      if (referenceRect) {
+        drawReferenceRect();
+      }
+      measurements.forEach(m => drawMeasurementRect(m));
+    }
+
+    // Eventi mouse
+    canvas.addEventListener('mousedown', (e) => {
+      if (!image) return;
+      
+      const rect = canvas.getBoundingClientRect();
+      const scaleX = canvas.width / rect.width;
+      const scaleY = canvas.height / rect.height;
+      
+      startX = (e.clientX - rect.left) * scaleX;
+      startY = (e.clientY - rect.top) * scaleY;
+      isDrawing = true;
+    });
+
+    canvas.addEventListener('mousemove', (e) => {
+      if (!isDrawing || !image) return;
+      
+      const rect = canvas.getBoundingClientRect();
+      const scaleX = canvas.width / rect.width;
+      const scaleY = canvas.height / rect.height;
+      
+      const currentX = (e.clientX - rect.left) * scaleX;
+      const currentY = (e.clientY - rect.top) * scaleY;
+      
+      // Redisegna
+      redrawCanvas();
+      
+      // Disegna rettangolo corrente
+      const width = Math.abs(currentX - startX);
+      const height = Math.abs(currentY - startY);
+      const x = Math.min(startX, currentX);
+      const y = Math.min(startY, currentY);
+      
+      if (isCalibrating) {
+        ctx.strokeStyle = '#10b981';
+        ctx.lineWidth = 3;
+        ctx.setLineDash([5, 5]);
+        ctx.strokeRect(x, y, width, height);
+        ctx.setLineDash([]);
+      } else if (isMeasuring) {
+        ctx.strokeStyle = '#3282b8';
+        ctx.lineWidth = 2;
+        ctx.strokeRect(x, y, width, height);
+        
+        // Mostra anteprima misura
+        if (referenceRect) {
+          const blocksWidth = (width / referenceRect.width) * referenceSizeInput.value;
+          const blocksHeight = (height / referenceRect.height) * referenceSizeInput.value;
+          ctx.fillStyle = '#3282b8';
+          ctx.font = '14px Arial';
+          ctx.fillText(
+            `${blocksWidth.toFixed(2)}×${blocksHeight.toFixed(2)} blocchi`,
+            x + 5,
+            y - 5
+          );
+        }
+      }
+    });
+
+    canvas.addEventListener('mouseup', (e) => {
+      if (!isDrawing || !image) return;
+      
+      const rect = canvas.getBoundingClientRect();
+      const scaleX = canvas.width / rect.width;
+      const scaleY = canvas.height / rect.height;
+      
+      const endX = (e.clientX - rect.left) * scaleX;
+      const endY = (e.clientY - rect.top) * scaleY;
+      
+      const width = Math.abs(endX - startX);
+      const height = Math.abs(endY - startY);
+      const x = Math.min(startX, endX);
+      const y = Math.min(startY, endY);
+      
+      if (isCalibrating) {
+        // Salva riferimento
+        referenceRect = { x, y, width, height };
+        drawReferenceRect();
+        alert(`Calibrazione completata! Rettangolo: ${width.toFixed(1)}x${height.toFixed(1)} pixel`);
+      } else if (isMeasuring && referenceRect) {
+        // Calcola misure in blocchi
+        const blocksWidth = (width / referenceRect.width) * referenceSizeInput.value;
+        const blocksHeight = (height / referenceRect.height) * referenceSizeInput.value;
+        
+        const measurement = {
+          id: Date.now(),
+          x, y, width, height,
+          blocksWidth: blocksWidth.toFixed(2),
+          blocksHeight: blocksHeight.toFixed(2)
+        };
+        
+        measurements.push(measurement);
+        drawMeasurementRect(measurement);
+        addMeasurementToList(measurement);
+      }
+      
+      isDrawing = false;
+    });
+
+    function drawReferenceRect() {
+      if (!referenceRect) return;
+      ctx.strokeStyle = '#10b981';
+      ctx.lineWidth = 3;
+      ctx.setLineDash([5, 5]);
+      ctx.strokeRect(referenceRect.x, referenceRect.y, referenceRect.width, referenceRect.height);
+      ctx.setLineDash([]);
+      
+      // Aggiungi etichetta
+      ctx.fillStyle = '#10b981';
+      ctx.font = 'bold 16px Arial';
+      ctx.fillText(
+        `RIFERIMENTO: ${referenceSizeInput.value}×${referenceSizeInput.value} blocchi`,
+        referenceRect.x + 5,
+        referenceRect.y - 5
+      );
+    }
+
+    function drawMeasurementRect(measurement) {
+      ctx.strokeStyle = '#3282b8';
+      ctx.lineWidth = 2;
+      ctx.strokeRect(measurement.x, measurement.y, measurement.width, measurement.height);
+      
+      // Aggiungi etichetta
+      ctx.fillStyle = '#3282b8';
+      ctx.font = '14px Arial';
+      ctx.fillText(
+        `${measurement.blocksWidth}×${measurement.blocksHeight} blocchi`,
+        measurement.x + 5,
+        measurement.y - 5
+      );
+    }
+
+    function addMeasurementToList(measurement) {
+      const item = document.createElement('div');
+      item.className = 'measurement-item';
+      item.innerHTML = `
+        <h4>Misura #${measurements.length}</h4>
+        <p><strong>Larghezza:</strong> ${measurement.blocksWidth} blocchi</p>
+        <p><strong>Altezza:</strong> ${measurement.blocksHeight} blocchi</p>
+        <p><strong>Pixel:</strong> ${measurement.width.toFixed(1)}×${measurement.height.toFixed(1)}</p>
+        <button class="btn-remove" onclick="removeMeasurement(${measurement.id})">Rimuovi</button>
+      `;
+      measurementsList.appendChild(item);
+    }
+
+    function removeMeasurement(id) {
+      measurements = measurements.filter(m => m.id !== id);
+      // Redisegna tutto
+      redrawCanvas();
+      
+      // Aggiorna lista
+      measurementsList.innerHTML = '';
+      measurements.forEach((m, index) => {
+        const item = document.createElement('div');
+        item.className = 'measurement-item';
+        item.innerHTML = `
+          <h4>Misura #${index + 1}</h4>
+          <p><strong>Larghezza:</strong> ${m.blocksWidth} blocchi</p>
+          <p><strong>Altezza:</strong> ${m.blocksHeight} blocchi</p>
+          <p><strong>Pixel:</strong> ${m.width.toFixed(1)}×${m.height.toFixed(1)}</p>
+          <button class="btn-remove" onclick="removeMeasurement(${m.id})">Rimuovi</button>
+        `;
+        measurementsList.appendChild(item);
+      });
+    }
+
+    // Esponi funzione globalmente
+    window.removeMeasurement = removeMeasurement;
+  </script>
+</body>
+</html>
+
