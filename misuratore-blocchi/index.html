@@ -69,6 +69,8 @@
       border-radius: 15px;
       padding: 20px;
       height: fit-content;
+      max-height: calc(100vh - 200px);
+      overflow-y: auto;
     }
 
     .control-group {
@@ -92,7 +94,8 @@
       cursor: pointer;
     }
 
-    .control-group input[type="number"] {
+    .control-group input[type="number"],
+    .control-group input[type="range"] {
       width: 100%;
       padding: 10px;
       border: 1px solid rgba(16, 185, 129, 0.3);
@@ -100,6 +103,17 @@
       background: rgba(0, 0, 0, 0.3);
       color: white;
       font-size: 1rem;
+    }
+
+    .control-group input[type="range"] {
+      padding: 0;
+    }
+
+    .control-group input[type="checkbox"] {
+      width: 20px;
+      height: 20px;
+      cursor: pointer;
+      margin-right: 10px;
     }
 
     .control-group button {
@@ -124,6 +138,10 @@
       transform: translateY(0);
     }
 
+    .control-group button.active {
+      background: rgba(16, 185, 129, 0.4);
+    }
+
     .canvas-container {
       position: relative;
       display: inline-block;
@@ -139,6 +157,22 @@
       max-width: 100%;
       height: auto;
       cursor: crosshair;
+    }
+
+    .point-handle {
+      position: absolute;
+      width: 12px;
+      height: 12px;
+      background: #ff6b6b;
+      border: 2px solid white;
+      border-radius: 50%;
+      cursor: move;
+      transform: translate(-50%, -50%);
+      z-index: 10;
+    }
+
+    .point-handle:hover {
+      transform: translate(-50%, -50%) scale(1.5);
     }
 
     .measurements {
@@ -210,6 +244,19 @@
       margin-bottom: 5px;
     }
 
+    .checkbox-group {
+      display: flex;
+      align-items: center;
+      margin-top: 10px;
+    }
+
+    .range-value {
+      display: inline-block;
+      margin-left: 10px;
+      color: #10b981;
+      font-weight: 600;
+    }
+
     @media (max-width: 1024px) {
       .content {
         grid-template-columns: 1fr;
@@ -237,9 +284,9 @@
           <ol>
             <li>Carica l'immagine</li>
             <li>Imposta la dimensione del quadrato arancione (default: 32x32)</li>
-            <li>Clicca e trascina sul quadrato arancione per calibrare</li>
-            <li>Clicca e trascina sugli altri elementi per misurarli</li>
-            <li>Le misure verranno calcolate automaticamente in blocchi</li>
+            <li><strong>Calibra:</strong> Clicca 4 punti sugli angoli del quadrato arancione</li>
+            <li><strong>Misura:</strong> Clicca 4 punti sugli angoli dell'elemento da misurare</li>
+            <li>Attiva la griglia per vedere le linee di riferimento</li>
           </ol>
         </div>
 
@@ -254,11 +301,25 @@
         </div>
 
         <div class="control-group">
-          <button id="calibrateBtn">🎯 Calibra (disegna sul quadrato arancione)</button>
+          <button id="calibrateBtn">🎯 Calibra (4 punti sul quadrato arancione)</button>
         </div>
 
         <div class="control-group">
-          <button id="measureBtn">📏 Misura (disegna sugli elementi)</button>
+          <button id="measureBtn">📏 Misura (4 punti sull'elemento)</button>
+        </div>
+
+        <div class="control-group">
+          <label>
+            <div class="checkbox-group">
+              <input type="checkbox" id="showGrid">
+              <span>Mostra Griglia di Riferimento</span>
+            </div>
+          </label>
+        </div>
+
+        <div class="control-group" id="gridControls" style="display: none;">
+          <label for="gridDensity">Densità Griglia: <span class="range-value" id="gridDensityValue">5</span></label>
+          <input type="range" id="gridDensity" min="1" max="20" value="5">
         </div>
 
         <div class="control-group">
@@ -282,16 +343,18 @@
     const measureBtn = document.getElementById('measureBtn');
     const clearBtn = document.getElementById('clearBtn');
     const measurementsList = document.getElementById('measurementsList');
+    const showGrid = document.getElementById('showGrid');
+    const gridDensity = document.getElementById('gridDensity');
+    const gridDensityValue = document.getElementById('gridDensityValue');
+    const gridControls = document.getElementById('gridControls');
 
     let image = null;
     let isCalibrating = false;
     let isMeasuring = false;
-    let startX = 0;
-    let startY = 0;
-    let isDrawing = false;
-    let referenceRect = null; // {x, y, width, height} del quadrato di riferimento
+    let currentPoints = [];
+    let referenceQuad = null; // {points: [{x,y}, ...], size: number}
     let measurements = [];
-    let currentRect = null;
+    let showGridEnabled = false;
 
     // Carica immagine
     imageInput.addEventListener('change', (e) => {
@@ -304,7 +367,7 @@
             image = img;
             canvas.width = img.width;
             canvas.height = img.height;
-            ctx.drawImage(img, 0, 0);
+            redrawCanvas();
           };
           img.src = event.target.result;
         };
@@ -316,178 +379,320 @@
     calibrateBtn.addEventListener('click', () => {
       isCalibrating = true;
       isMeasuring = false;
-      calibrateBtn.style.background = 'rgba(16, 185, 129, 0.4)';
-      measureBtn.style.background = 'rgba(16, 185, 129, 0.2)';
+      currentPoints = [];
+      calibrateBtn.classList.add('active');
+      measureBtn.classList.remove('active');
+      canvas.style.cursor = 'crosshair';
     });
 
     // Misurazione
     measureBtn.addEventListener('click', () => {
-      if (!referenceRect) {
-        alert('Prima calibra il quadrato arancione! Clicca su "Calibra" e disegna un rettangolo sul quadrato arancione.');
+      if (!referenceQuad) {
+        alert('Prima calibra il quadrato arancione! Clicca su "Calibra" e poi clicca 4 punti sugli angoli del quadrato.');
         return;
       }
       isMeasuring = true;
       isCalibrating = false;
-      measureBtn.style.background = 'rgba(16, 185, 129, 0.4)';
-      calibrateBtn.style.background = 'rgba(16, 185, 129, 0.2)';
+      currentPoints = [];
+      measureBtn.classList.add('active');
+      calibrateBtn.classList.remove('active');
+      canvas.style.cursor = 'crosshair';
+    });
+
+    // Griglia
+    showGrid.addEventListener('change', () => {
+      showGridEnabled = showGrid.checked;
+      gridControls.style.display = showGridEnabled ? 'block' : 'none';
+      redrawCanvas();
+    });
+
+    gridDensity.addEventListener('input', (e) => {
+      gridDensityValue.textContent = e.target.value;
+      redrawCanvas();
     });
 
     // Cancella tutto
     clearBtn.addEventListener('click', () => {
-      if (image) {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        ctx.drawImage(image, 0, 0);
-      }
-      referenceRect = null;
+      referenceQuad = null;
       measurements = [];
+      currentPoints = [];
       measurementsList.innerHTML = '';
       isCalibrating = false;
       isMeasuring = false;
-      calibrateBtn.style.background = 'rgba(16, 185, 129, 0.2)';
-      measureBtn.style.background = 'rgba(16, 185, 129, 0.2)';
+      calibrateBtn.classList.remove('active');
+      measureBtn.classList.remove('active');
+      canvas.style.cursor = 'default';
+      redrawCanvas();
     });
 
+    // Click sul canvas
+    canvas.addEventListener('click', (e) => {
+      if (!image) return;
+      
+      const rect = canvas.getBoundingClientRect();
+      const scaleX = canvas.width / rect.width;
+      const scaleY = canvas.height / rect.height;
+      
+      const x = (e.clientX - rect.left) * scaleX;
+      const y = (e.clientY - rect.top) * scaleY;
+      
+      if (isCalibrating) {
+        currentPoints.push({x, y});
+        if (currentPoints.length === 4) {
+          referenceQuad = {
+            points: [...currentPoints],
+            size: parseFloat(referenceSizeInput.value)
+          };
+          isCalibrating = false;
+          calibrateBtn.classList.remove('active');
+          alert('Calibrazione completata! Ora puoi misurare gli elementi.');
+          redrawCanvas();
+        } else {
+          redrawCanvas();
+        }
+      } else if (isMeasuring) {
+        currentPoints.push({x, y});
+        if (currentPoints.length === 4) {
+          const measurement = calculateMeasurement(currentPoints);
+          measurements.push(measurement);
+          addMeasurementToList(measurement);
+          currentPoints = [];
+          isMeasuring = false;
+          measureBtn.classList.remove('active');
+          redrawCanvas();
+        } else {
+          redrawCanvas();
+        }
+      }
+    });
+
+    // Disegna tutto
     function redrawCanvas() {
       if (!image) return;
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       ctx.drawImage(image, 0, 0);
       
-      // Disegna tutti i rettangoli esistenti
-      if (referenceRect) {
-        drawReferenceRect();
+      // Disegna griglia se abilitata
+      if (showGridEnabled && referenceQuad) {
+        drawGrid();
       }
-      measurements.forEach(m => drawMeasurementRect(m));
-    }
-
-    // Eventi mouse
-    canvas.addEventListener('mousedown', (e) => {
-      if (!image) return;
       
-      const rect = canvas.getBoundingClientRect();
-      const scaleX = canvas.width / rect.width;
-      const scaleY = canvas.height / rect.height;
+      // Disegna riferimento
+      if (referenceQuad) {
+        drawQuad(referenceQuad.points, '#10b981', 3, true);
+        const center = getQuadCenter(referenceQuad.points);
+        ctx.fillStyle = '#10b981';
+        ctx.font = 'bold 16px Arial';
+        ctx.textAlign = 'center';
+        ctx.fillText(
+          `RIFERIMENTO: ${referenceQuad.size}×${referenceQuad.size} blocchi`,
+          center.x,
+          center.y - 10
+        );
+        ctx.textAlign = 'left';
+      }
       
-      startX = (e.clientX - rect.left) * scaleX;
-      startY = (e.clientY - rect.top) * scaleY;
-      isDrawing = true;
-    });
-
-    canvas.addEventListener('mousemove', (e) => {
-      if (!isDrawing || !image) return;
+      // Disegna misure
+      measurements.forEach(m => {
+        drawQuad(m.points, '#3282b8', 2, false);
+        const center = getQuadCenter(m.points);
+        ctx.fillStyle = '#3282b8';
+        ctx.font = '14px Arial';
+        ctx.textAlign = 'center';
+        ctx.fillText(
+          `${m.blocksWidth}×${m.blocksHeight} blocchi`,
+          center.x,
+          center.y
+        );
+        ctx.textAlign = 'left';
+      });
       
-      const rect = canvas.getBoundingClientRect();
-      const scaleX = canvas.width / rect.width;
-      const scaleY = canvas.height / rect.height;
-      
-      const currentX = (e.clientX - rect.left) * scaleX;
-      const currentY = (e.clientY - rect.top) * scaleY;
-      
-      // Redisegna
-      redrawCanvas();
-      
-      // Disegna rettangolo corrente
-      const width = Math.abs(currentX - startX);
-      const height = Math.abs(currentY - startY);
-      const x = Math.min(startX, currentX);
-      const y = Math.min(startY, currentY);
-      
-      if (isCalibrating) {
-        ctx.strokeStyle = '#10b981';
-        ctx.lineWidth = 3;
-        ctx.setLineDash([5, 5]);
-        ctx.strokeRect(x, y, width, height);
-        ctx.setLineDash([]);
-      } else if (isMeasuring) {
-        ctx.strokeStyle = '#3282b8';
-        ctx.lineWidth = 2;
-        ctx.strokeRect(x, y, width, height);
+      // Disegna punti correnti
+      if (isCalibrating || isMeasuring) {
+        currentPoints.forEach((point, index) => {
+          ctx.fillStyle = isCalibrating ? '#10b981' : '#3282b8';
+          ctx.beginPath();
+          ctx.arc(point.x, point.y, 8, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.strokeStyle = 'white';
+          ctx.lineWidth = 2;
+          ctx.stroke();
+          
+          // Numero del punto
+          ctx.fillStyle = 'white';
+          ctx.font = 'bold 12px Arial';
+          ctx.textAlign = 'center';
+          ctx.fillText((index + 1).toString(), point.x, point.y + 4);
+          ctx.textAlign = 'left';
+        });
         
-        // Mostra anteprima misura
-        if (referenceRect) {
-          const blocksWidth = (width / referenceRect.width) * referenceSizeInput.value;
-          const blocksHeight = (height / referenceRect.height) * referenceSizeInput.value;
-          ctx.fillStyle = '#3282b8';
-          ctx.font = '14px Arial';
-          ctx.fillText(
-            `${blocksWidth.toFixed(2)}×${blocksHeight.toFixed(2)} blocchi`,
-            x + 5,
-            y - 5
-          );
+        // Disegna linee tra punti
+        if (currentPoints.length > 1) {
+          ctx.strokeStyle = isCalibrating ? '#10b981' : '#3282b8';
+          ctx.lineWidth = 2;
+          ctx.setLineDash([5, 5]);
+          ctx.beginPath();
+          ctx.moveTo(currentPoints[0].x, currentPoints[0].y);
+          for (let i = 1; i < currentPoints.length; i++) {
+            ctx.lineTo(currentPoints[i].x, currentPoints[i].y);
+          }
+          ctx.stroke();
+          ctx.setLineDash([]);
         }
       }
-    });
-
-    canvas.addEventListener('mouseup', (e) => {
-      if (!isDrawing || !image) return;
-      
-      const rect = canvas.getBoundingClientRect();
-      const scaleX = canvas.width / rect.width;
-      const scaleY = canvas.height / rect.height;
-      
-      const endX = (e.clientX - rect.left) * scaleX;
-      const endY = (e.clientY - rect.top) * scaleY;
-      
-      const width = Math.abs(endX - startX);
-      const height = Math.abs(endY - startY);
-      const x = Math.min(startX, endX);
-      const y = Math.min(startY, endY);
-      
-      if (isCalibrating) {
-        // Salva riferimento
-        referenceRect = { x, y, width, height };
-        drawReferenceRect();
-        alert(`Calibrazione completata! Rettangolo: ${width.toFixed(1)}x${height.toFixed(1)} pixel`);
-      } else if (isMeasuring && referenceRect) {
-        // Calcola misure in blocchi
-        const blocksWidth = (width / referenceRect.width) * referenceSizeInput.value;
-        const blocksHeight = (height / referenceRect.height) * referenceSizeInput.value;
-        
-        const measurement = {
-          id: Date.now(),
-          x, y, width, height,
-          blocksWidth: blocksWidth.toFixed(2),
-          blocksHeight: blocksHeight.toFixed(2)
-        };
-        
-        measurements.push(measurement);
-        drawMeasurementRect(measurement);
-        addMeasurementToList(measurement);
-      }
-      
-      isDrawing = false;
-    });
-
-    function drawReferenceRect() {
-      if (!referenceRect) return;
-      ctx.strokeStyle = '#10b981';
-      ctx.lineWidth = 3;
-      ctx.setLineDash([5, 5]);
-      ctx.strokeRect(referenceRect.x, referenceRect.y, referenceRect.width, referenceRect.height);
-      ctx.setLineDash([]);
-      
-      // Aggiungi etichetta
-      ctx.fillStyle = '#10b981';
-      ctx.font = 'bold 16px Arial';
-      ctx.fillText(
-        `RIFERIMENTO: ${referenceSizeInput.value}×${referenceSizeInput.value} blocchi`,
-        referenceRect.x + 5,
-        referenceRect.y - 5
-      );
     }
 
-    function drawMeasurementRect(measurement) {
-      ctx.strokeStyle = '#3282b8';
-      ctx.lineWidth = 2;
-      ctx.strokeRect(measurement.x, measurement.y, measurement.width, measurement.height);
+    function drawQuad(points, color, lineWidth, dashed) {
+      if (points.length !== 4) return;
       
-      // Aggiungi etichetta
-      ctx.fillStyle = '#3282b8';
-      ctx.font = '14px Arial';
-      ctx.fillText(
-        `${measurement.blocksWidth}×${measurement.blocksHeight} blocchi`,
-        measurement.x + 5,
-        measurement.y - 5
-      );
+      ctx.strokeStyle = color;
+      ctx.lineWidth = lineWidth;
+      if (dashed) {
+        ctx.setLineDash([5, 5]);
+      } else {
+        ctx.setLineDash([]);
+      }
+      
+      ctx.beginPath();
+      ctx.moveTo(points[0].x, points[0].y);
+      for (let i = 1; i < 4; i++) {
+        ctx.lineTo(points[i].x, points[i].y);
+      }
+      ctx.closePath();
+      ctx.stroke();
+      ctx.setLineDash([]);
+    }
+
+    function getQuadCenter(points) {
+      const x = points.reduce((sum, p) => sum + p.x, 0) / points.length;
+      const y = points.reduce((sum, p) => sum + p.y, 0) / points.length;
+      return {x, y};
+    }
+
+    function calculateMeasurement(points) {
+      if (!referenceQuad || points.length !== 4) return null;
+      
+      // Calcola l'area del quadrilatero di riferimento
+      const refArea = calculateQuadArea(referenceQuad.points);
+      const refBlocks = referenceQuad.size * referenceQuad.size;
+      const pixelsPerBlock = Math.sqrt(refArea / refBlocks);
+      
+      // Calcola l'area del quadrilatero misurato
+      const measArea = calculateQuadArea(points);
+      const measBlocks = measArea / (pixelsPerBlock * pixelsPerBlock);
+      
+      // Calcola dimensioni approssimate (media delle distanze)
+      const refWidth = getAverageWidth(referenceQuad.points);
+      const refHeight = getAverageHeight(referenceQuad.points);
+      const measWidth = getAverageWidth(points);
+      const measHeight = getAverageHeight(points);
+      
+      const blocksWidth = (measWidth / refWidth) * referenceQuad.size;
+      const blocksHeight = (measHeight / refHeight) * referenceQuad.size;
+      
+      return {
+        id: Date.now(),
+        points: [...points],
+        blocksWidth: blocksWidth.toFixed(2),
+        blocksHeight: blocksHeight.toFixed(2),
+        area: measBlocks.toFixed(2)
+      };
+    }
+
+    function calculateQuadArea(points) {
+      // Formula di Shoelace per l'area di un poligono
+      let area = 0;
+      for (let i = 0; i < points.length; i++) {
+        const j = (i + 1) % points.length;
+        area += points[i].x * points[j].y;
+        area -= points[j].x * points[i].y;
+      }
+      return Math.abs(area) / 2;
+    }
+
+    function getAverageWidth(points) {
+      const dist1 = distance(points[0], points[1]);
+      const dist2 = distance(points[2], points[3]);
+      return (dist1 + dist2) / 2;
+    }
+
+    function getAverageHeight(points) {
+      const dist1 = distance(points[0], points[3]);
+      const dist2 = distance(points[1], points[2]);
+      return (dist1 + dist2) / 2;
+    }
+
+    function distance(p1, p2) {
+      return Math.sqrt((p2.x - p1.x) ** 2 + (p2.y - p1.y) ** 2);
+    }
+
+    function drawGrid() {
+      if (!referenceQuad) return;
+      
+      const density = parseInt(gridDensity.value);
+      const blocksPerLine = referenceQuad.size / density;
+      
+      // Calcola le trasformazioni per mappare il riferimento distorto
+      const refPoints = referenceQuad.points;
+      
+      ctx.strokeStyle = 'rgba(255, 193, 7, 0.3)';
+      ctx.lineWidth = 1;
+      ctx.setLineDash([2, 2]);
+      
+      // Disegna linee orizzontali
+      for (let i = 1; i < density; i++) {
+        const t = i / density;
+        drawGridLine(
+          interpolatePoint(refPoints[0], refPoints[3], t),
+          interpolatePoint(refPoints[1], refPoints[2], t)
+        );
+      }
+      
+      // Disegna linee verticali
+      for (let i = 1; i < density; i++) {
+        const t = i / density;
+        drawGridLine(
+          interpolatePoint(refPoints[0], refPoints[1], t),
+          interpolatePoint(refPoints[3], refPoints[2], t)
+        );
+      }
+      
+      ctx.setLineDash([]);
+      
+      // Disegna etichette sui bordi
+      ctx.fillStyle = 'rgba(255, 193, 7, 0.8)';
+      ctx.font = '10px Arial';
+      ctx.textAlign = 'center';
+      
+      // Etichette orizzontali (sinistra)
+      for (let i = 0; i <= density; i++) {
+        const t = i / density;
+        const point = interpolatePoint(refPoints[0], refPoints[3], t);
+        ctx.fillText((i * blocksPerLine).toString(), point.x - 15, point.y);
+      }
+      
+      // Etichette verticali (alto)
+      for (let i = 0; i <= density; i++) {
+        const t = i / density;
+        const point = interpolatePoint(refPoints[0], refPoints[1], t);
+        ctx.fillText((i * blocksPerLine).toString(), point.x, point.y - 5);
+      }
+      
+      ctx.textAlign = 'left';
+    }
+
+    function drawGridLine(p1, p2) {
+      ctx.beginPath();
+      ctx.moveTo(p1.x, p1.y);
+      ctx.lineTo(p2.x, p2.y);
+      ctx.stroke();
+    }
+
+    function interpolatePoint(p1, p2, t) {
+      return {
+        x: p1.x + (p2.x - p1.x) * t,
+        y: p1.y + (p2.y - p1.y) * t
+      };
     }
 
     function addMeasurementToList(measurement) {
@@ -497,7 +702,7 @@
         <h4>Misura #${measurements.length}</h4>
         <p><strong>Larghezza:</strong> ${measurement.blocksWidth} blocchi</p>
         <p><strong>Altezza:</strong> ${measurement.blocksHeight} blocchi</p>
-        <p><strong>Pixel:</strong> ${measurement.width.toFixed(1)}×${measurement.height.toFixed(1)}</p>
+        <p><strong>Area:</strong> ${measurement.area} blocchi²</p>
         <button class="btn-remove" onclick="removeMeasurement(${measurement.id})">Rimuovi</button>
       `;
       measurementsList.appendChild(item);
@@ -505,7 +710,6 @@
 
     function removeMeasurement(id) {
       measurements = measurements.filter(m => m.id !== id);
-      // Redisegna tutto
       redrawCanvas();
       
       // Aggiorna lista
@@ -517,7 +721,7 @@
           <h4>Misura #${index + 1}</h4>
           <p><strong>Larghezza:</strong> ${m.blocksWidth} blocchi</p>
           <p><strong>Altezza:</strong> ${m.blocksHeight} blocchi</p>
-          <p><strong>Pixel:</strong> ${m.width.toFixed(1)}×${m.height.toFixed(1)}</p>
+          <p><strong>Area:</strong> ${m.area} blocchi²</p>
           <button class="btn-remove" onclick="removeMeasurement(${m.id})">Rimuovi</button>
         `;
         measurementsList.appendChild(item);
@@ -529,4 +733,3 @@
   </script>
 </body>
 </html>
-
