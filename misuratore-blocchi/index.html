@@ -318,8 +318,8 @@
         </div>
 
         <div class="control-group" id="gridControls" style="display: none;">
-          <label for="gridDensity">Densità Griglia: <span class="range-value" id="gridDensityValue">5</span></label>
-          <input type="range" id="gridDensity" min="1" max="20" value="5">
+          <label for="gridDensity">Densità Griglia: <span class="range-value" id="gridDensityValue">32</span></label>
+          <input type="range" id="gridDensity" min="1" max="32" value="32">
         </div>
 
         <div class="control-group">
@@ -355,6 +355,24 @@
     let referenceQuad = null; // {points: [{x,y}, ...], size: number}
     let measurements = [];
     let showGridEnabled = false;
+
+    // Inizializza il max della griglia con il valore di riferimento iniziale
+    gridDensity.max = parseInt(referenceSizeInput.value) || 32;
+    gridDensity.value = parseInt(referenceSizeInput.value) || 32;
+    gridDensityValue.textContent = referenceSizeInput.value || 32;
+
+    // Aggiorna max della griglia quando cambia la dimensione di riferimento
+    referenceSizeInput.addEventListener('input', (e) => {
+      const size = parseInt(e.target.value) || 32;
+      gridDensity.max = size;
+      if (parseInt(gridDensity.value) > size) {
+        gridDensity.value = size;
+        gridDensityValue.textContent = size;
+      }
+      if (showGridEnabled) {
+        redrawCanvas();
+      }
+    });
 
     // Carica immagine
     imageInput.addEventListener('change', (e) => {
@@ -439,10 +457,15 @@
       if (isCalibrating) {
         currentPoints.push({x, y});
         if (currentPoints.length === 4) {
+          const refSize = parseFloat(referenceSizeInput.value);
           referenceQuad = {
             points: [...currentPoints],
-            size: parseFloat(referenceSizeInput.value)
+            size: refSize
           };
+          // Imposta la densità griglia alla dimensione di riferimento
+          gridDensity.max = refSize;
+          gridDensity.value = refSize;
+          gridDensityValue.textContent = refSize;
           isCalibrating = false;
           calibrateBtn.classList.remove('active');
           alert('Calibrazione completata! Ora puoi misurare gli elementi.');
