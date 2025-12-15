@@ -341,6 +341,19 @@
       font-size: 1.1rem;
     }
 
+    .form-group input[type="text"]:focus,
+    .form-group input[type="number"]:focus,
+    .form-group select:focus {
+      outline: none;
+      border-color: #3b82f6;
+      background: rgba(255, 255, 255, 0.15);
+    }
+
+    .form-group select option {
+      background: #1a1a2e;
+      color: white;
+    }
+
     .alert {
       padding: 15px 20px;
       border-radius: 10px;
@@ -430,6 +443,21 @@
         margin-right: 0;
         margin-bottom: 5px;
       }
+      
+      /* Barra di ricerca responsive */
+      .results-section > div[style*="grid-template-columns: 2fr 1fr 1fr auto"] {
+        grid-template-columns: 1fr !important;
+      }
+      
+      .results-section button[onclick="resetFiltri()"] {
+        width: 100%;
+      }
+    }
+    
+    @media (max-width: 1024px) {
+      .results-section > div[style*="grid-template-columns: 2fr 1fr 1fr auto"] {
+        grid-template-columns: 1fr 1fr !important;
+      }
     }
   </style>
 </head>
@@ -475,6 +503,36 @@
           📊 Rifornimenti
           <span id="totale-rifornimenti" style="font-size: 1rem; opacity: 0.8;">0 rifornimenti</span>
         </h2>
+
+        <!-- Barra di Ricerca -->
+        <div style="background: rgba(255, 255, 255, 0.05); border-radius: 15px; padding: 20px; margin-bottom: 25px; border: 1px solid rgba(255, 255, 255, 0.1);">
+          <div style="display: grid; grid-template-columns: 2fr 1fr 1fr auto; gap: 15px; align-items: end;">
+            <div class="form-group" style="margin-bottom: 0;">
+              <label for="searchInput" style="margin-bottom: 8px; color: rgba(255, 255, 255, 0.9); font-weight: 500;">🔍 Cerca</label>
+              <input type="text" id="searchInput" placeholder="Cerca per data (es: 2025, 01/2025, 15/01/2025)..." 
+                     style="padding: 10px 15px; border: 2px solid rgba(255, 255, 255, 0.2); border-radius: 8px; background: rgba(255, 255, 255, 0.1); color: white; font-size: 0.95rem; width: 100%;">
+            </div>
+            <div class="form-group" style="margin-bottom: 0;">
+              <label for="filterCarburante" style="margin-bottom: 8px; color: rgba(255, 255, 255, 0.9); font-weight: 500;">⛽ Tipo</label>
+              <select id="filterCarburante" style="padding: 10px 15px; border: 2px solid rgba(255, 255, 255, 0.2); border-radius: 8px; background: rgba(255, 255, 255, 0.1); color: white; font-size: 0.95rem; width: 100%; cursor: pointer;">
+                <option value="all">Tutti</option>
+                <option value="benzina">Benzina</option>
+                <option value="gpl">GPL</option>
+              </select>
+            </div>
+            <div class="form-group" style="margin-bottom: 0;">
+              <label for="filterCosto" style="margin-bottom: 8px; color: rgba(255, 255, 255, 0.9); font-weight: 500;">💶 Costo Max</label>
+              <input type="number" id="filterCosto" placeholder="Nessun limite" step="0.01" min="0"
+                     style="padding: 10px 15px; border: 2px solid rgba(255, 255, 255, 0.2); border-radius: 8px; background: rgba(255, 255, 255, 0.1); color: white; font-size: 0.95rem; width: 100%;">
+            </div>
+            <button type="button" onclick="resetFiltri()" class="btn btn-secondary" style="padding: 10px 20px; white-space: nowrap;">
+              🔄 Reset
+            </button>
+          </div>
+          <div id="search-results-count" style="margin-top: 12px; font-size: 0.9rem; color: rgba(255, 255, 255, 0.7); display: none;">
+            <span id="search-count-text"></span>
+          </div>
+        </div>
 
         <!-- Statistiche -->
         <div class="stats">
@@ -538,12 +596,35 @@
     // Stato applicazione
     let rifornimenti = [];
     let editingId = null;
+    let filtroRicerca = '';
+    let filtroCarburante = 'all';
+    let filtroCostoMax = null;
 
     // Carica dati da localStorage al caricamento
     document.addEventListener('DOMContentLoaded', function() {
       caricaDati();
       const today = new Date().toISOString().split('T')[0];
       document.getElementById('data').value = today;
+      
+      // Event listener per ricerca
+      document.getElementById('searchInput').addEventListener('input', function(e) {
+        filtroRicerca = e.target.value.trim();
+        renderizzaRifornimenti();
+      });
+      
+      // Event listener per filtro carburante
+      document.getElementById('filterCarburante').addEventListener('change', function(e) {
+        filtroCarburante = e.target.value;
+        renderizzaRifornimenti();
+      });
+      
+      // Event listener per filtro costo
+      document.getElementById('filterCosto').addEventListener('input', function(e) {
+        const valore = e.target.value.trim();
+        filtroCostoMax = valore === '' ? null : parseFloat(valore);
+        renderizzaRifornimenti();
+      });
+      
       renderizzaRifornimenti();
     });
 
@@ -613,6 +694,46 @@
     function renderizzaRifornimenti() {
       const tbody = document.getElementById('rifornimenti-body');
       
+      // Filtra i rifornimenti
+      let rifornimentiFiltrati = rifornimenti.filter(r => {
+        // Filtro per ricerca (data)
+        if (filtroRicerca) {
+          const dataFormattata = formattaData(r.data);
+          const dataISO = r.data;
+          
+          // Cerca nella data formattata (DD/MM/YYYY, MM/YYYY, YYYY)
+          if (!dataFormattata.toLowerCase().includes(filtroRicerca.toLowerCase()) &&
+              !dataISO.includes(filtroRicerca)) {
+            return false;
+          }
+        }
+        
+        // Filtro per tipo carburante
+        if (filtroCarburante !== 'all') {
+          if (filtroCarburante === 'benzina' && !r.benzina) return false;
+          if (filtroCarburante === 'gpl' && r.benzina) return false;
+        }
+        
+        // Filtro per costo massimo
+        if (filtroCostoMax !== null && r.costo > filtroCostoMax) {
+          return false;
+        }
+        
+        return true;
+      });
+      
+      // Mostra conteggio risultati ricerca
+      const searchResultsDiv = document.getElementById('search-results-count');
+      const searchCountText = document.getElementById('search-count-text');
+      const haFiltriAttivi = filtroRicerca || filtroCarburante !== 'all' || filtroCostoMax !== null;
+      
+      if (haFiltriAttivi) {
+        searchResultsDiv.style.display = 'block';
+        searchCountText.textContent = `${rifornimentiFiltrati.length} di ${rifornimenti.length} rifornimenti`;
+      } else {
+        searchResultsDiv.style.display = 'none';
+      }
+      
       if (rifornimenti.length === 0) {
         tbody.innerHTML = `
           <tr>
@@ -627,9 +748,24 @@
         aggiornaStatistiche();
         return;
       }
+      
+      if (rifornimentiFiltrati.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="4">
+              <div class="empty-state">
+                <div class="empty-state-icon">🔍</div>
+                <p>Nessun rifornimento trovato con i filtri selezionati.<br>Prova a modificare i criteri di ricerca.</p>
+              </div>
+            </td>
+          </tr>
+        `;
+        aggiornaStatistiche(rifornimentiFiltrati);
+        return;
+      }
 
       // Formatta la data in formato italiano
-      tbody.innerHTML = rifornimenti.map(r => {
+      tbody.innerHTML = rifornimentiFiltrati.map(r => {
         const dataFormattata = formattaData(r.data);
         const badge = r.benzina 
           ? '<span class="badge badge-benzina">⛽ Benzina</span>'
@@ -650,7 +786,17 @@
         `;
       }).join('');
 
-      aggiornaStatistiche();
+      aggiornaStatistiche(rifornimentiFiltrati);
+    }
+    
+    function resetFiltri() {
+      filtroRicerca = '';
+      filtroCarburante = 'all';
+      filtroCostoMax = null;
+      document.getElementById('searchInput').value = '';
+      document.getElementById('filterCarburante').value = 'all';
+      document.getElementById('filterCosto').value = '';
+      renderizzaRifornimenti();
     }
 
     function formattaData(dataString) {
@@ -661,18 +807,29 @@
       return `${giorno}/${mese}/${anno}`;
     }
 
-    function aggiornaStatistiche() {
-      const totale = rifornimenti.length;
-      const totaleSpeso = rifornimenti.reduce((sum, r) => sum + r.costo, 0);
+    function aggiornaStatistiche(rifornimentiDaUsare = null) {
+      const rifornimentiPerStatistiche = rifornimentiDaUsare !== null ? rifornimentiDaUsare : rifornimenti;
+      const totale = rifornimentiPerStatistiche.length;
+      const totaleSpeso = rifornimentiPerStatistiche.reduce((sum, r) => sum + r.costo, 0);
       const media = totale > 0 ? totaleSpeso / totale : 0;
-      const totaleBenzina = rifornimenti.filter(r => r.benzina).length;
-      const totaleGPL = rifornimenti.filter(r => !r.benzina).length;
+      const totaleBenzina = rifornimentiPerStatistiche.filter(r => r.benzina).length;
+      const totaleGPL = rifornimentiPerStatistiche.filter(r => !r.benzina).length;
 
-      document.getElementById('totale-rifornimenti').textContent = `${totale} ${totale === 1 ? 'rifornimento' : 'rifornimenti'}`;
-      document.getElementById('totale-speso').textContent = `€${totaleSpeso.toFixed(2)}`;
-      document.getElementById('media-spesa').textContent = `€${media.toFixed(2)}`;
-      document.getElementById('totale-benzina').textContent = totaleBenzina;
-      document.getElementById('totale-gpl').textContent = totaleGPL;
+      // Mostra sempre il totale completo, non quello filtrato
+      const totaleCompleto = rifornimenti.length;
+      document.getElementById('totale-rifornimenti').textContent = `${totaleCompleto} ${totaleCompleto === 1 ? 'rifornimento' : 'rifornimenti'}`;
+      
+      // Le altre statistiche possono essere filtrate se necessario
+      // Per ora mostriamo quelle del totale completo per coerenza
+      const totaleSpesoCompleto = rifornimenti.reduce((sum, r) => sum + r.costo, 0);
+      const mediaCompleta = totaleCompleto > 0 ? totaleSpesoCompleto / totaleCompleto : 0;
+      const totaleBenzinaCompleto = rifornimenti.filter(r => r.benzina).length;
+      const totaleGPLCompleto = rifornimenti.filter(r => !r.benzina).length;
+      
+      document.getElementById('totale-speso').textContent = `€${totaleSpesoCompleto.toFixed(2)}`;
+      document.getElementById('media-spesa').textContent = `€${mediaCompleta.toFixed(2)}`;
+      document.getElementById('totale-benzina').textContent = totaleBenzinaCompleto;
+      document.getElementById('totale-gpl').textContent = totaleGPLCompleto;
     }
 
     function modificaRifornimento(id) {

@@ -311,6 +311,15 @@
         <div class="control-group">
           <label>
             <div class="checkbox-group">
+              <input type="checkbox" id="correctPerspective">
+              <span>Correggi Prospettiva (Griglia Dritta)</span>
+            </div>
+          </label>
+        </div>
+
+        <div class="control-group">
+          <label>
+            <div class="checkbox-group">
               <input type="checkbox" id="showGrid">
               <span>Mostra Griglia di Riferimento</span>
             </div>
@@ -347,14 +356,17 @@
     const gridDensity = document.getElementById('gridDensity');
     const gridDensityValue = document.getElementById('gridDensityValue');
     const gridControls = document.getElementById('gridControls');
+    const correctPerspective = document.getElementById('correctPerspective');
 
     let image = null;
+    let correctedImage = null; // Canvas con immagine corretta prospetticamente
     let isCalibrating = false;
     let isMeasuring = false;
     let currentPoints = [];
     let referenceQuad = null; // {points: [{x,y}, ...], size: number}
     let measurements = [];
     let showGridEnabled = false;
+    let perspectiveCorrected = false;
 
     // Inizializza il max della griglia con il valore di riferimento iniziale
     gridDensity.max = parseInt(referenceSizeInput.value) || 32;
@@ -385,6 +397,7 @@
             image = img;
             canvas.width = img.width;
             canvas.height = img.height;
+            correctedImage = null; // Reset immagine corretta
             redrawCanvas();
           };
           img.src = event.target.result;
@@ -415,6 +428,15 @@
       measureBtn.classList.add('active');
       calibrateBtn.classList.remove('active');
       canvas.style.cursor = 'crosshair';
+    });
+
+    // Correzione prospettica
+    correctPerspective.addEventListener('change', () => {
+      perspectiveCorrected = correctPerspective.checked;
+      if (perspectiveCorrected && referenceQuad) {
+        generateCorrectedImage();
+      }
+      redrawCanvas();
     });
 
     // Griglia
@@ -468,6 +490,9 @@
           gridDensityValue.textContent = refSize;
           isCalibrating = false;
           calibrateBtn.classList.remove('active');
+          if (perspectiveCorrected) {
+            generateCorrectedImage();
+          }
           alert('Calibrazione completata! Ora puoi misurare gli elementi.');
           redrawCanvas();
         } else {
@@ -489,19 +514,241 @@
       }
     });
 
+    // Genera immagine corretta prospetticamente
+    function generateCorrectedImage() {
+      if (!image || !referenceQuad) return;
+      
+      // Crea canvas temporaneo per ottenere i dati dell'immagine originale
+      const sourceCanvas = document.createElement('canvas');
+      sourceCanvas.width = image.width;
+      sourceCanvas.height = image.height;
+      const sourceCtx = sourceCanvas.getContext('2d');
+      sourceCtx.drawImage(image, 0, 0);
+      const sourceImageData = sourceCtx.getImageData(0, 0, image.width, image.height);
+      
+      // Calcola le dimensioni del rettangolo corretto basate sulla dimensione di riferimento
+      const refPoints = referenceQuad.points;
+      const avgWidth = (distance(refPoints[0], refPoints[1]) + distance(refPoints[2], refPoints[3])) / 2;
+      const avgHeight = (distance(refPoints[0], refPoints[3]) + distance(refPoints[1], refPoints[2])) / 2;
+      
+      // Crea canvas per immagine corretta
+      const tempCanvas = document.createElement('canvas');
+      tempCanvas.width = avgWidth;
+      tempCanvas.height = avgHeight;
+      const tempCtx = tempCanvas.getContext('2d');
+      
+      // Calcola matrice di trasformazione prospettica (homografia)
+      const H = calculateHomography(refPoints, [
+        {x: 0, y: 0},
+        {x: avgWidth, y: 0},
+        {x: avgWidth, y: avgHeight},
+        {x: 0, y: avgHeight}
+      ]);
+      
+      // Disegna l'immagine trasformata pixel per pixel (usando trasformazione inversa)
+      const correctedData = tempCtx.createImageData(avgWidth, avgHeight);
+      
+      for (let y = 0; y < avgHeight; y++) {
+        for (let x = 0; x < avgWidth; x++) {
+          // Trasformazione inversa: da coordinate corrette a coordinate originali
+          const src = applyHomographyInverse(H, {x, y});
+          
+          const srcX = Math.round(src.x);
+          const srcY = Math.round(src.y);
+          
+          if (srcX >= 0 && srcX < image.width && srcY >= 0 && srcY < image.height) {
+            const srcIdx = (srcY * image.width + srcX) * 4;
+            const dstIdx = (y * avgWidth + x) * 4;
+            
+            correctedData.data[dstIdx] = sourceImageData.data[srcIdx];
+            correctedData.data[dstIdx + 1] = sourceImageData.data[srcIdx + 1];
+            correctedData.data[dstIdx + 2] = sourceImageData.data[srcIdx + 2];
+            correctedData.data[dstIdx + 3] = sourceImageData.data[srcIdx + 3];
+          }
+        }
+      }
+      
+      tempCtx.putImageData(correctedData, 0, 0);
+      correctedImage = tempCanvas;
+    }
+    
+    // Calcola matrice di trasformazione homografica da 4 punti sorgente a 4 punti destinazione
+    function calculateHomography(srcPoints, dstPoints) {
+      // Normalizza i punti
+      const srcNorm = normalizePoints(srcPoints);
+      const dstNorm = normalizePoints(dstPoints);
+      
+      // Costruisce il sistema di equazioni per trovare l'homografia
+      const A = [];
+      const b = [];
+      
+      for (let i = 0; i < 4; i++) {
+        const x = srcNorm[i].x;
+        const y = srcNorm[i].y;
+        const u = dstNorm[i].x;
+        const v = dstNorm[i].y;
+        
+        A.push([x, y, 1, 0, 0, 0, -u*x, -u*y]);
+        A.push([0, 0, 0, x, y, 1, -v*x, -v*y]);
+        b.push(u);
+        b.push(v);
+      }
+      
+      // Risolvi il sistema usando eliminazione di Gauss-Jordan
+      const h = solveLinearSystem(A, b);
+      
+      // Costruisci la matrice 3x3
+      const H = [
+        [h[0], h[1], h[2]],
+        [h[3], h[4], h[5]],
+        [h[6], h[7], 1]
+      ];
+      
+      // Denormalizza
+      const srcInv = invertTransform(srcNorm.transform);
+      const dstT = dstNorm.transform;
+      
+      return multiplyMatrix(multiplyMatrix(dstT, H), srcInv);
+    }
+    
+    function normalizePoints(points) {
+      const centerX = points.reduce((sum, p) => sum + p.x, 0) / points.length;
+      const centerY = points.reduce((sum, p) => sum + p.y, 0) / points.length;
+      
+      let scale = 0;
+      for (const p of points) {
+        scale += Math.sqrt((p.x - centerX) ** 2 + (p.y - centerY) ** 2);
+      }
+      scale = Math.sqrt(2) / (scale / points.length);
+      
+      const transform = [
+        [scale, 0, -scale * centerX],
+        [0, scale, -scale * centerY],
+        [0, 0, 1]
+      ];
+      
+      const normalized = points.map(p => ({
+        x: scale * (p.x - centerX),
+        y: scale * (p.y - centerY)
+      }));
+      
+      return { points: normalized, transform };
+    }
+    
+    function invertTransform(T) {
+      const a = T[0][0], b = T[0][1], c = T[0][2];
+      const d = T[1][0], e = T[1][1], f = T[1][2];
+      const g = T[2][0], h = T[2][1], i = T[2][2];
+      
+      const det = a * (e * i - f * h) - b * (d * i - f * g) + c * (d * h - e * g);
+      if (Math.abs(det) < 1e-10) return [[1,0,0],[0,1,0],[0,0,1]];
+      
+      return [
+        [(e*i - f*h)/det, (c*h - b*i)/det, (b*f - c*e)/det],
+        [(f*g - d*i)/det, (a*i - c*g)/det, (c*d - a*f)/det],
+        [(d*h - e*g)/det, (b*g - a*h)/det, (a*e - b*d)/det]
+      ];
+    }
+    
+    function multiplyMatrix(A, B) {
+      const result = [[0,0,0],[0,0,0],[0,0,0]];
+      for (let i = 0; i < 3; i++) {
+        for (let j = 0; j < 3; j++) {
+          for (let k = 0; k < 3; k++) {
+            result[i][j] += A[i][k] * B[k][j];
+          }
+        }
+      }
+      return result;
+    }
+    
+    function solveLinearSystem(A, b) {
+      // Eliminazione di Gauss-Jordan
+      const n = A.length;
+      const augmented = A.map((row, i) => [...row, b[i]]);
+      
+      for (let i = 0; i < n; i++) {
+        // Pivot
+        let maxRow = i;
+        for (let k = i + 1; k < n; k++) {
+          if (Math.abs(augmented[k][i]) > Math.abs(augmented[maxRow][i])) {
+            maxRow = k;
+          }
+        }
+        [augmented[i], augmented[maxRow]] = [augmented[maxRow], augmented[i]];
+        
+        // Normalizza
+        const pivot = augmented[i][i];
+        if (Math.abs(pivot) < 1e-10) continue;
+        
+        for (let j = i; j <= n; j++) {
+          augmented[i][j] /= pivot;
+        }
+        
+        // Elimina
+        for (let k = 0; k < n; k++) {
+          if (k !== i) {
+            const factor = augmented[k][i];
+            for (let j = i; j <= n; j++) {
+              augmented[k][j] -= factor * augmented[i][j];
+            }
+          }
+        }
+      }
+      
+      return augmented.map(row => row[n]);
+    }
+    
+    function applyHomographyInverse(H, point) {
+      const x = point.x;
+      const y = point.y;
+      const w = H[2][0] * x + H[2][1] * y + H[2][2];
+      
+      return {
+        x: (H[0][0] * x + H[0][1] * y + H[0][2]) / w,
+        y: (H[1][0] * x + H[1][1] * y + H[1][2]) / w
+      };
+    }
+
     // Disegna tutto
     function redrawCanvas() {
       if (!image) return;
+      
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      ctx.drawImage(image, 0, 0);
+      
+      // Disegna immagine originale o corretta
+      if (perspectiveCorrected && correctedImage && referenceQuad) {
+        // Calcola dimensioni e posizione per centrare l'immagine corretta
+        const refPoints = referenceQuad.points;
+        const avgWidth = (distance(refPoints[0], refPoints[1]) + distance(refPoints[2], refPoints[3])) / 2;
+        const avgHeight = (distance(refPoints[0], refPoints[3]) + distance(refPoints[1], refPoints[2])) / 2;
+        
+        // Centra l'immagine corretta
+        const offsetX = (canvas.width - avgWidth) / 2;
+        const offsetY = (canvas.height - avgHeight) / 2;
+        
+        ctx.drawImage(correctedImage, offsetX, offsetY);
+        
+        // Disegna griglia rettangolare perfetta
+        if (showGridEnabled) {
+          drawRectangularGrid(offsetX, offsetY, avgWidth, avgHeight);
+        }
+      } else {
+        ctx.drawImage(image, 0, 0);
+        
+        // Disegna griglia distorta originale
+        if (showGridEnabled && referenceQuad) {
+          drawGrid();
+        }
+      }
       
       // Disegna griglia se abilitata
       if (showGridEnabled && referenceQuad) {
         drawGrid();
       }
       
-      // Disegna riferimento
-      if (referenceQuad) {
+      // Disegna riferimento (solo se non è abilitata la correzione prospettica)
+      if (referenceQuad && !perspectiveCorrected) {
         drawQuad(referenceQuad.points, '#10b981', 3, true);
         const center = getQuadCenter(referenceQuad.points);
         ctx.fillStyle = '#10b981';
@@ -511,6 +758,29 @@
           `RIFERIMENTO: ${referenceQuad.size}×${referenceQuad.size} blocchi`,
           center.x,
           center.y - 10
+        );
+        ctx.textAlign = 'left';
+      } else if (referenceQuad && perspectiveCorrected) {
+        // Disegna rettangolo di riferimento corretto
+        const refPoints = referenceQuad.points;
+        const avgWidth = (distance(refPoints[0], refPoints[1]) + distance(refPoints[2], refPoints[3])) / 2;
+        const avgHeight = (distance(refPoints[0], refPoints[3]) + distance(refPoints[1], refPoints[2])) / 2;
+        const offsetX = (canvas.width - avgWidth) / 2;
+        const offsetY = (canvas.height - avgHeight) / 2;
+        
+        ctx.strokeStyle = '#10b981';
+        ctx.lineWidth = 3;
+        ctx.setLineDash([5, 5]);
+        ctx.strokeRect(offsetX, offsetY, avgWidth, avgHeight);
+        ctx.setLineDash([]);
+        
+        ctx.fillStyle = '#10b981';
+        ctx.font = 'bold 16px Arial';
+        ctx.textAlign = 'center';
+        ctx.fillText(
+          `RIFERIMENTO: ${referenceQuad.size}×${referenceQuad.size} blocchi`,
+          offsetX + avgWidth / 2,
+          offsetY + avgHeight / 2 - 10
         );
         ctx.textAlign = 'left';
       }
@@ -699,6 +969,56 @@
         const t = i / density;
         const point = interpolatePoint(refPoints[0], refPoints[1], t);
         ctx.fillText((i * blocksPerLine).toString(), point.x, point.y - 5);
+      }
+      
+      ctx.textAlign = 'left';
+    }
+    
+    function drawRectangularGrid(offsetX, offsetY, width, height) {
+      if (!referenceQuad) return;
+      
+      const density = parseInt(gridDensity.value);
+      const blocksPerLine = referenceQuad.size / density;
+      
+      ctx.strokeStyle = 'rgba(255, 193, 7, 0.3)';
+      ctx.lineWidth = 1;
+      ctx.setLineDash([2, 2]);
+      
+      // Disegna linee orizzontali perfettamente dritte
+      for (let i = 1; i < density; i++) {
+        const y = offsetY + (height * i / density);
+        ctx.beginPath();
+        ctx.moveTo(offsetX, y);
+        ctx.lineTo(offsetX + width, y);
+        ctx.stroke();
+      }
+      
+      // Disegna linee verticali perfettamente dritte
+      for (let i = 1; i < density; i++) {
+        const x = offsetX + (width * i / density);
+        ctx.beginPath();
+        ctx.moveTo(x, offsetY);
+        ctx.lineTo(x, offsetY + height);
+        ctx.stroke();
+      }
+      
+      ctx.setLineDash([]);
+      
+      // Disegna etichette sui bordi
+      ctx.fillStyle = 'rgba(255, 193, 7, 0.8)';
+      ctx.font = '10px Arial';
+      ctx.textAlign = 'center';
+      
+      // Etichette orizzontali (sinistra)
+      for (let i = 0; i <= density; i++) {
+        const y = offsetY + (height * i / density);
+        ctx.fillText((i * blocksPerLine).toString(), offsetX - 15, y);
+      }
+      
+      // Etichette verticali (alto)
+      for (let i = 0; i <= density; i++) {
+        const x = offsetX + (width * i / density);
+        ctx.fillText((i * blocksPerLine).toString(), x, offsetY - 5);
       }
       
       ctx.textAlign = 'left';
