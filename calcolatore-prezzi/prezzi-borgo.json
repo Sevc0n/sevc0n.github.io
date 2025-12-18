@@ -35,6 +35,13 @@
     "tier": "Avanzato"
   },
   {
+    "name": "Withering Dust",
+    "price": 1,
+    "category": "Cristalli",
+    "subcategory": "Misto",
+    "tier": "Custode"
+  },
+  {
     "name": "Core Fragment",
     "price": 1,
     "category": "Aberrazioni",
