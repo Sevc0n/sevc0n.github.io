@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Colorante Armatura Minecraft - Sevcon Tools</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #ffffff;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: rgba(26, 26, 46, 0.95);
+            backdrop-filter: blur(15px);
+            border-radius: 25px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.6);
+            padding: 40px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, #ff6b6b, #ffd93d);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #aaa;
+            margin-bottom: 40px;
+            font-size: 1.1em;
+        }
+
+        .input-section {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .input-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+            font-weight: 600;
+            color: #fff;
+        }
+
+        .hex-input-wrapper {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        input[type="text"],
+        input[type="color"] {
+            padding: 12px 15px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            font-size: 1.1em;
+            transition: all 0.3s;
+        }
+
+        input[type="text"] {
+            flex: 1;
+            font-family: 'Courier New', monospace;
+        }
+
+        input[type="color"] {
+            width: 80px;
+            height: 50px;
+            cursor: pointer;
+            border: none;
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #10b981;
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.2em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 10px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(16, 185, 129, 0.4);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .result-section {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            display: none;
+        }
+
+        .result-section.show {
+            display: block;
+        }
+
+        .color-preview {
+            width: 100%;
+            height: 100px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .dyes-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .dye-item {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            transition: all 0.3s;
+        }
+
+        .dye-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .dye-color {
+            width: 50px;
+            height: 50px;
+            border-radius: 8px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            flex-shrink: 0;
+        }
+
+        .dye-info {
+            flex: 1;
+        }
+
+        .dye-name {
+            font-weight: 600;
+            font-size: 1.1em;
+            margin-bottom: 5px;
+        }
+
+        .dye-quantity {
+            color: #10b981;
+            font-size: 0.9em;
+        }
+
+        .result-info {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .result-info h3 {
+            margin-bottom: 10px;
+            color: #10b981;
+        }
+
+        .alert {
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .alert.error {
+            background: rgba(239, 68, 68, 0.2);
+            border: 1px solid rgba(239, 68, 68, 0.5);
+            color: #fca5a5;
+        }
+
+        .alert.show {
+            display: block;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 25px;
+            }
+
+            h1 {
+                font-size: 2em;
+            }
+
+            .hex-input-wrapper {
+                flex-direction: column;
+            }
+
+            input[type="color"] {
+                width: 100%;
+            }
+
+            .dyes-list {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎨 Colorante Armatura Minecraft</h1>
+        <p class="subtitle">Converte un colore HEX nella combinazione di coloranti necessaria</p>
+
+        <div class="alert error" id="alert"></div>
+
+        <div class="input-section">
+            <div class="input-group">
+                <label for="colorHex">Colore HEX</label>
+                <div class="hex-input-wrapper">
+                    <input type="text" id="colorHex" placeholder="#RRGGBB o RRGGBB" maxlength="7" value="#FF6B6B">
+                    <input type="color" id="colorPicker" value="#FF6B6B">
+                </div>
+            </div>
+
+            <button class="btn" onclick="convertColor()">🔍 Converti Colore</button>
+        </div>
+
+        <div class="result-section" id="resultSection">
+            <div class="color-preview" id="colorPreview"></div>
+            
+            <div class="result-info">
+                <h3>📊 Risultato Conversione</h3>
+                <p id="resultText"></p>
+            </div>
+
+            <h3 style="margin-bottom: 15px;">🎨 Coloranti Necessari:</h3>
+            <div class="dyes-list" id="dyesList"></div>
+        </div>
+    </div>
+
+    <script>
+        // Coloranti Minecraft con i loro valori RGB
+        const minecraftDyes = [
+            { name: "Bianco", hex: "#F9FFFE", rgb: [249, 255, 254] },
+            { name: "Arancione", hex: "#F9801D", rgb: [249, 128, 29] },
+            { name: "Magenta", hex: "#C74EBD", rgb: [199, 78, 189] },
+            { name: "Azzurro chiaro", hex: "#3AB3DA", rgb: [58, 179, 218] },
+            { name: "Giallo", hex: "#FED83D", rgb: [254, 216, 61] },
+            { name: "Lime", hex: "#80C71F", rgb: [128, 199, 31] },
+            { name: "Rosa", hex: "#F38BAA", rgb: [243, 139, 170] },
+            { name: "Grigio", hex: "#474F52", rgb: [71, 79, 82] },
+            { name: "Grigio chiaro", hex: "#9D9D97", rgb: [157, 157, 151] },
+            { name: "Ciano", hex: "#169C9C", rgb: [22, 156, 156] },
+            { name: "Viola", hex: "#8932B8", rgb: [137, 50, 184] },
+            { name: "Blu", hex: "#3C44AA", rgb: [60, 68, 170] },
+            { name: "Marrone", hex: "#835432", rgb: [131, 84, 50] },
+            { name: "Verde", hex: "#5E7C16", rgb: [94, 124, 22] },
+            { name: "Rosso", hex: "#B02E26", rgb: [176, 46, 38] },
+            { name: "Nero", hex: "#1D1D21", rgb: [29, 29, 33] }
+        ];
+
+        // Sincronizza color picker e input hex
+        document.getElementById('colorPicker').addEventListener('input', function(e) {
+            document.getElementById('colorHex').value = e.target.value.toUpperCase();
+        });
+
+        document.getElementById('colorHex').addEventListener('input', function(e) {
+            let value = e.target.value;
+            if (value.startsWith('#')) {
+                if (/^#[0-9A-Fa-f]{6}$/.test(value)) {
+                    document.getElementById('colorPicker').value = value;
+                }
+            } else {
+                if (/^[0-9A-Fa-f]{6}$/.test(value)) {
+                    document.getElementById('colorPicker').value = '#' + value;
+                }
+            }
+        });
+
+        // Funzione per convertire HEX a RGB
+        function hexToRgb(hex) {
+            hex = hex.replace('#', '');
+            const r = parseInt(hex.substring(0, 2), 16);
+            const g = parseInt(hex.substring(2, 4), 16);
+            const b = parseInt(hex.substring(4, 6), 16);
+            return [r, g, b];
+        }
+
+        // Funzione per calcolare la media RGB di più coloranti
+        function blendDyes(quantities) {
+            let totalR = 0, totalG = 0, totalB = 0;
+            let totalQuantity = 0;
+
+            quantities.forEach((qty, index) => {
+                if (qty > 0) {
+                    const dye = minecraftDyes[index];
+                    totalR += dye.rgb[0] * qty;
+                    totalG += dye.rgb[1] * qty;
+                    totalB += dye.rgb[2] * qty;
+                    totalQuantity += qty;
+                }
+            });
+
+            if (totalQuantity === 0) return [255, 255, 255];
+
+            return [
+                Math.round(totalR / totalQuantity),
+                Math.round(totalG / totalQuantity),
+                Math.round(totalB / totalQuantity)
+            ];
+        }
+
+        // Funzione per calcolare la distanza tra due colori RGB
+        function colorDistance(rgb1, rgb2) {
+            return Math.sqrt(
+                Math.pow(rgb1[0] - rgb2[0], 2) +
+                Math.pow(rgb1[1] - rgb2[1], 2) +
+                Math.pow(rgb1[2] - rgb2[2], 2)
+            );
+        }
+
+        // Algoritmo per trovare la combinazione ottimale di coloranti
+        function findOptimalDyes(targetRgb) {
+            const maxDyesPerColor = 8; // Limite ragionevole di coloranti
+            let bestCombination = null;
+            let bestDistance = Infinity;
+
+            // Cerca la combinazione migliore usando ricerca esplorativa
+            // Prova diverse combinazioni con fino a 4 coloranti diversi
+            for (let dye1 = 0; dye1 < minecraftDyes.length; dye1++) {
+                for (let qty1 = 0; qty1 <= maxDyesPerColor; qty1++) {
+                    // Prova con 1 colorante
+                    const combo1 = new Array(minecraftDyes.length).fill(0);
+                    combo1[dye1] = qty1;
+                    const result1 = blendDyes(combo1);
+                    const dist1 = colorDistance(targetRgb, result1);
+                    if (dist1 < bestDistance) {
+                        bestDistance = dist1;
+                        bestCombination = [...combo1];
+                    }
+
+                    // Prova con 2 coloranti
+                    for (let dye2 = dye1 + 1; dye2 < minecraftDyes.length; dye2++) {
+                        for (let qty2 = 1; qty2 <= maxDyesPerColor; qty2++) {
+                            const combo2 = new Array(minecraftDyes.length).fill(0);
+                            combo2[dye1] = qty1;
+                            combo2[dye2] = qty2;
+                            if (combo2[dye1] === 0) continue;
+                            const result2 = blendDyes(combo2);
+                            const dist2 = colorDistance(targetRgb, result2);
+                            if (dist2 < bestDistance) {
+                                bestDistance = dist2;
+                                bestCombination = [...combo2];
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Se non trovato, prova con 3 coloranti (ricerca più approfondita ma limitata)
+            if (bestDistance > 50) {
+                for (let dye1 = 0; dye1 < Math.min(minecraftDyes.length, 8); dye1++) {
+                    for (let dye2 = dye1 + 1; dye2 < Math.min(minecraftDyes.length, 12); dye2++) {
+                        for (let dye3 = dye2 + 1; dye3 < minecraftDyes.length; dye3++) {
+                            for (let qty1 = 1; qty1 <= 6; qty1++) {
+                                for (let qty2 = 1; qty2 <= 6; qty2++) {
+                                    for (let qty3 = 1; qty3 <= 6; qty3++) {
+                                        const combo3 = new Array(minecraftDyes.length).fill(0);
+                                        combo3[dye1] = qty1;
+                                        combo3[dye2] = qty2;
+                                        combo3[dye3] = qty3;
+                                        const result3 = blendDyes(combo3);
+                                        const dist3 = colorDistance(targetRgb, result3);
+                                        if (dist3 < bestDistance) {
+                                            bestDistance = dist3;
+                                            bestCombination = [...combo3];
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            return { combination: bestCombination, distance: bestDistance };
+        }
+
+        function convertColor() {
+            const hexInput = document.getElementById('colorHex').value.trim();
+            const alertDiv = document.getElementById('alert');
+
+            // Validazione input
+            let hex = hexInput;
+            if (!hex.startsWith('#')) {
+                hex = '#' + hex;
+            }
+
+            if (!/^#[0-9A-Fa-f]{6}$/.test(hex)) {
+                alertDiv.textContent = '❌ Formato colore non valido! Usa formato #RRGGBB o RRGGBB';
+                alertDiv.classList.add('show');
+                return;
+            }
+
+            alertDiv.classList.remove('show');
+
+            // Converti HEX a RGB
+            const targetRgb = hexToRgb(hex);
+            
+            // Trova la combinazione ottimale
+            const result = findOptimalDyes(targetRgb);
+            const combination = result.combination;
+
+            // Filtra solo i coloranti con quantità > 0
+            const usedDyes = [];
+            let totalDyes = 0;
+            combination.forEach((qty, index) => {
+                if (qty > 0) {
+                    usedDyes.push({
+                        name: minecraftDyes[index].name,
+                        hex: minecraftDyes[index].hex,
+                        rgb: minecraftDyes[index].rgb,
+                        quantity: qty
+                    });
+                    totalDyes += qty;
+                }
+            });
+
+            // Calcola il colore risultante
+            const resultRgb = blendDyes(combination);
+            const resultHex = '#' + resultRgb.map(x => {
+                const hex = x.toString(16);
+                return hex.length === 1 ? '0' + hex : hex;
+            }).join('').toUpperCase();
+
+            // Mostra risultati
+            document.getElementById('colorPreview').style.backgroundColor = hex;
+            document.getElementById('resultText').innerHTML = `
+                <strong>Colore target:</strong> ${hex.toUpperCase()}<br>
+                <strong>Colore risultante:</strong> ${resultHex}<br>
+                <strong>Totale coloranti:</strong> ${totalDyes}<br>
+                <strong>Precisione:</strong> ${(100 - (result.distance / 4.42)).toFixed(1)}%
+            `;
+
+            // Mostra lista coloranti
+            const dyesList = document.getElementById('dyesList');
+            dyesList.innerHTML = usedDyes.map(dye => `
+                <div class="dye-item">
+                    <div class="dye-color" style="background-color: ${dye.hex};"></div>
+                    <div class="dye-info">
+                        <div class="dye-name">${dye.name}</div>
+                        <div class="dye-quantity">Quantità: ${dye.quantity}</div>
+                    </div>
+                </div>
+            `).join('');
+
+            document.getElementById('resultSection').classList.add('show');
+        }
+
+        // Converti al caricamento della pagina
+        window.addEventListener('load', function() {
+            convertColor();
+        });
+    </script>
+</body>
+</html>
+
