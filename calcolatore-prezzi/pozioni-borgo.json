@@ -8,6 +8,10 @@
     "price": 4
   },
   {
+    "name": "Cura 3",
+    "price": 6
+  },
+  {
     "name": "Antidoto",
     "price": 2.5
   },
@@ -21,6 +25,6 @@
   },
   {
     "name": "Recall",
-    "price": 5
+    "price": 3
   }
 ]
