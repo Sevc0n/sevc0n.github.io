@@ -1146,17 +1146,48 @@
     let products = [];
     let currentPricebook = 'borgo'; // 'borgo' o 'esterno'
     
-    // Prezzi delle pozioni in bronzini
-    const potions = [
-      { name: 'Cura 1', price: 2 },
-      { name: 'Cura 2', price: 4 },
-      { name: 'Antidoto', price: 2.5 },
-      { name: 'Revivify', price: 3 },
-      { name: 'Extinguish', price: 3 },
-      { name: 'Recall', price: 5 }
-    ];
-    
-    let potionsQuantities = potions.map(() => 0);
+    // Pozioni caricate dal JSON
+    let potions = [];
+    let potionsQuantities = [];
+
+    // Carica le pozioni dal file JSON
+    async function loadPotions(pricebook = 'borgo') {
+      try {
+        const filename = pricebook === 'borgo' ? 'pozioni-borgo.json' : 'pozioni-esterno.json';
+        const response = await fetch(`./${filename}`);
+        
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+        
+        const data = await response.json();
+        console.log('Pozioni caricate con successo:', data);
+        
+        potions = data;
+        potionsQuantities = potions.map(() => 0);
+        
+        // Se la sezione pozioni è visibile, aggiorna il rendering
+        const potionsSection = document.getElementById("potions-section");
+        if (potionsSection && potionsSection.classList.contains("visible")) {
+          renderPotions();
+        }
+        
+        return true;
+      } catch (error) {
+        console.error('Errore nel caricamento delle pozioni:', error);
+        // Fallback: usa pozioni di default se il caricamento fallisce
+        potions = [
+          { name: 'Cura 1', price: 2 },
+          { name: 'Cura 2', price: 4 },
+          { name: 'Antidoto', price: 2.5 },
+          { name: 'Revivify', price: 3 },
+          { name: 'Extinguish', price: 3 },
+          { name: 'Recall', price: 5 }
+        ];
+        potionsQuantities = potions.map(() => 0);
+        return false;
+      }
+    }
 
     // Carica i prodotti dal file JSON
     async function loadProducts(pricebook = 'borgo') {
@@ -1192,6 +1223,9 @@
         defaultProducts = data;
         products = [...defaultProducts.map(p => ({ ...p, qty: 0 }))];
         currentPricebook = pricebook;
+        
+        // Carica anche le pozioni
+        await loadPotions(pricebook);
         
         // Aggiorna lo stato visivo del toggle e delle etichette
         const toggle = document.getElementById('pricebook-toggle');
@@ -1519,18 +1553,25 @@
       
       if (!toggle.checked) { // Se borgo è selezionato (toggle non checked)
         potionsSection.classList.add("visible");
-        renderPotions();
+        // Assicurati che le pozioni siano caricate prima di renderizzarle
+        if (potions.length > 0) {
+          renderPotions();
+        }
       } else {
         potionsSection.classList.remove("visible");
         // Reset delle quantità pozioni quando si cambia a esterno
-        potionsQuantities = potions.map(() => 0);
+        if (potions.length > 0) {
+          potionsQuantities = potions.map(() => 0);
+        }
         updateTotal();
       }
     }
 
     function resetAll() {
       products.forEach(p => p.qty = 0);
-      potionsQuantities = potions.map(() => 0);
+      if (potions.length > 0) {
+        potionsQuantities = potions.map(() => 0);
+      }
       renderMain();
       if (document.getElementById("potions-section").classList.contains("visible")) {
         renderPotions();
