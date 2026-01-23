@@ -14,6 +14,13 @@
     "tier": "Esperto"
   },
   {
+    "name": "Fire Stone",
+    "price": 9,
+    "category": "Cristalli",
+    "subcategory": "Carburanti",
+    "tier": "Maestro"
+  },
+  {
     "name": "Lapis",
     "price": 1,
     "category": "Cristalli",
@@ -106,5 +113,17 @@
     "price": 2,
     "category": "Aberrazioni",
     "tier": "Custode"
+  },
+  {
+    "name": "Lost Soul",
+    "price": 5,
+    "category": "Aberrazioni",
+    "tier": "Maestro"
+  },
+  {
+    "name": "Demon Heart",
+    "price": 5,
+    "category": "Aberrazioni",
+    "tier": "Maestro"
   }
 ]
