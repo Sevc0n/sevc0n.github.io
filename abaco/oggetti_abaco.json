@@ -167,5 +167,11 @@
     "price": 5,
     "category": "Aberrazioni",
     "tier": "Maestro"
+  },
+  {
+    "name": "Tua Madre",
+    "price": 8,
+    "category": "Aberrazioni",
+    "tier": "Gran Maestro"
   }
 ]

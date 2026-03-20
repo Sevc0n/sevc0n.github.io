@@ -260,6 +260,7 @@
     .tier-esperto { background: #718096; color: white; }
     .tier-custode { background: #d69e2e; color: white; }
     .tier-maestro { background: #4299e1; color: white; }
+    .tier-gran-maestro { background: #10b981; color: #002b1a; }
     .tier-tutti { background: linear-gradient(135deg, #667eea, #764ba2); color: white; }
 
     .quantity-container {
@@ -1201,7 +1202,13 @@
            </div>
          </div>
 
-        <div class="card" style="grid-column: 1 / -1; padding: 35px;">
+        <div style="grid-column: 1 / -1; text-align: center; margin-top: -5px; margin-bottom: 18px;">
+          <button id="toggle-prices-btn" class="list-btn" style="margin: 0 auto;" onclick="togglePricesEditor()">
+            Mostra prezzi personalizzati
+          </button>
+        </div>
+
+        <div id="prices-card" class="card" style="grid-column: 1 / -1; padding: 35px; display: none;">
           <h2 style="padding-right: 0; text-align: center; margin-bottom: 20px;">Prezzi Personalizzati</h2>
           <div style="text-align: center; margin-bottom: 20px; color: rgba(255,255,255,0.75); font-size: 0.95rem;">
             Puoi lasciare il campo vuoto (cancella le cifre) per tornare al prezzo base.
@@ -1248,6 +1255,7 @@
      const distributionResults = document.getElementById("distribution-results");
      const participantsInput = document.getElementById("participants");
     const pricesEditorContainer = document.getElementById('prices-editor');
+    const pricesCard = document.getElementById('prices-card');
  
     function caricaDati() {
       const datiSalvati = localStorage.getItem(STORAGE_KEY);
@@ -1428,7 +1436,12 @@
      }
 
      function getTierClass(tier) {
-       return `tier-${tier.toLowerCase()}`;
+      // Normalizza il testo per trasformarlo in una classe CSS valida
+      const safe = String(tier)
+        .toLowerCase()
+        .replace(/\s+/g, '-')
+        .replace(/[^a-z0-9\-_]/g, '');
+      return `tier-${safe}`;
      }
 
      // Funzione per formattare la valuta (conversione automatica br -> a)
@@ -1680,6 +1693,19 @@
        renderPricesEditor();
        updateDistribution();
      }
+
+    function togglePricesEditor() {
+      if (!pricesCard) return;
+      const btn = document.getElementById('toggle-prices-btn');
+      const isHidden = pricesCard.style.display === 'none';
+      if (isHidden) {
+        pricesCard.style.display = '';
+        if (btn) btn.textContent = 'Nascondi prezzi personalizzati';
+      } else {
+        pricesCard.style.display = 'none';
+        if (btn) btn.textContent = 'Mostra prezzi personalizzati';
+      }
+    }
  
      function createProductElement(p, globalIndex) {
        const div = document.createElement("div");
