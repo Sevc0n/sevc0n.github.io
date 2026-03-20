@@ -42,6 +42,20 @@
     "tier": "Maestro"
   },
   {
+    "name": "Frammento di netherite",
+    "price": 250,
+    "category": "Cristalli",
+    "subcategory": "Metalli",
+    "tier": "Gran Maestro"
+  },
+  {
+    "name": "Smeraldo grezzo",
+    "price": 60,
+    "category": "Cristalli",
+    "subcategory": "Metalli",
+    "tier": "Gran Maestro"
+  },
+  {
     "name": "Carbone",
     "price": 2.5,
     "category": "Cristalli",
@@ -167,6 +181,24 @@
     "price": 5,
     "category": "Aberrazioni",
     "tier": "Maestro"
+  },
+  {
+    "name": "Echo Shard",
+    "price": 8,
+    "category": "Aberrazioni",
+    "tier": "Gran Maestro"
+  },
+  {
+    "name": "Demonic Slab",
+    "price": 8,
+    "category": "Aberrazioni",
+    "tier": "Gran Maestro"
+  },
+  {
+    "name": "End Shard",
+    "price": 8,
+    "category": "Aberrazioni",
+    "tier": "Gran Maestro"
   },
   {
     "name": "Tua Madre",
