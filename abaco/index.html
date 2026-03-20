@@ -205,6 +205,43 @@
       white-space: nowrap;
     }
 
+    .price-editor {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 6px;
+    }
+
+    .price-input {
+      width: 90px;
+      padding: 6px 8px;
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      border-radius: 6px;
+      background: rgba(255, 255, 255, 0.08);
+      color: #ffffff;
+      font-size: 0.85rem;
+    }
+
+    .price-input:focus {
+      outline: none;
+      border-color: #63b3ed;
+      box-shadow: 0 0 0 2px rgba(99, 179, 237, 0.2);
+    }
+
+    .price-reset-btn {
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      background: rgba(255, 255, 255, 0.08);
+      color: #cbd5e0;
+      border-radius: 6px;
+      padding: 6px 8px;
+      font-size: 0.75rem;
+      cursor: pointer;
+    }
+
+    .price-reset-btn:hover {
+      background: rgba(255, 255, 255, 0.16);
+    }
+
     .tier-badge {
       display: inline-block;
       padding: 2px 8px;
@@ -1192,11 +1229,78 @@
   </div>
 
    <script>
-     let defaultProducts = [];
+    const STORAGE_KEY = 'abaco_state';
+    let defaultProducts = [];
      let products = [];
+    let stateCache = null;
      const distributionResults = document.getElementById("distribution-results");
      const participantsInput = document.getElementById("participants");
  
+    function caricaDati() {
+      const datiSalvati = localStorage.getItem(STORAGE_KEY);
+      if (!datiSalvati) return;
+
+      try {
+        stateCache = JSON.parse(datiSalvati);
+      } catch (e) {
+        console.error('Errore nel caricamento dati abaco:', e);
+        stateCache = null;
+      }
+    }
+
+    function salvaDati() {
+      const quantities = {};
+      const customPrices = {};
+
+      products.forEach(p => {
+        if (p.qty > 0) {
+          quantities[p.name] = p.qty;
+        }
+        if (typeof p.basePrice === 'number' && p.price !== p.basePrice) {
+          customPrices[p.name] = p.price;
+        }
+      });
+
+      const stato = {
+        participants: parseInt(participantsInput.value, 10) || 1,
+        unifiedView: document.getElementById('unified-view-toggle').checked,
+        quantities,
+        customPrices
+      };
+
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(stato));
+    }
+
+    function applicaStatoSalvatoAiProdotti() {
+      if (!stateCache || !Array.isArray(products)) return;
+
+      const quantities = stateCache.quantities || {};
+      const customPrices = stateCache.customPrices || {};
+
+      products = products.map(product => {
+        const savedQty = quantities[product.name];
+        const savedPrice = customPrices[product.name];
+        const parsedQty = Number.isFinite(savedQty) ? savedQty : parseInt(savedQty, 10);
+        const parsedPrice = Number.isFinite(savedPrice) ? savedPrice : parseFloat(savedPrice);
+
+        return {
+          ...product,
+          qty: Number.isFinite(parsedQty) ? parsedQty : 0,
+          price: Number.isFinite(parsedPrice) ? parsedPrice : product.price
+        };
+      });
+
+      if (Number.isFinite(stateCache.participants) || !Number.isNaN(parseInt(stateCache.participants, 10))) {
+        participantsInput.value = Number.isFinite(stateCache.participants)
+          ? stateCache.participants
+          : parseInt(stateCache.participants, 10);
+      }
+
+      if (typeof stateCache.unifiedView === 'boolean') {
+        document.getElementById('unified-view-toggle').checked = stateCache.unifiedView;
+      }
+    }
+
      // Carica i prodotti dal file JSON
      async function loadProducts() {
        const productList = document.getElementById("product-list");
@@ -1230,8 +1334,9 @@
          const data = await response.json();
          console.log('JSON caricato con successo:', data);
          
-         defaultProducts = data;
-         products = [...defaultProducts.map(p => ({ ...p, qty: 0 }))];
+        defaultProducts = data;
+        products = [...defaultProducts.map(p => ({ ...p, basePrice: p.price, qty: 0 }))];
+        applicaStatoSalvatoAiProdotti();
          renderMain();
                    jsonLoaded = true;
          
@@ -1291,7 +1396,8 @@
          { name: "Stagno", price: 30, category: "Metalli", subcategory: "Base", tier: "Base" }
        ];
           
-          products = [...defaultProducts.map(p => ({ ...p, qty: 0 }))];
+          products = [...defaultProducts.map(p => ({ ...p, basePrice: p.price, qty: 0 }))];
+          applicaStatoSalvatoAiProdotti();
           renderMain();
           
        // Mostra messaggio di successo
@@ -1429,9 +1535,44 @@
        const price = document.createElement("div");
        price.className = `product-price ${getCurrencyClass(p.price)}`;
        price.textContent = formatCurrency(p.price);
+
+      const priceEditor = document.createElement("div");
+      priceEditor.className = "price-editor";
+
+      const priceInput = document.createElement("input");
+      priceInput.type = "number";
+      priceInput.className = "price-input";
+      priceInput.min = "0";
+      priceInput.step = "0.1";
+      priceInput.value = p.price;
+      priceInput.title = "Prezzo personalizzato";
+      priceInput.addEventListener("input", () => {
+        const nuovoPrezzo = parseFloat(priceInput.value);
+        if (!Number.isFinite(nuovoPrezzo) || nuovoPrezzo < 0) {
+          return;
+        }
+
+        products[globalIndex].price = nuovoPrezzo;
+        renderMain();
+        salvaDati();
+      });
+
+      const resetPriceBtn = document.createElement("button");
+      resetPriceBtn.type = "button";
+      resetPriceBtn.className = "price-reset-btn";
+      resetPriceBtn.textContent = "Reset";
+      resetPriceBtn.addEventListener("click", () => {
+        products[globalIndex].price = products[globalIndex].basePrice;
+        renderMain();
+        salvaDati();
+      });
+
+      priceEditor.appendChild(priceInput);
+      priceEditor.appendChild(resetPriceBtn);
        
        productDetails.appendChild(name);
        productDetails.appendChild(price);
+      productDetails.appendChild(priceEditor);
        
        productInfo.appendChild(productDetails);
 
@@ -1447,6 +1588,7 @@
            qty.value = currentValue - 1;
            products[globalIndex].qty = currentValue - 1;
            updateDistribution();
+          salvaDati();
          }
        });
  
@@ -1459,6 +1601,7 @@
        qty.addEventListener("input", () => {
          products[globalIndex].qty = parseInt(qty.value) || 0;
          updateDistribution();
+        salvaDati();
        });
  
        const plusBtn = document.createElement("button");
@@ -1469,6 +1612,7 @@
          qty.value = currentValue + 1;
          products[globalIndex].qty = currentValue + 1;
          updateDistribution();
+        salvaDati();
        });
 
        quantityContainer.appendChild(minusBtn);
@@ -1856,6 +2000,7 @@
       const currentValue = parseInt(participantsInput.value) || 1;
       participantsInput.value = currentValue + 1;
       updateDistribution();
+      salvaDati();
     }
 
     function decreaseParticipants() {
@@ -1863,12 +2008,19 @@
       if (currentValue > 1) {
         participantsInput.value = currentValue - 1;
         updateDistribution();
+        salvaDati();
       }
     }
 
     // Event listeners
-    participantsInput.addEventListener("input", updateDistribution);
-    document.getElementById('unified-view-toggle').addEventListener("change", updateDistribution);
+    participantsInput.addEventListener("input", () => {
+      updateDistribution();
+      salvaDati();
+    });
+    document.getElementById('unified-view-toggle').addEventListener("change", () => {
+      updateDistribution();
+      salvaDati();
+    });
 
     // Funzione per generare la lista degli oggetti presi in abisso
     function generateAbyssList() {
@@ -1943,7 +2095,8 @@
       }
     }
 
-     // Inizializzazione
+    // Inizializzazione
+    caricaDati();
      loadProducts();
    </script>
  </body>
