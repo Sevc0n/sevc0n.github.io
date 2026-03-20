@@ -242,6 +242,10 @@
       background: rgba(255, 255, 255, 0.16);
     }
 
+    #prices-editor .product {
+      margin: 10px 0;
+    }
+
     .tier-badge {
       display: inline-block;
       padding: 2px 8px;
@@ -1196,6 +1200,14 @@
              <div id="distribution-results"></div>
            </div>
          </div>
+
+        <div class="card" style="grid-column: 1 / -1; padding: 35px;">
+          <h2 style="padding-right: 0; text-align: center; margin-bottom: 20px;">Prezzi Personalizzati</h2>
+          <div style="text-align: center; margin-bottom: 20px; color: rgba(255,255,255,0.75); font-size: 0.95rem;">
+            Puoi lasciare il campo vuoto (cancella le cifre) per tornare al prezzo base.
+          </div>
+          <div id="prices-editor"></div>
+        </div>
        </div>
      </main>
  
@@ -1235,6 +1247,7 @@
     let stateCache = null;
      const distributionResults = document.getElementById("distribution-results");
      const participantsInput = document.getElementById("participants");
+    const pricesEditorContainer = document.getElementById('prices-editor');
  
     function caricaDati() {
       const datiSalvati = localStorage.getItem(STORAGE_KEY);
@@ -1445,6 +1458,160 @@
        }
      }
  
+    function isCustomPrice(product) {
+      if (!product || typeof product.basePrice !== 'number') return false;
+      // Tolleranza per gestire float
+      return Math.abs(product.price - product.basePrice) > 1e-9;
+    }
+
+    function updateProductPriceDisplays() {
+      // Aggiorna SOLO i prezzi mostrati nella "Lista Materiali"
+      const priceEls = document.querySelectorAll('[data-product-price-index]');
+      priceEls.forEach(el => {
+        const idx = parseInt(el.getAttribute('data-product-price-index'), 10);
+        if (!Number.isFinite(idx) || !products[idx]) return;
+        const prod = products[idx];
+        el.textContent = formatCurrency(prod.price);
+        el.className = `product-price ${getCurrencyClass(prod.price)}`;
+      });
+    }
+
+    function createPriceRow(p, idx) {
+      const row = document.createElement("div");
+      row.className = "product";
+
+      const productInfo = document.createElement("div");
+      productInfo.className = "product-info";
+
+      const productDetails = document.createElement("div");
+      productDetails.className = "product-details";
+
+      const name = document.createElement("div");
+      name.className = "product-name";
+      name.textContent = p.name;
+
+      const tierBadge = document.createElement("span");
+      tierBadge.className = `tier-badge ${getTierClass(p.tier)}`;
+      tierBadge.textContent = p.tier;
+      name.appendChild(tierBadge);
+
+      const editorWrap = document.createElement("div");
+      editorWrap.className = "price-editor";
+      editorWrap.style.marginTop = "6px";
+
+      const priceInput = document.createElement("input");
+      priceInput.type = "number";
+      priceInput.className = "price-input";
+      priceInput.min = "0";
+      priceInput.step = "0.1";
+      priceInput.title = "Prezzo personalizzato";
+      priceInput.placeholder = formatCurrency(p.basePrice);
+      priceInput.value = isCustomPrice(p) ? String(p.price) : '';
+
+      priceInput.addEventListener("input", () => {
+        const prod = products[idx];
+        if (!prod) return;
+
+        const raw = priceInput.value.trim();
+        if (raw === '') {
+          prod.price = prod.basePrice;
+        } else {
+          const next = parseFloat(raw);
+          if (!Number.isFinite(next) || next < 0) return;
+          prod.price = next;
+
+          // Se inserisci il prezzo base, riportiamo il campo a "vuoto"
+          if (Math.abs(prod.price - prod.basePrice) <= 1e-9) {
+            prod.price = prod.basePrice;
+            priceInput.value = '';
+          }
+        }
+
+        updateProductPriceDisplays();
+        updateDistribution();
+        salvaDati();
+      });
+
+      const resetPriceBtn = document.createElement("button");
+      resetPriceBtn.type = "button";
+      resetPriceBtn.className = "price-reset-btn";
+      resetPriceBtn.textContent = "Reset";
+      resetPriceBtn.addEventListener("click", () => {
+        const prod = products[idx];
+        if (!prod) return;
+        prod.price = prod.basePrice;
+        priceInput.value = '';
+        updateProductPriceDisplays();
+        updateDistribution();
+        salvaDati();
+      });
+
+      editorWrap.appendChild(priceInput);
+      editorWrap.appendChild(resetPriceBtn);
+
+      productDetails.appendChild(name);
+      productDetails.appendChild(editorWrap);
+      productInfo.appendChild(productDetails);
+      row.appendChild(productInfo);
+
+      return row;
+    }
+
+    function renderPricesEditor() {
+      if (!pricesEditorContainer) return;
+      if (!Array.isArray(products) || products.length === 0) {
+        pricesEditorContainer.innerHTML = '';
+        return;
+      }
+
+      pricesEditorContainer.innerHTML = "";
+
+      const categories = [...new Set(products.map(p => p.category))];
+
+      categories.forEach(category => {
+        const categoryDiv = document.createElement("div");
+        categoryDiv.className = "category-section";
+
+        const categoryTitle = document.createElement("h3");
+        categoryTitle.className = "category-title";
+        categoryTitle.textContent = category === "Cristalli" ? `Materiali dai ${category}` : category;
+        categoryDiv.appendChild(categoryTitle);
+
+        if (category === "Cristalli") {
+          const subcategories = [...new Set(products.filter(p => p.category === category).map(p => p.subcategory))];
+
+          subcategories.forEach(subcategory => {
+            const subcategoryDiv = document.createElement("div");
+            subcategoryDiv.className = "subcategoryDiv";
+
+            const subcategoryTitle = document.createElement("h4");
+            subcategoryTitle.className = "subcategoryTitle";
+            subcategoryTitle.textContent = subcategory;
+            subcategoryDiv.appendChild(subcategoryTitle);
+
+            const productsContainer = document.createElement("div");
+            productsContainer.style.width = "100%";
+
+            products.forEach((p, idx) => {
+              if (p.category === category && p.subcategory === subcategory) {
+                productsContainer.appendChild(createPriceRow(p, idx));
+              }
+            });
+
+            subcategoryDiv.appendChild(productsContainer);
+            categoryDiv.appendChild(subcategoryDiv);
+          });
+        } else {
+          products.forEach((p, idx) => {
+            if (p.category !== category) return;
+            categoryDiv.appendChild(createPriceRow(p, idx));
+          });
+        }
+
+        pricesEditorContainer.appendChild(categoryDiv);
+      });
+    }
+
      function renderMain() {
        const productList = document.getElementById("product-list");
        productList.innerHTML = "";
@@ -1510,6 +1677,7 @@
          productList.appendChild(categoryDiv);
        });
  
+       renderPricesEditor();
        updateDistribution();
      }
  
@@ -1535,44 +1703,10 @@
        const price = document.createElement("div");
        price.className = `product-price ${getCurrencyClass(p.price)}`;
        price.textContent = formatCurrency(p.price);
-
-      const priceEditor = document.createElement("div");
-      priceEditor.className = "price-editor";
-
-      const priceInput = document.createElement("input");
-      priceInput.type = "number";
-      priceInput.className = "price-input";
-      priceInput.min = "0";
-      priceInput.step = "0.1";
-      priceInput.value = p.price;
-      priceInput.title = "Prezzo personalizzato";
-      priceInput.addEventListener("input", () => {
-        const nuovoPrezzo = parseFloat(priceInput.value);
-        if (!Number.isFinite(nuovoPrezzo) || nuovoPrezzo < 0) {
-          return;
-        }
-
-        products[globalIndex].price = nuovoPrezzo;
-        renderMain();
-        salvaDati();
-      });
-
-      const resetPriceBtn = document.createElement("button");
-      resetPriceBtn.type = "button";
-      resetPriceBtn.className = "price-reset-btn";
-      resetPriceBtn.textContent = "Reset";
-      resetPriceBtn.addEventListener("click", () => {
-        products[globalIndex].price = products[globalIndex].basePrice;
-        renderMain();
-        salvaDati();
-      });
-
-      priceEditor.appendChild(priceInput);
-      priceEditor.appendChild(resetPriceBtn);
+       price.dataset.productPriceIndex = String(globalIndex);
        
        productDetails.appendChild(name);
        productDetails.appendChild(price);
-      productDetails.appendChild(priceEditor);
        
        productInfo.appendChild(productDetails);
 
