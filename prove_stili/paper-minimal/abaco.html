@@ -1,25 +1,1129 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
+  <base href="../../abaco/">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Paper Minimal - Abaco</title>
+  <title>paper-minimal - Abaco</title>
+  <link rel="icon" type="image/png" href="../logo.png">
+  <link rel="shortcut icon" type="image/png" href="../logo.png">
+  <link rel="apple-touch-icon" href="../logo.png">
   <style>
-    body { margin: 0; font-family: Georgia, serif; background: #f7f4ed; color: #2f2a1f; }
-    .wrap { width: min(1200px, 96vw); margin: 18px auto; }
-    .top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-    .tag { padding: 8px 12px; border: 1px solid #cdbf9c; border-radius: 999px; background: #fffaf0; }
-    a { color: #6b4f1d; text-decoration: none; }
-    iframe { width: 100%; height: calc(100vh - 90px); border: 1px solid #decfa9; border-radius: 12px; background: #fff; }
+body{font-family:Georgia,serif!important;background:#efe7d5!important;color:#2e2618!important}
+      .container,.card,.results-card,.list-modal-content,.modal-content{background:#fff8eb!important;border:1px solid #cdbb98!important;box-shadow:none!important}
+      h1,.card h2,.results-card h2{color:#6f511f!important}
+      .product{background:#f6eddd!important;border-color:#d7c2a0!important}
+      .product-price,.currency-br,.currency-mixed{color:#4b8a4a!important}
+      .quantity-btn{border-color:#8b6a2e!important;color:#8b6a2e!important;background:#e8dcc5!important}
+      .quantity-btn:hover{background:#8b6a2e!important;color:#fff8eb!important}
+      .contact-item,.list-btn,#reload-data{background:#efe0c8!important;border-color:#b79866!important;color:#553d1f!important}
+      .copy-btn{background:#6f511f!important}
   </style>
-</head>
-<body>
-  <div class="wrap">
-    <div class="top">
-      <div class="tag">Concept: Paper Minimal · Abaco ufficiale embedded</div>
-      <a href="index.html">Apri versione Homepage</a>
-    </div>
-    <iframe src="../../abaco/index.html" title="Abaco ufficiale"></iframe>
+ </head>
+ <body>
+   <div class="container">
+           <header>
+                 <h1><img src="../logo.png" alt="Abaco Logo" class="logo" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline';">Abaco per Divisione Abisso</h1>
+        <p class="subtitle">Divisore intelligente per bottini di abisso</p>
+                 <a href="../" style="position: absolute; top: 20px; right: 20px; color: #63b3ed; text-decoration: none; font-size: 0.9rem; padding: 8px 12px; border: 1px solid rgba(99, 179, 237, 0.3); border-radius: 8px; transition: all 0.3s ease; cursor: pointer; display: block; width: auto; height: auto; z-index: 10;" onmouseover="this.style.background='rgba(99, 179, 237, 0.1)'" onmouseout="this.style.background='transparent'">🏠 Homepage</a>
+      </header>
+ 
+     <main>
+       <div class="grid">
+                   <div class="card">
+            <h2 style="text-align: center; position: relative;">
+              Lista Materiali
+              <div style="position: absolute; right: 0; top: 50%; transform: translateY(-50%); display: flex; gap: 8px; align-items: center;">
+                <button class="list-btn" style="margin: 0; font-size: 0.8rem; padding: 5px 10px;" onclick="generateAbyssList()">📋 Lista</button>
+                <button id="reload-data" style="background: rgba(99, 179, 237, 0.2); border: 1px solid rgba(99, 179, 237, 0.5); color: #63b3ed; padding: 5px 10px; border-radius: 5px; cursor: pointer; font-size: 0.8rem;" onclick="reloadData()">🔄 Ricarica Dati</button>
+              </div>
+            </h2>
+            <div id="product-list">
+              <div class="loading">Caricamento materiali in corso...</div>
+            </div>
+          </div>
+ 
+         <div>
+           <div class="card participants-section">
+             <h2>Partecipanti</h2>
+             <label class="participants-label">Numero di partecipanti:</label>
+             <div class="participants-controls">
+               <button class="quantity-btn minus-btn" onclick="decreaseParticipants()">-</button>
+             <input type="number" id="participants" min="1" value="4">
+               <button class="quantity-btn plus-btn" onclick="increaseParticipants()">+</button>
+             </div>
+             <div class="toggle-container">
+               <span class="toggle-label">Visualizzazione separata</span>
+               <label class="toggle-switch">
+                 <input type="checkbox" id="unified-view-toggle" checked>
+                 <span class="toggle-slider"></span>
+               </label>
+               <span class="toggle-label">Lista unificata</span>
+             </div>
+           </div>
+ 
+           <div class="card results-card">
+             <h2>Distribuzione</h2>
+             <div id="distribution-results"></div>
+           </div>
+         </div>
+
+        <div style="grid-column: 1 / -1; text-align: center; margin-top: -5px; margin-bottom: 18px;">
+          <button id="toggle-prices-btn" class="list-btn" style="margin: 0 auto;" onclick="togglePricesEditor()">
+            Mostra prezzi personalizzati
+          </button>
+        </div>
+
+        <div id="prices-card" class="card" style="grid-column: 1 / -1; padding: 35px; display: none;">
+          <h2 style="padding-right: 0; text-align: center; margin-bottom: 20px;">Prezzi Personalizzati</h2>
+          <div style="text-align: center; margin-bottom: 20px; color: rgba(255,255,255,0.75); font-size: 0.95rem;">
+            Puoi lasciare il campo vuoto (cancella le cifre) per tornare al prezzo base.
+          </div>
+          <div id="prices-editor"></div>
+        </div>
+       </div>
+     </main>
+ 
+           <div class="contacts-section">
+        <div class="contacts-title">📞 Contatti</div>
+        <div>
+          <span class="contact-item">
+            🎮 Discord: <strong>picciobeffa</strong>
+          </span>
+          <span class="contact-item">
+            📱 Telegram: <strong>@piccionenberg</strong>
+          </span>
+        </div>
+        <div style="margin-top: 20px; padding-top: 15px; border-top: 1px solid rgba(255, 255, 255, 0.1); display: flex; align-items: center; justify-content: center; gap: 10px; font-size: 0.9rem; color: #a0aec0;">
+                     <img src="../logo.png" alt="Sevcon Logo" style="width: 16px; height: 16px; border-radius: 3px;" onerror="this.style.display='none';">
+          © 2025 Sevcon by piccionenberg - Creato con ❤️ e per noia
+        </div>
+      </div>
   </div>
-</body>
+
+  <!-- Modal per la lista -->
+  <div id="list-modal" class="list-modal">
+    <div class="list-modal-content">
+      <div class="list-modal-header">
+        <h3 class="list-modal-title" id="list-modal-title">Lista Abisso</h3>
+        <span class="close-modal" onclick="closeListModal()">&times;</span>
+      </div>
+      <textarea id="list-textarea" class="list-textarea" readonly></textarea>
+      <button class="copy-btn" onclick="copyList()">📋 Copia Lista</button>
+    </div>
+  </div>
+
+   <script>
+    const STORAGE_KEY = 'abaco_state';
+    let defaultProducts = [];
+     let products = [];
+    let stateCache = null;
+     const distributionResults = document.getElementById("distribution-results");
+     const participantsInput = document.getElementById("participants");
+    const pricesEditorContainer = document.getElementById('prices-editor');
+    const pricesCard = document.getElementById('prices-card');
+ 
+    function caricaDati() {
+      const datiSalvati = localStorage.getItem(STORAGE_KEY);
+      if (!datiSalvati) return;
+
+      try {
+        stateCache = JSON.parse(datiSalvati);
+      } catch (e) {
+        console.error('Errore nel caricamento dati abaco:', e);
+        stateCache = null;
+      }
+    }
+
+    function salvaDati() {
+      const quantities = {};
+      const customPrices = {};
+
+      products.forEach(p => {
+        if (p.qty > 0) {
+          quantities[p.name] = p.qty;
+        }
+        if (typeof p.basePrice === 'number' && p.price !== p.basePrice) {
+          customPrices[p.name] = p.price;
+        }
+      });
+
+      const stato = {
+        participants: parseInt(participantsInput.value, 10) || 1,
+        unifiedView: document.getElementById('unified-view-toggle').checked,
+        quantities,
+        customPrices
+      };
+
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(stato));
+    }
+
+    function applicaStatoSalvatoAiProdotti() {
+      if (!stateCache || !Array.isArray(products)) return;
+
+      const quantities = stateCache.quantities || {};
+      const customPrices = stateCache.customPrices || {};
+
+      products = products.map(product => {
+        const savedQty = quantities[product.name];
+        const savedPrice = customPrices[product.name];
+        const parsedQty = Number.isFinite(savedQty) ? savedQty : parseInt(savedQty, 10);
+        const parsedPrice = Number.isFinite(savedPrice) ? savedPrice : parseFloat(savedPrice);
+
+        return {
+          ...product,
+          qty: Number.isFinite(parsedQty) ? parsedQty : 0,
+          price: Number.isFinite(parsedPrice) ? parsedPrice : product.price
+        };
+      });
+
+      if (Number.isFinite(stateCache.participants) || !Number.isNaN(parseInt(stateCache.participants, 10))) {
+        participantsInput.value = Number.isFinite(stateCache.participants)
+          ? stateCache.participants
+          : parseInt(stateCache.participants, 10);
+      }
+
+      if (typeof stateCache.unifiedView === 'boolean') {
+        document.getElementById('unified-view-toggle').checked = stateCache.unifiedView;
+      }
+    }
+
+     // Carica i prodotti dal file JSON
+     async function loadProducts() {
+       const productList = document.getElementById("product-list");
+       let jsonLoaded = false;
+       
+       // Mostra sempre il messaggio di caricamento iniziale
+       productList.innerHTML = `
+         <div class="loading">
+           ⏳ Caricamento dati in corso...<br>
+           <small>Connessione al database materiali</small>
+         </div>
+       `;
+       
+       try {
+         console.log('=== DEBUG CARICAMENTO JSON ===');
+         console.log('Tentativo di caricamento JSON da:', window.location.href);
+         
+         // Controlla se è un problema CORS
+         if (window.location.protocol === 'file:') {
+           console.log('Rilevato protocollo file:// - problema CORS');
+           throw new Error('CORS_BLOCKED');
+         }
+         
+         // Prova a caricare il JSON
+         const response = await fetch('./oggetti_abaco.json');
+         
+         if (!response.ok) {
+           throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+         }
+         
+         const data = await response.json();
+         console.log('JSON caricato con successo:', data);
+         
+        defaultProducts = data;
+        products = [...defaultProducts.map(p => ({ ...p, basePrice: p.price, qty: 0 }))];
+        applicaStatoSalvatoAiProdotti();
+         renderMain();
+                   jsonLoaded = true;
+         
+       } catch (error) {
+         console.error('Errore nel caricamento JSON:', error);
+         
+         if (error.message === 'CORS_BLOCKED') {
+           // Mostra messaggio CORS con soluzioni
+           productList.innerHTML = `
+             <div class="warning">
+               <h3>⚠️ Problema di Caricamento</h3>
+               <p>Il file JSON non può essere caricato direttamente dal browser per motivi di sicurezza.</p>
+               <p><strong>Soluzioni:</strong></p>
+               <ul style="text-align: left; margin: 10px 0;">
+                 <li>Usa un server locale (es. Live Server in VS Code)</li>
+                 <li>Carica il file su un server web</li>
+                 <li>Oppure clicca il pulsante qui sotto per usare i dati di test</li>
+               </ul>
+               <button onclick="loadProductsFromFallback()" style="background: #28a745; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-size: 14px; margin-top: 10px;">
+                 Usa Dati di Test
+               </button>
+             </div>
+           `;
+         } else {
+           // Mostra errore generico
+           productList.innerHTML = `
+             <div class="error">
+               <h3>❌ Errore di Caricamento</h3>
+               <p>Impossibile caricare i dati dei materiali: ${error.message}</p>
+               <button onclick="loadProductsFromFallback()" style="background: #28a745; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-size: 14px; margin-top: 10px;">
+                 Usa Dati di Test
+               </button>
+             </div>
+           `;
+         }
+       }
+     }
+
+     function loadProductsFromFallback() {
+       console.log('Caricamento dati di fallback...');
+       const productList = document.getElementById("product-list");
+       
+       // Dati di fallback con materiali per pozioni
+       defaultProducts = [
+         { name: "Brim", price: 50, category: "Reagenti", subcategory: "Novizio", tier: "Novizio" },
+         { name: "Carne marcia", price: 75, category: "Reagenti", subcategory: "Novizio", tier: "Novizio" },
+         { name: "Quarzo", price: 100, category: "Reagenti", subcategory: "Novizio", tier: "Novizio" },
+         { name: "Therium", price: 125, category: "Reagenti", subcategory: "Novizio", tier: "Novizio" },
+         { name: "Occhio di ragno", price: 200, category: "Reagenti", subcategory: "Avanzato", tier: "Avanzato" },
+         { name: "Ametista", price: 250, category: "Reagenti", subcategory: "Avanzato", tier: "Avanzato" },
+         { name: "Blaze Powder", price: 300, category: "Reagenti", subcategory: "Esperto", tier: "Esperto" },
+         { name: "Membrana", price: 400, category: "Reagenti", subcategory: "Esperto", tier: "Esperto" },
+         { name: "Slime Ball", price: 500, category: "Reagenti", subcategory: "Esperto", tier: "Esperto" },
+         { name: "Prismarine Shard", price: 600, category: "Reagenti", subcategory: "Custode", tier: "Custode" },
+         { name: "Lost Soul", price: 800, category: "Reagenti", subcategory: "Maestro", tier: "Maestro" },
+         { name: "Demon Heart", price: 1000, category: "Reagenti", subcategory: "Maestro", tier: "Maestro" },
+         { name: "Stagno", price: 30, category: "Metalli", subcategory: "Base", tier: "Base" }
+       ];
+          
+          products = [...defaultProducts.map(p => ({ ...p, basePrice: p.price, qty: 0 }))];
+          applicaStatoSalvatoAiProdotti();
+          renderMain();
+          
+       // Mostra messaggio di successo
+          setTimeout(() => {
+            productList.innerHTML = `
+           <div class="loading">
+             ✅ Dati di test caricati con successo!<br>
+             <small>Ricarica la pagina per provare il caricamento JSON</small>
+              </div>
+            `;
+         setTimeout(() => {
+           renderMain();
+          }, 2000);
+       }, 1000);
+     }
+
+     function getTierClass(tier) {
+      // Normalizza il testo per trasformarlo in una classe CSS valida
+      const safe = String(tier)
+        .toLowerCase()
+        .replace(/\s+/g, '-')
+        .replace(/[^a-z0-9\-_]/g, '');
+      return `tier-${safe}`;
+     }
+
+     // Funzione per formattare la valuta (conversione automatica br -> a)
+     function formatCurrency(value) {
+       if (value >= 100) {
+         const argenti = Math.floor(value / 100);
+         const bronzini = value % 100;
+         
+         if (bronzini === 0) {
+           return `${argenti}a`;
+         } else {
+           const bronziniDisplay = (bronzini % 1 === 0) ? bronzini.toString() : bronzini.toFixed(1);
+           return `${argenti}a ${bronziniDisplay}br`;
+         }
+       } else {
+         const display = (value % 1 === 0) ? value.toString() : value.toFixed(1);
+         return `${display}br`;
+       }
+     }
+ 
+     // Funzione per applicare la classe CSS corretta in base al valore
+     function getCurrencyClass(value) {
+       if (value >= 100) {
+         return 'currency-mixed';
+       } else {
+         return 'currency-br';
+       }
+     }
+ 
+    function isCustomPrice(product) {
+      if (!product || typeof product.basePrice !== 'number') return false;
+      // Tolleranza per gestire float
+      return Math.abs(product.price - product.basePrice) > 1e-9;
+    }
+
+    function updateProductPriceDisplays() {
+      // Aggiorna SOLO i prezzi mostrati nella "Lista Materiali"
+      const priceEls = document.querySelectorAll('[data-product-price-index]');
+      priceEls.forEach(el => {
+        const idx = parseInt(el.getAttribute('data-product-price-index'), 10);
+        if (!Number.isFinite(idx) || !products[idx]) return;
+        const prod = products[idx];
+        el.textContent = formatCurrency(prod.price);
+        el.className = `product-price ${getCurrencyClass(prod.price)}`;
+      });
+    }
+
+    function createPriceRow(p, idx) {
+      const row = document.createElement("div");
+      row.className = "product";
+
+      const productInfo = document.createElement("div");
+      productInfo.className = "product-info";
+
+      const productDetails = document.createElement("div");
+      productDetails.className = "product-details";
+
+      const name = document.createElement("div");
+      name.className = "product-name";
+      name.textContent = p.name;
+
+      const tierBadge = document.createElement("span");
+      tierBadge.className = `tier-badge ${getTierClass(p.tier)}`;
+      tierBadge.textContent = p.tier;
+      name.appendChild(tierBadge);
+
+      const editorWrap = document.createElement("div");
+      editorWrap.className = "price-editor";
+      editorWrap.style.marginTop = "6px";
+
+      const priceInput = document.createElement("input");
+      priceInput.type = "number";
+      priceInput.className = "price-input";
+      priceInput.min = "0";
+      priceInput.step = "0.1";
+      priceInput.title = "Prezzo personalizzato";
+      priceInput.placeholder = formatCurrency(p.basePrice);
+      priceInput.value = isCustomPrice(p) ? String(p.price) : '';
+
+      priceInput.addEventListener("input", () => {
+        const prod = products[idx];
+        if (!prod) return;
+
+        const raw = priceInput.value.trim();
+        if (raw === '') {
+          prod.price = prod.basePrice;
+        } else {
+          const next = parseFloat(raw);
+          if (!Number.isFinite(next) || next < 0) return;
+          prod.price = next;
+
+          // Se inserisci il prezzo base, riportiamo il campo a "vuoto"
+          if (Math.abs(prod.price - prod.basePrice) <= 1e-9) {
+            prod.price = prod.basePrice;
+            priceInput.value = '';
+          }
+        }
+
+        updateProductPriceDisplays();
+        updateDistribution();
+        salvaDati();
+      });
+
+      const resetPriceBtn = document.createElement("button");
+      resetPriceBtn.type = "button";
+      resetPriceBtn.className = "price-reset-btn";
+      resetPriceBtn.textContent = "Reset";
+      resetPriceBtn.addEventListener("click", () => {
+        const prod = products[idx];
+        if (!prod) return;
+        prod.price = prod.basePrice;
+        priceInput.value = '';
+        updateProductPriceDisplays();
+        updateDistribution();
+        salvaDati();
+      });
+
+      editorWrap.appendChild(priceInput);
+      editorWrap.appendChild(resetPriceBtn);
+
+      productDetails.appendChild(name);
+      productDetails.appendChild(editorWrap);
+      productInfo.appendChild(productDetails);
+      row.appendChild(productInfo);
+
+      return row;
+    }
+
+    function renderPricesEditor() {
+      if (!pricesEditorContainer) return;
+      if (!Array.isArray(products) || products.length === 0) {
+        pricesEditorContainer.innerHTML = '';
+        return;
+      }
+
+      pricesEditorContainer.innerHTML = "";
+
+      const categories = [...new Set(products.map(p => p.category))];
+
+      categories.forEach(category => {
+        const categoryDiv = document.createElement("div");
+        categoryDiv.className = "category-section";
+
+        const categoryTitle = document.createElement("h3");
+        categoryTitle.className = "category-title";
+        categoryTitle.textContent = category === "Cristalli" ? `Materiali dai ${category}` : category;
+        categoryDiv.appendChild(categoryTitle);
+
+        if (category === "Cristalli") {
+          const subcategories = [...new Set(products.filter(p => p.category === category).map(p => p.subcategory))];
+
+          subcategories.forEach(subcategory => {
+            const subcategoryDiv = document.createElement("div");
+            subcategoryDiv.className = "subcategoryDiv";
+
+            const subcategoryTitle = document.createElement("h4");
+            subcategoryTitle.className = "subcategoryTitle";
+            subcategoryTitle.textContent = subcategory;
+            subcategoryDiv.appendChild(subcategoryTitle);
+
+            const productsContainer = document.createElement("div");
+            productsContainer.style.width = "100%";
+
+            products.forEach((p, idx) => {
+              if (p.category === category && p.subcategory === subcategory) {
+                productsContainer.appendChild(createPriceRow(p, idx));
+              }
+            });
+
+            subcategoryDiv.appendChild(productsContainer);
+            categoryDiv.appendChild(subcategoryDiv);
+          });
+        } else {
+          products.forEach((p, idx) => {
+            if (p.category !== category) return;
+            categoryDiv.appendChild(createPriceRow(p, idx));
+          });
+        }
+
+        pricesEditorContainer.appendChild(categoryDiv);
+      });
+    }
+
+     function renderMain() {
+       const productList = document.getElementById("product-list");
+       productList.innerHTML = "";
+ 
+       const categories = [...new Set(products.map(p => p.category))];
+       
+       categories.forEach(category => {
+         const categoryDiv = document.createElement("div");
+         categoryDiv.className = "category-section";
+         
+         const categoryTitle = document.createElement("h3");
+         categoryTitle.className = "category-title";
+         categoryTitle.textContent = category === "Cristalli" ? `Materiali dai ${category}` : category;
+         categoryDiv.appendChild(categoryTitle);
+ 
+        if (category === "Cristalli") {
+          // Per i cristalli, raggruppa per sottocategorie
+          const subcategories = [...new Set(products.filter(p => p.category === category).map(p => p.subcategory))];
+          
+          subcategories.forEach(subcategory => {
+            // Container per la sottocategoria
+            const subcategoryDiv = document.createElement("div");
+            subcategoryDiv.className = "subcategoryDiv";
+            
+            // Titolo della sottocategoria
+            const subcategoryTitle = document.createElement("h4");
+            subcategoryTitle.className = "subcategoryTitle";
+            subcategoryTitle.textContent = subcategory;
+            subcategoryDiv.appendChild(subcategoryTitle);
+            
+            // Container per i prodotti della sottocategoria
+            const productsContainer = document.createElement("div");
+            productsContainer.style.width = "100%";
+            productsContainer.style.clear = "both";
+            
+            // Filtra i prodotti per questa sottocategoria
+            const subcategoryProducts = products.filter(p => p.category === category && p.subcategory === subcategory);
+            
+            // Aggiungi ogni prodotto al container
+            subcategoryProducts.forEach((p) => {
+              const globalIndex = products.indexOf(p);
+              const productDiv = createProductElement(p, globalIndex);
+              productsContainer.appendChild(productDiv);
+            });
+            
+            // Aggiungi il container dei prodotti alla sottocategoria
+            subcategoryDiv.appendChild(productsContainer);
+            
+            // Aggiungi la sottocategoria alla categoria
+            categoryDiv.appendChild(subcategoryDiv);
+          });
+        } else {
+          // Per altre categorie, mostra direttamente i prodotti
+          const categoryProducts = products.filter(p => p.category === category);
+          
+          categoryProducts.forEach((p) => {
+            const globalIndex = products.indexOf(p);
+            const productDiv = createProductElement(p, globalIndex);
+            categoryDiv.appendChild(productDiv);
+          });
+        }
+         
+         productList.appendChild(categoryDiv);
+       });
+ 
+       renderPricesEditor();
+       updateDistribution();
+     }
+
+    function togglePricesEditor() {
+      if (!pricesCard) return;
+      const btn = document.getElementById('toggle-prices-btn');
+      const isHidden = pricesCard.style.display === 'none';
+      if (isHidden) {
+        pricesCard.style.display = '';
+        if (btn) btn.textContent = 'Nascondi prezzi personalizzati';
+      } else {
+        pricesCard.style.display = 'none';
+        if (btn) btn.textContent = 'Mostra prezzi personalizzati';
+      }
+    }
+ 
+     function createProductElement(p, globalIndex) {
+       const div = document.createElement("div");
+       div.className = "product";
+ 
+       const productInfo = document.createElement("div");
+       productInfo.className = "product-info";
+       
+       const productDetails = document.createElement("div");
+       productDetails.className = "product-details";
+       
+       const name = document.createElement("div");
+       name.className = "product-name";
+       name.textContent = p.name;
+       
+       const tierBadge = document.createElement("span");
+       tierBadge.className = `tier-badge ${getTierClass(p.tier)}`;
+       tierBadge.textContent = p.tier;
+       name.appendChild(tierBadge);
+       
+       const price = document.createElement("div");
+       price.className = `product-price ${getCurrencyClass(p.price)}`;
+       price.textContent = formatCurrency(p.price);
+       price.dataset.productPriceIndex = String(globalIndex);
+       
+       productDetails.appendChild(name);
+       productDetails.appendChild(price);
+       
+       productInfo.appendChild(productDetails);
+
+       const quantityContainer = document.createElement("div");
+       quantityContainer.className = "quantity-container";
+       
+       const minusBtn = document.createElement("button");
+       minusBtn.className = "quantity-btn minus-btn";
+       minusBtn.textContent = "-";
+       minusBtn.addEventListener("click", () => {
+         const currentValue = parseInt(qty.value) || 0;
+         if (currentValue > 0) {
+           qty.value = currentValue - 1;
+           products[globalIndex].qty = currentValue - 1;
+           updateDistribution();
+          salvaDati();
+         }
+       });
+ 
+               const qty = document.createElement("input");
+        qty.type = "number";
+       qty.className = "quantity-input";
+        qty.min = "0";
+        qty.value = p.qty > 0 ? p.qty : "";
+       qty.placeholder = "0";
+       qty.addEventListener("input", () => {
+         products[globalIndex].qty = parseInt(qty.value) || 0;
+         updateDistribution();
+        salvaDati();
+       });
+ 
+       const plusBtn = document.createElement("button");
+       plusBtn.className = "quantity-btn plus-btn";
+       plusBtn.textContent = "+";
+       plusBtn.addEventListener("click", () => {
+         const currentValue = parseInt(qty.value) || 0;
+         qty.value = currentValue + 1;
+         products[globalIndex].qty = currentValue + 1;
+         updateDistribution();
+        salvaDati();
+       });
+
+       quantityContainer.appendChild(minusBtn);
+       quantityContainer.appendChild(qty);
+       quantityContainer.appendChild(plusBtn);
+
+       div.appendChild(productInfo);
+       div.appendChild(quantityContainer);
+       
+       return div;
+     }
+ 
+     function updateDistribution() {
+       const participants = parseInt(participantsInput.value) || 1;
+       const activeItems = products.filter(p => p.qty > 0);
+       const unifiedView = document.getElementById('unified-view-toggle').checked;
+       
+       if (activeItems.length === 0) {
+         distributionResults.innerHTML = '<div class="empty-state">Seleziona alcuni materiali per vedere la distribuzione</div>';
+         return;
+       }
+
+       distributionResults.innerHTML = "";
+       
+       // Array per tenere traccia dei valori di ogni partecipante
+       const participantValues = new Array(participants).fill(0);
+       const participantItems = new Array(participants).fill().map(() => []);
+       
+       // Distribuzione base: divide equamente gli oggetti interi
+       activeItems.forEach(item => {
+         const itemsPerParticipant = Math.floor(item.qty / participants);
+         const totalDistributed = itemsPerParticipant * participants;
+         
+         if (itemsPerParticipant > 0) {
+           for (let i = 0; i < participants; i++) {
+             participantItems[i].push({
+               name: item.name,
+               qty: itemsPerParticipant,
+               price: item.price
+             });
+             participantValues[i] += itemsPerParticipant * item.price;
+           }
+         }
+       });
+       
+       // Calcola l'esubero (oggetti rimanenti)
+       const esuberoItems = [];
+       activeItems.forEach(item => {
+         const itemsPerParticipant = Math.floor(item.qty / participants);
+         const totalDistributed = itemsPerParticipant * participants;
+         const remaining = item.qty - totalDistributed;
+         
+         if (remaining > 0) {
+           esuberoItems.push({
+             name: item.name,
+             qty: remaining,
+             price: item.price
+           });
+         }
+       });
+       
+       // Se c'è esubero, lo distribuisce in modo bilanciato tra i partecipanti
+       if (esuberoItems.length > 0) {
+         const totalEsuberoValue = esuberoItems.reduce((total, item) => total + (item.qty * item.price), 0);
+         
+         // Ordina gli oggetti dell'esubero per valore (dal più alto al più basso)
+         esuberoItems.sort((a, b) => b.price - a.price);
+         
+         // Distribuisce gli oggetti in modo bilanciato
+         esuberoItems.forEach(item => {
+           let remainingQty = item.qty;
+           
+           // Distribuisce gli oggetti uno per uno, sempre al partecipante con valore più basso
+           while (remainingQty > 0) {
+             const qtyToGive = Math.min(1, remainingQty);
+             
+             // Trova il partecipante con il valore più basso
+             let minValueIndex = 0;
+             let minValue = participantValues[0];
+             
+              for (let i = 1; i < participants; i++) {
+               if (participantValues[i] < minValue) {
+                 minValue = participantValues[i];
+                 minValueIndex = i;
+               }
+             }
+             
+             // Aggiunge l'oggetto al partecipante con valore più basso
+             participantItems[minValueIndex].push({
+               name: item.name,
+               qty: qtyToGive,
+               price: item.price,
+               isEsubero: true // Marca come oggetto dell'esubero
+             });
+             
+             // Aggiorna il valore del partecipante
+             participantValues[minValueIndex] += qtyToGive * item.price;
+             
+             remainingQty -= qtyToGive;
+           }
+         });
+       }
+       
+       // Visualizzazione unificata (nuovo sistema)
+       if (unifiedView) {
+         // Mostra messaggio informativo se c'è esubero
+         if (esuberoItems.length > 0) {
+           const totalEsuberoValue = esuberoItems.reduce((total, item) => total + (item.qty * item.price), 0);
+           const infoDiv = document.createElement("div");
+           infoDiv.style.textAlign = "center";
+           infoDiv.style.marginBottom = "20px";
+           infoDiv.style.padding = "15px";
+           infoDiv.style.background = "rgba(99, 179, 237, 0.1)";
+           infoDiv.style.borderRadius = "8px";
+           infoDiv.style.border = "1px solid rgba(99, 179, 237, 0.3)";
+           infoDiv.style.color = "#63b3ed";
+           infoDiv.style.fontSize = "0.9rem";
+           infoDiv.innerHTML = `📦 <strong>Esubero distribuito:</strong> ${formatCurrency(totalEsuberoValue)} distribuito in modo bilanciato tra i partecipanti`;
+           
+           distributionResults.appendChild(infoDiv);
+         }
+         
+         // Mostra i risultati per ogni partecipante (tutti gli oggetti insieme)
+         for (let i = 0; i < participants; i++) {
+           const participantDiv = document.createElement("div");
+           participantDiv.className = "participant-result";
+           
+           const title = document.createElement("div");
+           title.className = "participant-title";
+           title.textContent = `Partecipante ${i + 1}`;
+           participantDiv.appendChild(title);
+           
+           // Raggruppa tutti gli oggetti (base + esubero) per nome, distinguendo base e esubero
+           const groupedItems = {};
+           participantItems[i].forEach(item => {
+             if (!groupedItems[item.name]) {
+               groupedItems[item.name] = {
+                 name: item.name,
+                 baseQty: 0,
+                 esuberoQty: 0,
+                 price: item.price
+               };
+             }
+             if (item.isEsubero) {
+               groupedItems[item.name].esuberoQty += item.qty;
+             } else {
+               groupedItems[item.name].baseQty += item.qty;
+             }
+           });
+           
+           // Mostra tutti gli oggetti raggruppati
+           if (Object.keys(groupedItems).length > 0) {
+             Object.values(groupedItems).forEach(item => {
+               const itemDiv = document.createElement("div");
+               itemDiv.className = "item-distribution";
+               
+               const itemName = document.createElement("span");
+               let nameText = item.name;
+               
+               // Se c'è sia base che esubero, mostra "base xN [+esubero]"
+               if (item.baseQty > 0 && item.esuberoQty > 0) {
+                 const esuberoBadge = document.createElement("span");
+                 esuberoBadge.className = "esubero-badge";
+                 esuberoBadge.textContent = `+${item.esuberoQty}`;
+                 nameText = `${nameText} x${item.baseQty} `;
+                 itemName.textContent = nameText;
+                 itemName.appendChild(esuberoBadge);
+               } else if (item.baseQty > 0) {
+                 // Solo base
+                 itemName.textContent = `${nameText} x${item.baseQty}`;
+               } else if (item.esuberoQty > 0) {
+                 // Solo esubero
+                 itemName.textContent = `${nameText} x${item.esuberoQty}`;
+               }
+               
+               const itemCost = document.createElement("span");
+               const totalQty = item.baseQty + item.esuberoQty;
+               const cost = totalQty * item.price;
+               itemCost.className = getCurrencyClass(cost);
+               itemCost.textContent = formatCurrency(cost);
+               
+               itemDiv.appendChild(itemName);
+               itemDiv.appendChild(itemCost);
+               participantDiv.appendChild(itemDiv);
+             });
+           } else {
+             // Se non ha oggetti, mostra un messaggio
+             const noItemsDiv = document.createElement("div");
+             noItemsDiv.style.textAlign = "center";
+             noItemsDiv.style.padding = "15px";
+             noItemsDiv.style.color = "#a0aec0";
+             noItemsDiv.style.fontStyle = "italic";
+             noItemsDiv.textContent = "Nessun oggetto";
+             participantDiv.appendChild(noItemsDiv);
+           }
+            
+           // Mostra il totale
+           const totalDiv = document.createElement("div");
+           totalDiv.className = "total-cost";
+           const formattedTotal = formatCurrency(participantValues[i]);
+           totalDiv.innerHTML = `Totale: <span class="${getCurrencyClass(participantValues[i])}">${formattedTotal}</span>`;
+           participantDiv.appendChild(totalDiv);
+           
+           distributionResults.appendChild(participantDiv);
+         }
+       } else {
+         // Visualizzazione separata (vecchio sistema)
+         if (esuberoItems.length > 0) {
+           const totalEsuberoValue = esuberoItems.reduce((total, item) => total + (item.qty * item.price), 0);
+           const infoDiv = document.createElement("div");
+           infoDiv.style.textAlign = "center";
+           infoDiv.style.marginTop = "20px";
+           infoDiv.style.padding = "15px";
+           infoDiv.style.background = "rgba(99, 179, 237, 0.1)";
+           infoDiv.style.borderRadius = "8px";
+           infoDiv.style.border = "1px solid rgba(99, 179, 237, 0.3)";
+           infoDiv.style.color = "#63b3ed";
+           infoDiv.style.fontSize = "0.9rem";
+           infoDiv.innerHTML = `📦 <strong>Esubero distribuito:</strong> ${formatCurrency(totalEsuberoValue)} distribuito in modo bilanciato tra i partecipanti`;
+           
+           distributionResults.appendChild(infoDiv);
+         }
+         
+         // Mostra cosa prende ogni partecipante (parte normale, non esubero)
+         const baseDistributionDiv = document.createElement("div");
+         baseDistributionDiv.style.marginBottom = "30px";
+         baseDistributionDiv.style.padding = "20px";
+         baseDistributionDiv.style.background = "rgba(72, 187, 120, 0.1)";
+         baseDistributionDiv.style.borderRadius = "12px";
+         baseDistributionDiv.style.border = "1px solid rgba(72, 187, 120, 0.3)";
+         
+         const baseTitle = document.createElement("h3");
+         baseTitle.style.color = "#68d391";
+         baseTitle.style.fontSize = "1.2rem";
+         baseTitle.style.marginBottom = "15px";
+         baseTitle.style.textAlign = "center";
+         baseTitle.textContent = "🎯 Ogni partecipante prende:";
+         baseDistributionDiv.appendChild(baseTitle);
+         
+         // Raggruppa gli oggetti normali (non esubero) per nome
+         const baseItems = {};
+         for (let i = 0; i < participants; i++) {
+           participantItems[i].forEach(item => {
+             if (!item.isEsubero) {
+               if (!baseItems[item.name]) {
+                 baseItems[item.name] = {
+                   name: item.name,
+                   qty: item.qty,
+                   price: item.price
+                 };
+               }
+             }
+           });
+         }
+         
+         // Mostra gli oggetti base distribuiti
+         Object.values(baseItems).forEach(item => {
+           const itemDiv = document.createElement("div");
+           itemDiv.style.display = "flex";
+           itemDiv.style.justifyContent = "space-between";
+           itemDiv.style.alignItems = "center";
+           itemDiv.style.padding = "8px 12px";
+           itemDiv.style.margin = "5px 0";
+           itemDiv.style.background = "rgba(255, 255, 255, 0.05)";
+           itemDiv.style.borderRadius = "6px";
+           
+           const itemName = document.createElement("span");
+           itemName.textContent = `${item.name} x${item.qty}`;
+           itemName.style.color = "#ffffff";
+           
+           const itemCost = document.createElement("span");
+           const cost = item.qty * item.price;
+           itemCost.className = getCurrencyClass(cost);
+           itemCost.textContent = formatCurrency(cost);
+           
+           itemDiv.appendChild(itemName);
+           itemDiv.appendChild(itemCost);
+           baseDistributionDiv.appendChild(itemDiv);
+         });
+         
+         distributionResults.appendChild(baseDistributionDiv);
+         
+         // Mostra i risultati per ogni partecipante (solo esubero e totali)
+         for (let i = 0; i < participants; i++) {
+           const participantDiv = document.createElement("div");
+           participantDiv.className = "participant-result";
+           
+           const title = document.createElement("div");
+           title.className = "participant-title";
+           title.textContent = `Partecipante ${i + 1}`;
+           participantDiv.appendChild(title);
+           
+           // Mostra solo gli oggetti dell'esubero per questo partecipante
+           const esuberoItemsForParticipant = participantItems[i].filter(item => item.isEsubero);
+           
+           if (esuberoItemsForParticipant.length > 0) {
+             // Raggruppa gli oggetti dell'esubero per nome
+             const groupedEsuberoItems = {};
+             esuberoItemsForParticipant.forEach(item => {
+               if (!groupedEsuberoItems[item.name]) {
+                 groupedEsuberoItems[item.name] = {
+                   name: item.name,
+                   qty: 0,
+                   price: item.price
+                 };
+               }
+               groupedEsuberoItems[item.name].qty += item.qty;
+             });
+             
+             // Mostra gli oggetti dell'esubero raggruppati
+             Object.values(groupedEsuberoItems).forEach(item => {
+               const itemDiv = document.createElement("div");
+               itemDiv.className = "item-distribution";
+               itemDiv.style.background = "rgba(237, 137, 54, 0.2)";
+               itemDiv.style.borderColor = "rgba(237, 137, 54, 0.3)";
+               itemDiv.style.border = "1px solid rgba(237, 137, 54, 0.3)";
+               
+               const itemName = document.createElement("span");
+               itemName.innerHTML = `📦 ${item.name} x${item.qty}`;
+               
+               const itemCost = document.createElement("span");
+               const cost = item.qty * item.price;
+               itemCost.className = getCurrencyClass(cost);
+               itemCost.textContent = formatCurrency(cost);
+               
+               itemDiv.appendChild(itemName);
+               itemDiv.appendChild(itemCost);
+               participantDiv.appendChild(itemDiv);
+             });
+           } else {
+             // Se non ha oggetti dell'esubero, mostra un messaggio
+             const noEsuberoDiv = document.createElement("div");
+             noEsuberoDiv.style.textAlign = "center";
+             noEsuberoDiv.style.padding = "15px";
+             noEsuberoDiv.style.color = "#a0aec0";
+             noEsuberoDiv.style.fontStyle = "italic";
+             noEsuberoDiv.textContent = "Nessun oggetto dell'esubero";
+             participantDiv.appendChild(noEsuberoDiv);
+           }
+            
+           // Mostra il totale (incluso esubero)
+           const totalDiv = document.createElement("div");
+           totalDiv.className = "total-cost";
+           const formattedTotal = formatCurrency(participantValues[i]);
+           totalDiv.innerHTML = `Totale: <span class="${getCurrencyClass(participantValues[i])}">${formattedTotal}</span>`;
+           participantDiv.appendChild(totalDiv);
+           
+           distributionResults.appendChild(participantDiv);
+         }
+       }
+     }
+
+         // Funzione per ricaricare i dati manualmente
+    async function reloadData() {
+      const reloadButton = document.getElementById('reload-data');
+      const originalText = reloadButton.innerHTML;
+      
+      // Mostra che sta caricando
+      reloadButton.innerHTML = '⏳ Caricando...';
+      reloadButton.disabled = true;
+      
+      try {
+        await loadProducts();
+        reloadButton.innerHTML = '✅ Ricaricato!';
+        
+        // Torna al testo originale dopo 2 secondi
+        setTimeout(() => {
+          reloadButton.innerHTML = originalText;
+          reloadButton.disabled = false;
+        }, 2000);
+      } catch (error) {
+        reloadButton.innerHTML = '❌ Errore';
+        console.error('Errore nel ricaricamento:', error);
+        
+        // Torna al testo originale dopo 3 secondi
+        setTimeout(() => {
+          reloadButton.innerHTML = originalText;
+          reloadButton.disabled = false;
+        }, 3000);
+      }
+    }
+
+    // Funzioni per gestire i partecipanti
+    function increaseParticipants() {
+      const currentValue = parseInt(participantsInput.value) || 1;
+      participantsInput.value = currentValue + 1;
+      updateDistribution();
+      salvaDati();
+    }
+
+    function decreaseParticipants() {
+      const currentValue = parseInt(participantsInput.value) || 1;
+      if (currentValue > 1) {
+        participantsInput.value = currentValue - 1;
+        updateDistribution();
+        salvaDati();
+      }
+    }
+
+    // Event listeners
+    participantsInput.addEventListener("input", () => {
+      updateDistribution();
+      salvaDati();
+    });
+    document.getElementById('unified-view-toggle').addEventListener("change", () => {
+      updateDistribution();
+      salvaDati();
+    });
+
+    // Funzione per generare la lista degli oggetti presi in abisso
+    function generateAbyssList() {
+      const activeItems = products.filter(p => p.qty > 0);
+      
+      if (activeItems.length === 0) {
+        alert('Nessun oggetto selezionato!');
+        return;
+      }
+      
+      // Ottieni la data di oggi nel formato italiano
+      const today = new Date();
+      const day = String(today.getDate()).padStart(2, '0');
+      const month = String(today.getMonth() + 1).padStart(2, '0');
+      const year = today.getFullYear();
+      const dateStr = `${day}/${month}/${year}`;
+      
+      // Calcola il valore totale del bottino
+      let totalValue = 0;
+      activeItems.forEach(item => {
+        totalValue += item.qty * item.price;
+      });
+      
+      let listText = `Oggetti presi in abisso - ${dateStr}\n\n`;
+      
+      activeItems.forEach(item => {
+        listText += `${item.qty}x ${item.name}\n`;
+      });
+      
+      listText += `\n━━━━━━━━━━━━━━━━━━━━\n`;
+      listText += `Valore totale: ${formatCurrency(totalValue)}\n`;
+      
+      showListModal('Lista Abisso', listText.trim());
+    }
+    
+    // Funzione per mostrare il modal con la lista
+    function showListModal(title, text) {
+      document.getElementById('list-modal-title').textContent = title;
+      document.getElementById('list-textarea').value = text;
+      document.getElementById('list-modal').style.display = 'block';
+    }
+    
+    // Funzione per chiudere il modal
+    function closeListModal() {
+      document.getElementById('list-modal').style.display = 'none';
+    }
+    
+    // Funzione per copiare la lista
+    function copyList() {
+      const textarea = document.getElementById('list-textarea');
+      textarea.select();
+      textarea.setSelectionRange(0, 99999); // Per mobile
+      
+      try {
+        document.execCommand('copy');
+        const copyBtn = document.querySelector('.copy-btn');
+        const originalText = copyBtn.textContent;
+        copyBtn.textContent = '✅ Copiato!';
+        setTimeout(() => {
+          copyBtn.textContent = originalText;
+        }, 2000);
+      } catch (err) {
+        alert('Errore durante la copia. Seleziona manualmente il testo.');
+      }
+    }
+    
+    // Chiudi il modal cliccando fuori
+    window.onclick = function(event) {
+      const modal = document.getElementById('list-modal');
+      if (event.target === modal) {
+        closeListModal();
+      }
+    }
+
+    // Inizializzazione
+    caricaDati();
+     loadProducts();
+   </script>
+ </body>
 </html>

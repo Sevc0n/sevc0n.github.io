@@ -1,25 +1,150 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
+  <base href="../../">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Glass Cyber - Homepage</title>
+  <meta name="description" content="Sevcon.it - Hub professionale per strumenti web utili alla community gaming e ai workflow operativi.">
+  <title>glass-cyber - Homepage</title>
+  <link rel="icon" type="image/png" href="logo.png">
   <style>
-    body { margin: 0; font-family: "Segoe UI", sans-serif; background: linear-gradient(140deg, #0f172a, #3b0764); color: #f5e8ff; }
-    .wrap { width: min(1200px, 96vw); margin: 18px auto; }
-    .top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-    .tag { padding: 8px 12px; border: 1px solid #ffffff55; border-radius: 999px; background: rgba(255,255,255,0.1); backdrop-filter: blur(8px); }
-    a { color: #f5d0fe; text-decoration: none; }
-    iframe { width: 100%; height: calc(100vh - 90px); border: 1px solid #ffffff55; border-radius: 16px; background: #000; }
+:root{--bg:#0f172a;--bg-soft:#1e1b4b;--panel:#ffffff1a;--text:#f8eaff;--muted:#e4c8ff;--primary:#c084fc;--primary-strong:#a855f7;--line:#ffffff40;--success:#86efac;--shadow:0 12px 40px #00000040;--radius:18px}
+      body{background:linear-gradient(140deg,#0f172a,#4c1d95)!important}
+      .topbar,.hero-main,.hero-side,.tool-card,.panel{background:#ffffff1a!important;backdrop-filter:blur(9px)!important;border:1px solid #ffffff50!important}
+      .cta{background:linear-gradient(100deg,#9333ea,#7e22ce)!important}
+      .btn-primary{background:linear-gradient(90deg,#a855f7,#c084fc)!important}
+      .btn-ghost{background:#ffffff20!important;border-color:#ffffff55!important;color:#f8eaff!important}
+      .badge-live{background:#86efac2a!important;color:#d1fae5!important;border-color:#86efac66!important}
   </style>
 </head>
 <body>
-  <div class="wrap">
-    <div class="top">
-      <div class="tag">Concept: Glass Cyber · Homepage ufficiale embedded</div>
-      <a href="abaco.html">Apri versione Abaco</a>
-    </div>
-    <iframe src="../../index.html" title="Homepage ufficiale"></iframe>
+  <div class="wrapper">
+    <header class="topbar">
+      <div class="brand">
+        <img src="logo.png" alt="Logo Sevcon" onerror="this.style.display='none';">
+        <div>
+          <div class="brand-name">Sevcon.it</div>
+          <div class="brand-tag">Strumenti digitali affidabili per community e creator</div>
+        </div>
+      </div>
+      <nav class="nav">
+        <a href="#strumenti">Strumenti</a>
+        <a href="#approccio">Approccio</a>
+        <a href="#contatti">Contatti</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="hero" aria-label="Presentazione">
+        <article class="hero-main">
+          <div class="eyebrow">Piattaforma Operativa</div>
+          <h1>Una homepage universale, ordinata e professionale per tutti i tool Sevcon.</h1>
+          <p>
+            Sevcon.it centralizza strumenti utili, interfacce snelle e funzionalita operative in un unico hub.
+            Obiettivo: velocita, chiarezza e standard qualitativi elevati su ogni pagina.
+          </p>
+          <div class="hero-actions">
+            <a class="btn btn-primary" href="#strumenti">Esplora i tool</a>
+            <a class="btn btn-ghost" href="https://github.com/sevc0n/sevc0n.github.io" target="_blank" rel="noopener noreferrer">Repository GitHub</a>
+          </div>
+        </article>
+        <aside class="hero-side">
+          <h2>Panoramica servizio</h2>
+          <div class="kpis">
+            <div class="kpi">
+              <strong>6</strong>
+              <span>tool accessibili da homepage</span>
+            </div>
+            <div class="kpi">
+              <strong>100%</strong>
+              <span>layout responsive desktop/mobile</span>
+            </div>
+            <div class="kpi">
+              <strong>24/7</strong>
+              <span>consultazione in autonomia</span>
+            </div>
+          </div>
+          <p>Interfaccia pensata per offrire accesso rapido, comunicazione chiara e immagine coerente del brand Sevcon.</p>
+        </aside>
+      </section>
+
+      <section id="strumenti" aria-label="Tool disponibili">
+        <div class="section-head">
+          <h2>Strumenti principali</h2>
+          <p>Collegamenti diretti ai tool operativi attualmente online.</p>
+        </div>
+        <div class="tools-grid">
+          <article class="tool-card">
+            <span class="badge badge-live">Live</span>
+            <h3>Abaco Divisore</h3>
+            <p>Distribuzione bilanciata dei materiali fra partecipanti in pochi passaggi.</p>
+            <a href="abaco/">Apri strumento</a>
+          </article>
+          <article class="tool-card">
+            <span class="badge badge-live">Live</span>
+            <h3>Calcolatore Prezzi</h3>
+            <p>Calcolo automatico del costo totale con supporto a piu listini materiali/pozioni.</p>
+            <a href="calcolatore-prezzi/">Apri strumento</a>
+          </article>
+          <article class="tool-card">
+            <span class="badge badge-live">Live</span>
+            <h3>Analizzatore Liste</h3>
+            <p>Supporto OCR per estrazione e normalizzazione delle liste da immagini.</p>
+            <a href="analizzatore-liste/">Apri strumento</a>
+          </article>
+          <article class="tool-card">
+            <span class="badge badge-live">Live</span>
+            <h3>Colorante Armatura</h3>
+            <p>Conversione colore HEX in combinazioni pratiche di coloranti Minecraft.</p>
+            <a href="colorante-armatura/">Apri strumento</a>
+          </article>
+          <article class="tool-card">
+            <span class="badge badge-live">Live</span>
+            <h3>Calici</h3>
+            <p>Pagina dedicata al workflow calici e alle relative utilita operative.</p>
+            <a href="calici/">Apri strumento</a>
+          </article>
+          <article class="tool-card">
+            <span class="badge badge-live">Live</span>
+            <h3>Misuratore Blocchi</h3>
+            <p>Tool rapido per supportare stime e controllo quantita in-game.</p>
+            <a href="misuratore-blocchi/">Apri strumento</a>
+          </article>
+        </div>
+      </section>
+
+      <section id="approccio" class="two-cols" aria-label="Metodo e standard">
+        <article class="panel">
+          <h2>Approccio</h2>
+          <ul>
+            <li>Progettazione orientata alla facilita d'uso.</li>
+            <li>Struttura modulare per crescita graduale dei tool.</li>
+            <li>Design coerente per rafforzare identita e fiducia.</li>
+          </ul>
+        </article>
+        <article class="panel" id="contatti">
+          <h2>Contatti</h2>
+          <ul>
+            <li>Discord: <strong>picciobeffa</strong></li>
+            <li>Telegram: <strong>@piccionenberg</strong></li>
+            <li>GitHub: <a href="https://github.com/sevc0n/sevc0n.github.io" target="_blank" rel="noopener noreferrer">sevc0n.github.io</a></li>
+          </ul>
+        </article>
+      </section>
+
+      <section class="cta" aria-label="Call to action">
+        <div>
+          <h2>Vuoi estendere la suite Sevcon?</h2>
+          <p>Nuovi strumenti possono essere integrati mantenendo lo stesso standard visivo e operativo della homepage.</p>
+        </div>
+        <a class="btn btn-primary" href="https://github.com/sevc0n/sevc0n.github.io/issues" target="_blank" rel="noopener noreferrer">Proponi un nuovo tool</a>
+      </section>
+    </main>
+
+    <footer>
+      <span>© 2026 Sevcon.it - Tutti i diritti riservati</span>
+      <span>Realizzato da piccionenberg</span>
+    </footer>
   </div>
 </body>
 </html>
