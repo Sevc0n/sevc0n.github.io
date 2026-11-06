@@ -459,9 +459,9 @@
         grid-template-columns: 1fr 1fr !important;
       }
     }
-  </style>
+  </style><link rel="stylesheet" href="../../assets/tool-redesign.css">
 <style id="sevcon-redesign">.suite-home{position:fixed;z-index:1001;top:12px;left:14px;padding:9px 13px;border:1px solid var(--line,#ffffff25);border-radius:9px;background:#101a20ef;color:var(--accent,#83c9c0);text-decoration:none;font:700 .82rem system-ui;backdrop-filter:blur(10px)}.suite-home:hover{border-color:var(--accent,#83c9c0)}@media(max-width:600px){.suite-home{top:7px;left:8px;padding:8px 10px}}:root{color-scheme:dark;--line:#e3bd7230}body{background:radial-gradient(ellipse at 90% 0,#4b422266,transparent 38rem),#111613;color:#f0eee6;font-family:Inter,system-ui,sans-serif;padding:60px 18px 28px}.container{max-width:1320px;margin:auto;background:#171e19;border:1px solid var(--line);border-radius:18px;overflow:hidden}header{padding:28px 32px;background:linear-gradient(120deg,#293b2c,#1c2b21);border-bottom:1px solid var(--line)}h1{color:#f1dfb5}.subtitle{color:#b7b7a8}main{padding:24px}.form-section,.results-section{background:#1d2921;border:1px solid var(--line);border-radius:13px;padding:22px;margin-bottom:20px}.form-section h2,.results-section h2{color:#e7c77f}.form-group label{color:#d4d4c7}.form-group input,.form-group select{background:#111914!important;color:#f2f0e8!important;border:1px solid #5a654f!important;border-radius:8px!important;padding:11px 12px!important}.checkbox-group{background:#27372a;border:1px solid #526747;border-radius:8px;padding:10px 13px}.btn-primary{background:#98743a;border:1px solid #c69d54;color:#fff7e5;border-radius:8px;padding:11px 15px;font-weight:800}.btn-secondary{background:#26352a;color:#e3d5b5;border:1px solid #647456}.stats{gap:12px}.stat-card{background:linear-gradient(145deg,#29392d,#202c23);border:1px solid var(--line);border-radius:11px;padding:16px}.stat-card .label{color:#b7b7a8}.stat-card .value{color:#f0d28d;font-size:1.55rem;font-weight:800}.table-container{overflow-x:auto;border:1px solid var(--line);border-radius:10px}table{width:100%;border-collapse:collapse;min-width:650px}thead{background:#2c3c2d}th{color:#eddaa8;font-size:.8rem;text-transform:uppercase}td,th{padding:12px 13px;border-bottom:1px solid #ffffff10}tbody tr:hover{background:#ffffff08}.badge-benzina{background:#5b4824;color:#f6d58c}.badge-gpl{background:#234d4b;color:#9ce1d5}.alert-success{background:#183b2a;color:#a6e4b8}.alert-error{background:#47242a;color:#ffc2c8}@media(max-width:700px){body{padding:54px 0 0}header{padding:22px 18px}main{padding:12px}.form-section,.results-section{padding:15px}.form-grid{grid-template-columns:1fr!important}.stats{grid-template-columns:repeat(2,minmax(0,1fr))!important}}</style></head>
-<body><a class="suite-home" href="../../">← Sevcon Tools</a>
+<body data-tool="rifornimenti"><a class="suite-home" href="../../">← Sevcon Tools</a>
   <div class="container">
     <header>
       <h1>🧾 Gestore Rifornimenti</h1>
@@ -566,7 +566,7 @@
           </div>
         </div>
 
-        <!-- Statistiche Veicolo (Chevy Spark GPL) -->
+        <!-- Statistiche carburante -->
         <div style="margin-top: 30px;">
           <h3 style="color: #ffd93d; margin-bottom: 20px; font-size: 1.3rem;">🚗 Statistiche Veicolo (Chevy Spark GPL)</h3>
           <div class="stats">
@@ -579,7 +579,7 @@
               <div class="value" id="litri-totali-benzina">0 L</div>
             </div>
             <div class="stat-card">
-              <div class="label">Rifornimenti GPL Completi (30L)</div>
+              <div class="label">Equivalenti GPL da 30 L (stima)</div>
               <div class="value" id="rifornimenti-gpl-completi">0</div>
             </div>
             <div class="stat-card">
@@ -983,7 +983,7 @@
     }
     
     function aggiornaStatisticheVeicolo() {
-      const TANK_GPL_CAPACITA = 30; // litri
+      const TANK_GPL_CAPACITA = 30; // riferimento convenzionale per equivalenti, non capacità del serbatoio
       
       // Separa rifornimenti GPL e Benzina
       const rifornimentiGPL = rifornimenti.filter(r => !r.benzina);
@@ -1092,11 +1092,7 @@
     
     function calcolaFrequenzaRifornimenti(litriTotaliGPL, litriTotaliBenzina) {
       // Parametri lavoro
-      const KM_ANDATA = 45;
-      const KM_RITORNO = 45;
-      const KM_GIORNO = KM_ANDATA + KM_RITORNO; // 90km
-      const GIORNI_LAVORO_SETTIMANA = 5; // Martedì-Sabato
-      const KM_SETTIMANA = KM_GIORNO * GIORNI_LAVORO_SETTIMANA; // 450km
+      // I chilometri non sono stimabili senza registrare il contachilometri.
       
       if (rifornimenti.length < 2) {
         document.getElementById('media-giorni-rifornimenti').textContent = '--';
@@ -1128,17 +1124,7 @@
       const mediaGiorniLavorativi = mediaGiorni * (GIORNI_LAVORO_SETTIMANA / 7); // Proporzione giorni lavorativi
       const kmPercorsi = mediaGiorniLavorativi * KM_GIORNO;
       
-      // Calcola consumo medio (km/litro)
-      const litriTotali = litriTotaliGPL + litriTotaliBenzina;
-      let consumoMedio = 0;
-      if (litriTotali > 0 && rifornimenti.length > 0) {
-        // Stima km totali percorsi
-        const giorniTotali = (new Date(rifornimentiOrdinati[rifornimentiOrdinati.length - 1].data) - 
-                              new Date(rifornimentiOrdinati[0].data)) / (1000 * 60 * 60 * 24);
-        const settimaneTotali = giorniTotali / 7;
-        const kmTotaliStimati = settimaneTotali * KM_SETTIMANA;
-        consumoMedio = kmTotaliStimati / litriTotali;
-      }
+      // Il consumo km/L non è calcolabile in modo affidabile senza i km percorsi.
       
       // Calcola frequenza rifornimenti (ogni quanti giorni)
       const frequenzaGiorni = mediaGiorni;
@@ -1153,10 +1139,10 @@
       
       // Aggiorna UI
       document.getElementById('media-giorni-rifornimenti').textContent = `${mediaGiorni.toFixed(1)} giorni`;
-      document.getElementById('km-tra-rifornimenti').textContent = `${kmPercorsi.toFixed(0)} km`;
-      document.getElementById('consumo-km-litro').textContent = consumoMedio > 0 ? `${consumoMedio.toFixed(1)} km/L` : '--';
+      document.getElementById('km-tra-rifornimenti').textContent = '--';
+      document.getElementById('consumo-km-litro').textContent = '--';
       document.getElementById('frequenza-rifornimenti').innerHTML = 
-        `<span style="color: #ffd93d">${frequenzaTesto}</span><br><small style="font-size: 0.7rem; color: rgba(255,255,255,0.6);">~${kmPercorsi.toFixed(0)} km tra rifornimenti</small>`;
+        `<span style="color: #ffd93d">${frequenzaTesto}</span><br><small style="font-size: 0.7rem; color: rgba(255,255,255,0.6);">intervallo medio basato sulle date registrate</small>`;
     }
     
     function aggiornaStatisticheMensili() {
