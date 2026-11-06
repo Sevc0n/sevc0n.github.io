@@ -460,7 +460,7 @@
           }
         });
         
-        statusDiv.className = 'status-box success';
+        if (requestId !== ocrRequestId) return;\n        statusDiv.className = 'status-box success';
         statusDiv.innerHTML = '<p>✅ Testo estratto con successo!</p>';
         document.getElementById('extracted-text').value = text;
         extractedSection.classList.add('visible');
@@ -491,10 +491,61 @@
     }
 
     function parseAndUnifyMaterials(text) {
-      const lines = text.split('\n').filter(line => line.trim());
+      const lines = text.split(/\r?\n/).filter(line => line.trim());
       const materialsMap = new Map();
-      
-      // Pattern per riconoscere: "Nome Materiale: xQuantità" o "xQuantità Nome Materiale" o "Nome Materiale xQuantità"
+      const patterns = [
+        /^(\d+)\s*x\s*(.+?)$/i,
+        /^(.+?)\s*:\s*x\s*(\d+)$/i,
+        /^(.+?)\s+x\s*(\d+)$/i,
+        /^x\s*(\d+)\s+(.+?)$/i
+      ];
+
+      lines.forEach(line => {
+        const cleanLine = line.trim();
+        let name = '';
+        let qty = 0;
+        let match = cleanLine.match(patterns[0]);
+        if (match) {
+          qty = Number.parseInt(match[1], 10);
+          name = match[2];
+        } else if ((match = cleanLine.match(patterns[1]))) {
+          name = match[1];
+          qty = Number.parseInt(match[2], 10);
+        } else if ((match = cleanLine.match(patterns[2]))) {
+          name = match[1];
+          qty = Number.parseInt(match[2], 10);
+        } else if ((match = cleanLine.match(patterns[3]))) {
+          qty = Number.parseInt(match[1], 10);
+          name = match[2];
+        } else {
+          const simple = cleanLine.match(/^(\d+)\s*[xX]\s*([\p{L}\p{N}][\p{L}\p{N}\s_'’().-]*)$/u) ||
+            cleanLine.match(/^([\p{L}\p{N}][\p{L}\p{N}\s_'’().-]*)\s*[xX]\s*(\d+)$/u);
+          if (simple) {
+            if (/^\d+$/.test(simple[1])) {
+              qty = Number.parseInt(simple[1], 10);
+              name = simple[2];
+            } else {
+              name = simple[1];
+              qty = Number.parseInt(simple[2], 10);
+            }
+          }
+        }
+
+        name = name.replace(/[|:]/g, '').trim().replace(/\s+/g, ' ');
+        if (!name || !Number.isSafeInteger(qty) || qty <= 0) return;
+        const key = name.toLocaleLowerCase('it');
+        const existing = materialsMap.get(key);
+        if (existing) existing.qty += qty;
+        else materialsMap.set(key, { name: name, qty: qty });
+      });
+
+      extractedMaterials = Array.from(materialsMap.values());
+      return extractedMaterials.length
+        ? extractedMaterials.map(item => item.qty + 'x ' + item.name).join('\n')
+        : 'Nessun materiale trovato. Controlla il formato del testo estratto.';
+    }
+
+        // Pattern per riconoscere: "Nome Materiale: xQuantità" o "xQuantità Nome Materiale" o "Nome Materiale xQuantità"
       const patterns = [
         /(\d+)\s*x\s*([^|:]+?)(?:\s*\|\s*[^|]+)?$/i,  // "25x Dark Oak Fence Gate"
         /([^|:]+?):\s*x\s*(\d+)/i,  // "Dark Oak Fence Gate: x25"

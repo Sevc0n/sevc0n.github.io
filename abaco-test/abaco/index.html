@@ -1622,7 +1622,7 @@
              <label class="participants-label">Numero di partecipanti:</label>
              <div class="participants-controls">
                <button class="quantity-btn minus-btn" onclick="decreaseParticipants()">-</button>
-             <input type="number" id="participants" min="1" value="4">
+             <input type="number" id="participants" min="1" max="100" value="4">
                <button class="quantity-btn plus-btn" onclick="increaseParticipants()">+</button>
              </div>
              <div class="toggle-container">
@@ -2198,7 +2198,7 @@
         qty.value = p.qty > 0 ? p.qty : "";
        qty.placeholder = "0";
        qty.addEventListener("input", () => {
-         products[globalIndex].qty = parseInt(qty.value) || 0;
+         products[globalIndex].qty = Math.max(0, parseInt(qty.value, 10) || 0);\n         qty.value = products[globalIndex].qty || '';
          updateDistribution();
         salvaDati();
        });
@@ -2225,7 +2225,7 @@
      }
  
      function updateDistribution() {
-       const participants = parseInt(participantsInput.value) || 1;
+       const requestedParticipants = parseInt(participantsInput.value, 10);\n       if (!Number.isInteger(requestedParticipants) || requestedParticipants < 1) {\n         distributionResults.innerHTML = '<div class="empty-state">Inserisci almeno un partecipante per calcolare la distribuzione.</div>';\n         return;\n       }\n       const participants = Math.min(requestedParticipants, 100);\n       if (participants !== requestedParticipants) participantsInput.value = participants;
        const activeItems = products.filter(p => p.qty > 0);
        const unifiedView = document.getElementById('unified-view-toggle').checked;
        
@@ -2597,7 +2597,7 @@
     // Funzioni per gestire i partecipanti
     function increaseParticipants() {
       const currentValue = parseInt(participantsInput.value) || 1;
-      participantsInput.value = currentValue + 1;
+      participantsInput.value = Math.min(currentValue + 1, 100);
       updateDistribution();
       salvaDati();
     }

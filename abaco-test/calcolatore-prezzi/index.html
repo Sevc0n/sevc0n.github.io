@@ -1145,6 +1145,8 @@
     let defaultProducts = [];
     let products = [];
     let currentPricebook = 'borgo'; // 'borgo' o 'esterno'
+    const pricebookQuantities = { borgo: {}, esterno: {} };
+    const potionQuantitiesByPricebook = { borgo: {}, esterno: {} };
     
     // Pozioni caricate dal JSON
     let potions = [];
@@ -1626,22 +1628,30 @@
     // Funzione per cambiare il prezziario tramite toggle
     async function togglePricebook() {
       const toggle = document.getElementById('pricebook-toggle');
-      const pricebook = toggle.checked ? 'esterno' : 'borgo';
-      
-      // Aggiorna lo stato visivo delle etichette
-      updateToggleLabels(pricebook);
-      
-      // Reset delle quantità prima di cambiare
-      products.forEach(p => p.qty = 0);
-      
-      // Mostra/nascondi sezione pozioni
+      const previousPricebook = currentPricebook;
+      const nextPricebook = toggle.checked ? 'esterno' : 'borgo';
+
+      products.forEach(product => {
+        pricebookQuantities[previousPricebook][product.name] = product.qty || 0;
+      });
+      potions.forEach((potion, index) => {
+        potionQuantitiesByPricebook[previousPricebook][potion.name] = potionsQuantities[index] || 0;
+      });
+
+      updateToggleLabels(nextPricebook);
       togglePotionsSection();
-      
-      // Carica il nuovo prezziario
-      await loadProducts(pricebook);
+      await loadProducts(nextPricebook);
+
+      products.forEach(product => {
+        product.qty = pricebookQuantities[nextPricebook][product.name] || 0;
+      });
+      potionsQuantities = potions.map(potion => potionQuantitiesByPricebook[nextPricebook][potion.name] || 0);
+      renderMain();
+      if (document.getElementById('potions-section').classList.contains('visible')) renderPotions();
+      updateTotal();
     }
 
-    // Funzione per cambiare il prezziario (mantenuta per compatibilità)
+        // Funzione per cambiare il prezziario (mantenuta per compatibilità)
     async function switchPricebook(pricebook) {
       const toggle = document.getElementById('pricebook-toggle');
       toggle.checked = (pricebook === 'esterno');
