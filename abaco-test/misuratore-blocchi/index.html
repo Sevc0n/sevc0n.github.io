@@ -531,34 +531,37 @@
       const avgWidth = (distance(refPoints[0], refPoints[1]) + distance(refPoints[2], refPoints[3])) / 2;
       const avgHeight = (distance(refPoints[0], refPoints[3]) + distance(refPoints[1], refPoints[2])) / 2;
       
-      // Crea canvas per immagine corretta
+      // Canvas e ImageData richiedono dimensioni intere positive.
+      const outputWidth = Math.max(1, Math.round(avgWidth));
+      const outputHeight = Math.max(1, Math.round(avgHeight));
       const tempCanvas = document.createElement('canvas');
-      tempCanvas.width = avgWidth;
-      tempCanvas.height = avgHeight;
+      tempCanvas.width = outputWidth;
+      tempCanvas.height = outputHeight;
       const tempCtx = tempCanvas.getContext('2d');
-      
-      // Calcola matrice di trasformazione prospettica (homografia)
+      if (!tempCtx) return;
+
       const H = calculateHomography(refPoints, [
         {x: 0, y: 0},
-        {x: avgWidth, y: 0},
-        {x: avgWidth, y: avgHeight},
-        {x: 0, y: avgHeight}
+        {x: outputWidth, y: 0},
+        {x: outputWidth, y: outputHeight},
+        {x: 0, y: outputHeight}
       ]);
-      
-      // Disegna l'immagine trasformata pixel per pixel (usando trasformazione inversa)
-      const correctedData = tempCtx.createImageData(avgWidth, avgHeight);
-      
-      for (let y = 0; y < avgHeight; y++) {
-        for (let x = 0; x < avgWidth; x++) {
-          // Trasformazione inversa: da coordinate corrette a coordinate originali
+      if (!H || H.some(row => row.some(value => !Number.isFinite(value)))) {
+        alert('Impossibile correggere la prospettiva: i punti selezionati non formano una calibrazione valida.');
+        return;
+      }
+
+      const correctedData = tempCtx.createImageData(outputWidth, outputHeight);
+      for (let y = 0; y < outputHeight; y++) {
+        for (let x = 0; x < outputWidth; x++) {
           const src = applyHomographyInverse(H, {x, y});
-          
+          if (!Number.isFinite(src.x) || !Number.isFinite(src.y)) continue;
           const srcX = Math.round(src.x);
           const srcY = Math.round(src.y);
           
           if (srcX >= 0 && srcX < image.width && srcY >= 0 && srcY < image.height) {
             const srcIdx = (srcY * image.width + srcX) * 4;
-            const dstIdx = (y * avgWidth + x) * 4;
+            const dstIdx = (y * outputWidth + x) * 4;
             
             correctedData.data[dstIdx] = sourceImageData.data[srcIdx];
             correctedData.data[dstIdx + 1] = sourceImageData.data[srcIdx + 1];
@@ -596,6 +599,7 @@
       
       // Risolvi il sistema usando eliminazione di Gauss-Jordan
       const h = solveLinearSystem(A, b);
+      if (!h || h.length !== 8 || h.some(value => !Number.isFinite(value))) return null;
       
       // Costruisci la matrice 3x3
       const H = [
@@ -607,7 +611,7 @@
       // Denormalizza
       const srcInv = invertTransform(srcNorm.transform);
       const dstT = dstNorm.transform;
-      
+      if (!srcInv || !dstT) return null;
       return multiplyMatrix(multiplyMatrix(dstT, H), srcInv);
     }
     
