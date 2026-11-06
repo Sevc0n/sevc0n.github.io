@@ -521,7 +521,7 @@
           <div style="display: grid; grid-template-columns: 2fr 1fr 1fr auto; gap: 15px; align-items: end;">
             <div class="form-group" style="margin-bottom: 0;">
               <label for="searchInput" style="margin-bottom: 8px; color: rgba(255, 255, 255, 0.9); font-weight: 500;">🔍 Cerca</label>
-              <input type="text" id="searchInput" placeholder="Cerca per data (es: 2025, 01/2025, 15/01/2025)..." 
+              <input type="text" id="searchInput" placeholder="Cerca per data (es. 2026, 11/2026, 06/11/2026)..." 
                      style="padding: 10px 15px; border: 2px solid rgba(255, 255, 255, 0.2); border-radius: 8px; background: rgba(255, 255, 255, 0.1); color: white; font-size: 0.95rem; width: 100%;">
             </div>
             <div class="form-group" style="margin-bottom: 0;">
@@ -1118,13 +1118,8 @@
       // Media giorni tra rifornimenti
       const mediaGiorni = giorniTraRifornimenti.reduce((sum, giorni) => sum + giorni, 0) / giorniTraRifornimenti.length;
       
-      // Stima KM percorsi tra rifornimenti
-      // Assumendo che i giorni siano principalmente giorni lavorativi
-      // Calcola quanti giorni lavorativi ci sono in media tra i rifornimenti
-      const mediaGiorniLavorativi = mediaGiorni * (GIORNI_LAVORO_SETTIMANA / 7); // Proporzione giorni lavorativi
-      const kmPercorsi = mediaGiorniLavorativi * KM_GIORNO;
-      
-      // Il consumo km/L non è calcolabile in modo affidabile senza i km percorsi.
+      // Chilometri e consumo medio richiedono letture del contachilometri,
+      // che il modulo non registra: non vengono quindi stimati.
       
       // Calcola frequenza rifornimenti (ogni quanti giorni)
       const frequenzaGiorni = mediaGiorni;
