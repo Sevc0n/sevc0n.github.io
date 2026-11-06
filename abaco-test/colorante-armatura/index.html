@@ -364,23 +364,28 @@
         }
 
         // Distanza CIE76: approssima meglio la differenza percepita rispetto alla distanza RGB grezza.
-        function colorDistance(rgb1, rgb2) {
-            const lab1 = rgbToLab(rgb1);
+        function colorDistanceFromLab(lab1, rgb2) {
             const lab2 = rgbToLab(rgb2);
             return Math.hypot(lab1[0] - lab2[0], lab1[1] - lab2[1], lab1[2] - lab2[2]);
         }
 
+        function colorDistance(rgb1, rgb2) {
+            return colorDistanceFromLab(rgbToLab(rgb1), rgb2);
+        }
+
         function findOptimalDyes(targetRgb) {
             const maxDyesPerColor = 8;
-            let bestCombination = null;
-            let bestDistance = Infinity;
+            const targetLab = rgbToLab(targetRgb);
+            const distanceToTarget = rgb => colorDistanceFromLab(targetLab, rgb);
+            let bestCombination = new Array(minecraftDyes.length).fill(0);
+            let bestDistance = distanceToTarget([255, 255, 255]);
 
             // Prova tutte le combinazioni con uno o due coloranti.
             for (let dye1 = 0; dye1 < minecraftDyes.length; dye1++) {
                 for (let qty1 = 1; qty1 <= maxDyesPerColor; qty1++) {
                     const combo1 = new Array(minecraftDyes.length).fill(0);
                     combo1[dye1] = qty1;
-                    const distance1 = colorDistance(targetRgb, blendDyes(combo1));
+                    const distance1 = distanceToTarget(blendDyes(combo1));
                     if (distance1 < bestDistance) {
                         bestDistance = distance1;
                         bestCombination = combo1.slice();
@@ -391,7 +396,7 @@
                             const combo2 = new Array(minecraftDyes.length).fill(0);
                             combo2[dye1] = qty1;
                             combo2[dye2] = qty2;
-                            const distance2 = colorDistance(targetRgb, blendDyes(combo2));
+                            const distance2 = distanceToTarget(blendDyes(combo2));
                             if (distance2 < bestDistance) {
                                 bestDistance = distance2;
                                 bestCombination = combo2.slice();
@@ -412,7 +417,7 @@
                                     combo3[dye1] = qty1;
                                     combo3[dye2] = qty2;
                                     combo3[dye3] = qty3;
-                                    const distance3 = colorDistance(targetRgb, blendDyes(combo3));
+                                    const distance3 = distanceToTarget(blendDyes(combo3));
                                     if (distance3 < bestDistance) {
                                         bestDistance = distance3;
                                         bestCombination = combo3.slice();
