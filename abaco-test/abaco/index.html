@@ -1633,6 +1633,27 @@
                </label>
                <span class="toggle-label">Lista unificata</span>
              </div>
+             <div style="margin-top:22px;padding-top:18px;border-top:1px solid rgba(255,255,255,.1);text-align:left;">
+               <label for="distribution-mode" class="participants-label" style="font-size:.95rem;margin-bottom:8px;">Modalità di distribuzione</label>
+               <select id="distribution-mode" style="width:100%;padding:11px;border-radius:8px;background:#202b46;color:#fff;border:1px solid rgba(255,255,255,.2);font-size:1rem;">
+                 <option value="balanced">Equa con avanzi casuali</option>
+                 <option value="random">Casuale (ogni unità)</option>
+               </select>
+               <p style="font-size:.8rem;color:#a0aec0;margin-top:7px;">La modalità equa divide prima le quantità in parti uguali; gli avanzi vengono assegnati a partecipanti casuali. La modalità casuale assegna ogni singola unità a un partecipante a caso.</p>
+             </div>
+             <div id="abaco-presets" style="margin-top:20px;padding-top:18px;border-top:1px solid rgba(255,255,255,.1);text-align:left;">
+               <strong style="display:block;margin-bottom:10px;color:#63b3ed;">Preset</strong>
+               <input id="preset-name" type="text" maxlength="40" placeholder="Nome del preset" style="width:100%;padding:10px;border-radius:8px;background:rgba(255,255,255,.08);color:#fff;border:1px solid rgba(255,255,255,.2);margin-bottom:8px;">
+               <button type="button" class="list-btn" onclick="saveAbacoPreset()">💾 Salva preset</button>
+               <select id="preset-list" aria-label="Preset salvati" style="width:100%;padding:10px;margin-top:10px;border-radius:8px;background:#202b46;color:#fff;border:1px solid rgba(255,255,255,.2);">
+                 <option value="">Nessun preset salvato</option>
+               </select>
+               <div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap;">
+                 <button type="button" class="list-btn" onclick="loadAbacoPreset()">Carica</button>
+                 <button type="button" class="list-btn" onclick="deleteAbacoPreset()">Elimina</button>
+               </div>
+               <small id="preset-feedback" aria-live="polite" style="display:block;color:#a0aec0;margin-top:8px;"></small>
+             </div>
            </div>
  
            <div class="card results-card">
@@ -1688,6 +1709,7 @@
 
    <script>
     const STORAGE_KEY = 'sevcon_abaco_test_state';
+    const PRESETS_KEY = 'sevcon_abaco_presets_v1';
     let defaultProducts = [];
      let products = [];
     let stateCache = null;
@@ -1724,6 +1746,7 @@
       const stato = {
         participants: parseInt(participantsInput.value, 10) || 1,
         unifiedView: document.getElementById('unified-view-toggle').checked,
+        distributionMode: document.getElementById('distribution-mode').value,
         quantities,
         customPrices
       };
@@ -1758,6 +1781,122 @@
 
       if (typeof stateCache.unifiedView === 'boolean') {
         document.getElementById('unified-view-toggle').checked = stateCache.unifiedView;
+      }
+      if (stateCache.distributionMode === 'random' || stateCache.distributionMode === 'balanced') {
+        document.getElementById('distribution-mode').value = stateCache.distributionMode;
+      }
+    }
+
+    function readAbacoPresets() {
+      try {
+        const saved = JSON.parse(localStorage.getItem(PRESETS_KEY) || '{}');
+        return saved && typeof saved === 'object' && !Array.isArray(saved) ? saved : {};
+      } catch (error) {
+        console.error('Errore nel caricamento dei preset:', error);
+        return {};
+      }
+    }
+
+    function refreshAbacoPresetList(selectedName = '') {
+      const select = document.getElementById('preset-list');
+      if (!select) return;
+      const presets = readAbacoPresets();
+      select.innerHTML = '';
+      const names = Object.keys(presets).sort((a, b) => a.localeCompare(b, 'it'));
+      if (!names.length) {
+        const option = document.createElement('option');
+        option.value = '';
+        option.textContent = 'Nessun preset salvato';
+        select.appendChild(option);
+        return;
+      }
+      names.forEach(name => {
+        const option = document.createElement('option');
+        option.value = name;
+        option.textContent = name;
+        select.appendChild(option);
+      });
+      if (selectedName && names.includes(selectedName)) select.value = selectedName;
+    }
+
+    function getAbacoSnapshot() {
+      const quantities = {};
+      const customPrices = {};
+      products.forEach(product => {
+        if (product.qty > 0) quantities[product.name] = product.qty;
+        if (typeof product.basePrice === 'number' && product.price !== product.basePrice) customPrices[product.name] = product.price;
+      });
+      return {
+        participants: Math.max(1, Math.min(100, parseInt(participantsInput.value, 10) || 1)),
+        unifiedView: document.getElementById('unified-view-toggle').checked,
+        distributionMode: document.getElementById('distribution-mode').value,
+        quantities,
+        customPrices
+      };
+    }
+
+    function saveAbacoPreset() {
+      const nameInput = document.getElementById('preset-name');
+      const name = nameInput.value.trim();
+      const feedback = document.getElementById('preset-feedback');
+      if (!name) {
+        feedback.textContent = 'Inserisci un nome per il preset.';
+        nameInput.focus();
+        return;
+      }
+      try {
+        const presets = readAbacoPresets();
+        presets[name] = getAbacoSnapshot();
+        localStorage.setItem(PRESETS_KEY, JSON.stringify(presets));
+        refreshAbacoPresetList(name);
+        feedback.textContent = 'Preset salvato in questo browser.';
+      } catch (error) {
+        console.error('Errore nel salvataggio del preset:', error);
+        feedback.textContent = 'Impossibile salvare: memoria locale non disponibile o piena.';
+      }
+    }
+
+    function loadAbacoPreset() {
+      const name = document.getElementById('preset-list').value;
+      const preset = readAbacoPresets()[name];
+      const feedback = document.getElementById('preset-feedback');
+      if (!preset) {
+        feedback.textContent = 'Seleziona un preset valido.';
+        return;
+      }
+      const quantities = preset.quantities && typeof preset.quantities === 'object' ? preset.quantities : {};
+      const customPrices = preset.customPrices && typeof preset.customPrices === 'object' ? preset.customPrices : {};
+      products = products.map(product => ({
+        ...product,
+        qty: Number.isFinite(Number(quantities[product.name])) ? Math.max(0, Math.floor(Number(quantities[product.name]))) : 0,
+        price: Number.isFinite(Number(customPrices[product.name])) ? Number(customPrices[product.name]) : product.basePrice
+      }));
+      const participantCount = Number(preset.participants);
+      participantsInput.value = Number.isFinite(participantCount) ? Math.max(1, Math.min(100, Math.floor(participantCount))) : 1;
+      document.getElementById('unified-view-toggle').checked = preset.unifiedView !== false;
+      document.getElementById('distribution-mode').value = preset.distributionMode === 'random' ? 'random' : 'balanced';
+      renderMain();
+      salvaDati();
+      feedback.textContent = 'Preset caricato.';
+    }
+
+    function deleteAbacoPreset() {
+      const select = document.getElementById('preset-list');
+      const name = select.value;
+      const feedback = document.getElementById('preset-feedback');
+      if (!name) {
+        feedback.textContent = 'Seleziona un preset da eliminare.';
+        return;
+      }
+      const presets = readAbacoPresets();
+      delete presets[name];
+      try {
+        localStorage.setItem(PRESETS_KEY, JSON.stringify(presets));
+        refreshAbacoPresetList();
+        feedback.textContent = 'Preset eliminato.';
+      } catch (error) {
+        console.error('Errore nell’eliminazione del preset:', error);
+        feedback.textContent = 'Impossibile aggiornare i preset salvati.';
       }
     }
 
@@ -2247,77 +2386,38 @@
        const participantValues = new Array(participants).fill(0);
        const participantItems = new Array(participants).fill().map(() => []);
        
-       // Distribuzione base: divide equamente gli oggetti interi
-       activeItems.forEach(item => {
-         const itemsPerParticipant = Math.floor(item.qty / participants);
-         const totalDistributed = itemsPerParticipant * participants;
-         
-         if (itemsPerParticipant > 0) {
-           for (let i = 0; i < participants; i++) {
-             participantItems[i].push({
-               name: item.name,
-               qty: itemsPerParticipant,
-               price: item.price
-             });
-             participantValues[i] += itemsPerParticipant * item.price;
-           }
-         }
-       });
-       
-       // Calcola l'esubero (oggetti rimanenti)
+       const distributionMode = document.getElementById('distribution-mode').value;
        const esuberoItems = [];
-       activeItems.forEach(item => {
-         const itemsPerParticipant = Math.floor(item.qty / participants);
-         const totalDistributed = itemsPerParticipant * participants;
-         const remaining = item.qty - totalDistributed;
-         
-         if (remaining > 0) {
-           esuberoItems.push({
-             name: item.name,
-             qty: remaining,
-             price: item.price
-           });
-         }
-       });
-       
-       // Se c'è esubero, lo distribuisce in modo bilanciato tra i partecipanti
-       if (esuberoItems.length > 0) {
-         const totalEsuberoValue = esuberoItems.reduce((total, item) => total + (item.qty * item.price), 0);
-         
-         // Ordina gli oggetti dell'esubero per valore (dal più alto al più basso)
-         esuberoItems.sort((a, b) => b.price - a.price);
-         
-         // Distribuisce gli oggetti in modo bilanciato
-         esuberoItems.forEach(item => {
-           let remainingQty = item.qty;
-           
-           // Distribuisce gli oggetti uno per uno, sempre al partecipante con valore più basso
-           while (remainingQty > 0) {
-             const qtyToGive = Math.min(1, remainingQty);
-             
-             // Trova il partecipante con il valore più basso
-             let minValueIndex = 0;
-             let minValue = participantValues[0];
-             
-              for (let i = 1; i < participants; i++) {
-               if (participantValues[i] < minValue) {
-                 minValue = participantValues[i];
-                 minValueIndex = i;
-               }
+
+       if (distributionMode === 'random') {
+         // Modalità casuale: assegna ogni singola unità a un partecipante estratto a sorte.
+         activeItems.forEach(item => {
+           for (let unit = 0; unit < item.qty; unit++) {
+             const recipient = Math.floor(Math.random() * participants);
+             participantItems[recipient].push({ name: item.name, qty: 1, price: item.price, isEsubero: true });
+             participantValues[recipient] += item.price;
+           }
+           esuberoItems.push({ name: item.name, qty: item.qty, price: item.price });
+         });
+       } else {
+         // Modalità equa: assegna prima la quota intera uguale a tutti.
+         activeItems.forEach(item => {
+           const perParticipant = Math.floor(item.qty / participants);
+           for (let i = 0; i < participants; i++) {
+             if (perParticipant > 0) {
+               participantItems[i].push({ name: item.name, qty: perParticipant, price: item.price });
+               participantValues[i] += perParticipant * item.price;
              }
-             
-             // Aggiunge l'oggetto al partecipante con valore più basso
-             participantItems[minValueIndex].push({
-               name: item.name,
-               qty: qtyToGive,
-               price: item.price,
-               isEsubero: true // Marca come oggetto dell'esubero
-             });
-             
-             // Aggiorna il valore del partecipante
-             participantValues[minValueIndex] += qtyToGive * item.price;
-             
-             remainingQty -= qtyToGive;
+           }
+           const remainder = item.qty % participants;
+           if (remainder > 0) esuberoItems.push({ name: item.name, qty: remainder, price: item.price });
+         });
+         // Gli avanzi vengono assegnati casualmente, senza modificare le quote base.
+         esuberoItems.forEach(item => {
+           for (let unit = 0; unit < item.qty; unit++) {
+             const recipient = Math.floor(Math.random() * participants);
+             participantItems[recipient].push({ name: item.name, qty: 1, price: item.price, isEsubero: true });
+             participantValues[recipient] += item.price;
            }
          });
        }
@@ -2336,7 +2436,9 @@
            infoDiv.style.border = "1px solid rgba(99, 179, 237, 0.3)";
            infoDiv.style.color = "#63b3ed";
            infoDiv.style.fontSize = "0.9rem";
-           infoDiv.innerHTML = `📦 <strong>Esubero distribuito:</strong> ${formatCurrency(totalEsuberoValue)} distribuito in modo bilanciato tra i partecipanti`;
+           infoDiv.innerHTML = distributionMode === 'random'
+             ? `🎲 <strong>Distribuzione casuale:</strong> ${formatCurrency(totalEsuberoValue)} assegnato casualmente`
+             : `📦 <strong>Avanzi assegnati casualmente:</strong> ${formatCurrency(totalEsuberoValue)}`;
            
            distributionResults.appendChild(infoDiv);
          }
@@ -2437,7 +2539,9 @@
            infoDiv.style.border = "1px solid rgba(99, 179, 237, 0.3)";
            infoDiv.style.color = "#63b3ed";
            infoDiv.style.fontSize = "0.9rem";
-           infoDiv.innerHTML = `📦 <strong>Esubero distribuito:</strong> ${formatCurrency(totalEsuberoValue)} distribuito in modo bilanciato tra i partecipanti`;
+           infoDiv.innerHTML = distributionMode === 'random'
+             ? `🎲 <strong>Distribuzione casuale:</strong> ${formatCurrency(totalEsuberoValue)} assegnato casualmente`
+             : `📦 <strong>Avanzi assegnati casualmente:</strong> ${formatCurrency(totalEsuberoValue)}`;
            
            distributionResults.appendChild(infoDiv);
          }
@@ -2462,7 +2566,7 @@
          const baseItems = {};
          for (let i = 0; i < participants; i++) {
            participantItems[i].forEach(item => {
-             if (!item.isEsubero) {
+             if (distributionMode !== 'random' && !item.isEsubero) {
                if (!baseItems[item.name]) {
                  baseItems[item.name] = {
                    name: item.name,
@@ -2627,6 +2731,11 @@
       updateDistribution();
       salvaDati();
     });
+    document.getElementById('distribution-mode').addEventListener("change", () => {
+      updateDistribution();
+      salvaDati();
+    });
+    refreshAbacoPresetList();
 
     // Funzione per generare la lista degli oggetti presi in abisso
     function generateAbyssList() {
