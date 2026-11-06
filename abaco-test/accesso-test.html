@@ -1,389 +1,53 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="it">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Accesso Area Test - Sevcon Tools</title>
-  <link rel="icon" type="image/png" href="logo.png">
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: #ffffff;
-    }
-
-    .container {
-      background: rgba(20, 25, 45, 0.95);
-      backdrop-filter: blur(10px);
-      border-radius: 20px;
-      padding: 40px;
-      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      text-align: center;
-      max-width: 500px;
-      width: 90%;
-      animation: slideIn 0.6s ease-out;
-    }
-
-    @keyframes slideIn {
-      from {
-        opacity: 0;
-        transform: translateY(30px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    .logo {
-      width: 60px;
-      height: 60px;
-      margin: 0 auto 20px;
-      display: block;
-      border-radius: 12px;
-    }
-
-    h1 {
-      font-size: 1.8rem;
-      margin-bottom: 10px;
-      color: #63b3ed;
-    }
-
-    .subtitle {
-      color: #a0aec0;
-      margin-bottom: 30px;
-      font-size: 1rem;
-    }
-
-    .form-group {
-      margin-bottom: 25px;
-    }
-
-    .form-group label {
-      display: block;
-      font-weight: 600;
-      color: #ffffff;
-      margin-bottom: 10px;
-      font-size: 1.1rem;
-    }
-
-    .code-input {
-      width: 100%;
-      padding: 15px;
-      border: 2px solid rgba(99, 179, 237, 0.3);
-      border-radius: 10px;
-      font-size: 1.2rem;
-      text-align: center;
-      background: rgba(45, 55, 72, 0.8);
-      color: #ffffff;
-      transition: all 0.3s ease;
-      letter-spacing: 2px;
-      font-weight: 600;
-    }
-
-    .code-input:focus {
-      outline: none;
-      border-color: #63b3ed;
-      box-shadow: 0 0 0 3px rgba(99, 179, 237, 0.2);
-      transform: scale(1.02);
-    }
-
-    .code-input::placeholder {
-      color: #a0aec0;
-      letter-spacing: normal;
-      font-weight: normal;
-    }
-
-    .btn {
-      display: inline-block;
-      padding: 15px 30px;
-      background: linear-gradient(135deg, #63b3ed, #4299e1);
-      border: none;
-      border-radius: 10px;
-      color: white;
-      text-decoration: none;
-      font-size: 1.1rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      width: 100%;
-      margin-bottom: 15px;
-    }
-
-    .btn:hover {
-      background: linear-gradient(135deg, #4299e1, #3182ce);
-      transform: translateY(-2px);
-      box-shadow: 0 8px 20px rgba(99, 179, 237, 0.3);
-    }
-
-    .btn:active {
-      transform: scale(0.98);
-    }
-
-    .btn:disabled {
-      background: #a0aec0;
-      cursor: not-allowed;
-      transform: none;
-      box-shadow: none;
-    }
-
-    .back-link {
-      display: inline-block;
-      padding: 10px 20px;
-      background: rgba(99, 179, 237, 0.1);
-      border: 1px solid rgba(99, 179, 237, 0.3);
-      color: #63b3ed;
-      text-decoration: none;
-      border-radius: 8px;
-      transition: all 0.3s ease;
-      font-size: 0.9rem;
-    }
-
-    .back-link:hover {
-      background: rgba(99, 179, 237, 0.2);
-      transform: translateY(-1px);
-    }
-
-    .error-message {
-      background: rgba(245, 101, 101, 0.1);
-      border: 1px solid rgba(245, 101, 101, 0.3);
-      color: #f56565;
-      padding: 12px;
-      border-radius: 8px;
-      margin-top: 15px;
-      font-size: 0.9rem;
-      display: none;
-    }
-
-    .success-message {
-      background: rgba(72, 187, 120, 0.1);
-      border: 1px solid rgba(72, 187, 120, 0.3);
-      color: #68d391;
-      padding: 12px;
-      border-radius: 8px;
-      margin-top: 15px;
-      font-size: 0.9rem;
-      display: none;
-    }
-
-    .hint {
-      color: #a0aec0;
-      font-size: 0.8rem;
-      margin-top: 10px;
-      font-style: italic;
-    }
-
-    .test-zones {
-      margin-top: 30px;
-      padding: 20px;
-      background: rgba(45, 55, 72, 0.3);
-      border-radius: 10px;
-      border: 1px solid rgba(255, 255, 255, 0.1);
-    }
-
-    .test-zones h3 {
-      color: #63b3ed;
-      margin-bottom: 15px;
-      font-size: 1.1rem;
-    }
-
-    .zone-list {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-      text-align: left;
-    }
-
-    .zone-item {
-      padding: 8px 12px;
-      background: rgba(99, 179, 237, 0.1);
-      border-radius: 6px;
-      font-size: 0.9rem;
-      border: 1px solid rgba(99, 179, 237, 0.2);
-    }
-
-    .zone-code {
-      font-weight: 600;
-      color: #68d391;
-    }
-
-    .zone-name {
-      color: #a0aec0;
-      margin-left: 5px;
-    }
-
-    /* Animazioni */
-    .shake {
-      animation: shake 0.5s ease-in-out;
-    }
-
-    @keyframes shake {
-      0%, 100% { transform: translateX(0); }
-      25% { transform: translateX(-5px); }
-      75% { transform: translateX(5px); }
-    }
-
-    .pulse {
-      animation: pulse 0.3s ease-in-out;
-    }
-
-    @keyframes pulse {
-      0% { transform: scale(1); }
-      50% { transform: scale(1.05); }
-      100% { transform: scale(1); }
-    }
-
-    @media (max-width: 480px) {
-      .zone-list {
-        grid-template-columns: 1fr;
-      }
-      
-      .container {
-        padding: 20px;
-      }
-    }
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Accesso aree test · Sevcon</title>
+<link rel="icon" href="logo.png">
+<style>
+:root{color-scheme:dark;--bg:#090d18;--panel:#111a2b;--line:#263750;--text:#edf4ff;--muted:#9aabc2;--accent:#72b7ff;--good:#77e0b0}
+*{box-sizing:border-box}body{margin:0;min-height:100vh;display:grid;place-items:center;padding:24px;background:radial-gradient(ellipse at 15% 10%,#183b61 0,transparent 42%),radial-gradient(ellipse at 90% 85%,#27204c 0,transparent 38%),var(--bg);font:16px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif;color:var(--text)}
+main{width:min(100%,480px);padding:clamp(24px,6vw,42px);border:1px solid var(--line);border-radius:24px;background:linear-gradient(145deg,rgba(22,34,55,.96),rgba(13,20,34,.98));box-shadow:0 28px 90px #0008}
+.brand{display:flex;align-items:center;gap:12px;margin-bottom:30px;color:var(--muted);font-size:.85rem;letter-spacing:.12em;text-transform:uppercase}.brand img{width:38px;height:38px;object-fit:contain;border-radius:10px}
+.eyebrow{color:var(--accent);font-size:.75rem;font-weight:800;letter-spacing:.16em;text-transform:uppercase}h1{font-size:clamp(2rem,7vw,2.7rem);line-height:1.05;letter-spacing:-.05em;margin:9px 0 12px}.intro{color:var(--muted);margin:0 0 28px}
+label{display:block;font-size:.88rem;font-weight:700;margin:0 0 9px}input{width:100%;padding:16px 17px;border:1px solid #344965;border-radius:12px;background:#080f1d;color:var(--text);font:700 1.05rem ui-monospace,monospace;letter-spacing:.13em;text-transform:uppercase;outline:none}input:focus{border-color:var(--accent);box-shadow:0 0 0 3px #72b7ff22}
+button{width:100%;margin-top:13px;padding:15px;border:0;border-radius:12px;background:linear-gradient(110deg,#4c9bea,#8068df);color:white;font-weight:800;font-size:1rem;cursor:pointer}button:hover{filter:brightness(1.1)}button:focus-visible,a:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+#feedback{min-height:26px;margin:13px 0 0;font-size:.9rem;color:#ff9e9e}#feedback.ok{color:var(--good)}
+footer{display:flex;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-top:30px;padding-top:20px;border-top:1px solid var(--line)}a{color:var(--accent);text-decoration:none;font-size:.88rem}a:hover{text-decoration:underline}.note{margin-top:20px;color:#7789a3;font-size:.76rem}
+</style>
 </head>
-<body>
-  <div class="container">
-    <img src="logo.png" alt="Sevcon Logo" class="logo" onerror="this.style.display='none';">
-    <h1>Accesso Area Test</h1>
-    <p class="subtitle">Inserisci il codice per accedere alle zone di test</p>
-    
-    <form id="accessForm">
-      <div class="form-group">
-        <label for="accessCode">Codice di Accesso:</label>
-        <input 
-          type="text" 
-          id="accessCode" 
-          class="code-input" 
-          placeholder="Inserisci il codice"
-          maxlength="15"
-          autocomplete="off"
-          required
-        >
-      </div>
-      
-      <button type="submit" class="btn" id="submitBtn">
-        🚀 Accedi al Test
-      </button>
-      
-      <div class="error-message" id="errorMessage">
-        ❌ Codice errato. Riprova.
-      </div>
-      
-      <div class="success-message" id="successMessage">
-        ✅ Accesso autorizzato! Reindirizzamento...
-      </div>
-    </form>
-    
-    <div class="hint">
-      💡 Inserisci il codice per accedere alle zone di test, download o admin
-    </div>
-    
-    
-    <a href="index.html" class="back-link">🏠 Torna alla Homepage</a>
-  </div>
-
-  <script>
-    // Sistema di codici per diverse zone di test
-    const TEST_CODES = {
-      "ABACO1": "test/abaco/",
-      "TOOL1": "test/tool1/",
-      "TOOL2": "test/tool2/",
-      "TOOL3": "test/tool3/",
-      "DEMO1": "test/demo/",
-      "BETA1": "test/beta/",
-      "MISURA1": "misuratore-blocchi/",
-      "RIFOR1": "futuro/rifornimenti/",
-      "CLOUD": "download/",
-      "ADMIN": "download/admin/"
-    };
-    
-    const form = document.getElementById('accessForm');
-    const codeInput = document.getElementById('accessCode');
-    const submitBtn = document.getElementById('submitBtn');
-    const errorMessage = document.getElementById('errorMessage');
-    const successMessage = document.getElementById('successMessage');
-    
-    // Formattazione input (solo lettere e numeri, maiuscole)
-    codeInput.addEventListener('input', function(e) {
-      // Converte in maiuscole e rimuove caratteri non validi
-      e.target.value = e.target.value.replace(/[^A-Z0-9]/g, '').toUpperCase();
-      
-      // Limita a 15 caratteri
-      if (e.target.value.length > 15) {
-        e.target.value = e.target.value.slice(0, 15);
-      }
-    });
-    
-    // Gestione submit form
-    form.addEventListener('submit', function(e) {
-      e.preventDefault();
-      
-      const enteredCode = codeInput.value.trim();
-      
-      // Reset messaggi
-      errorMessage.style.display = 'none';
-      successMessage.style.display = 'none';
-      
-      if (TEST_CODES[enteredCode]) {
-        // Codice corretto
-        successMessage.style.display = 'block';
-        submitBtn.disabled = true;
-        submitBtn.textContent = '✅ Accesso Autorizzato';
-        
-        // Animazione di successo
-        codeInput.classList.add('pulse');
-        setTimeout(() => {
-          codeInput.classList.remove('pulse');
-        }, 300);
-        
-        // Reindirizzamento dopo 1.5 secondi
-        setTimeout(() => {
-          window.location.href = TEST_CODES[enteredCode];
-        }, 1500);
-        
-      } else {
-        // Codice errato
-        errorMessage.style.display = 'block';
-        
-        // Animazione di errore
-        codeInput.classList.add('shake');
-        setTimeout(() => {
-          codeInput.classList.remove('shake');
-        }, 500);
-        
-        // Svuota il campo
-        codeInput.value = '';
-        codeInput.focus();
-      }
-    });
-    
-    // Focus automatico sul campo
-    codeInput.focus();
-    
-    // Gestione tasto Enter
-    codeInput.addEventListener('keypress', function(e) {
-      if (e.key === 'Enter') {
-        form.dispatchEvent(new Event('submit'));
-      }
-    });
-    
-    // Debug info (rimuovi in produzione)
-    console.log('🔐 Sistema di accesso multi-zona attivo');
-    console.log('💡 Codici disponibili:', Object.keys(TEST_CODES));
-  </script>
-</body>
-</html>
+<body><main>
+<div class="brand"><img src="logo.png" alt="" onerror="this.hidden=true"> SEVCON · TOOLS</div>
+<div class="eyebrow">Area sperimentale</div>
+<h1>Accesso test</h1>
+<p class="intro">Inserisci il codice associato all'area che vuoi aprire.</p>
+<form id="access-form">
+<label for="access-code">Codice di accesso</label>
+<input id="access-code" name="code" type="text" maxlength="15" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="ES. ABACO1" required>
+<button type="submit">Apri area <span aria-hidden="true">↗</span></button>
+<p id="feedback" role="status" aria-live="polite"></p>
+</form>
+<footer><a href="index.html">← Homepage test</a><a href="codici-test.html">Elenco codici</a></footer>
+<p class="note">Questo è un sistema di instradamento client-side: i codici e le destinazioni sono leggibili nel sorgente e non costituiscono una protezione di sicurezza.</p>
+</main>
+<script>
+const TEST_CODES = {
+  "ABACO1": "abaco/",
+  "MISURA1": "misuratore-blocchi/",
+  "RIFOR1": "futuro/rifornimenti/"
+};
+const form=document.getElementById("access-form");
+const input=document.getElementById("access-code");
+const feedback=document.getElementById("feedback");
+input.addEventListener("input",()=>{input.value=input.value.replace(/[^a-z0-9]/gi,"").toUpperCase();feedback.textContent="";feedback.className="";});
+form.addEventListener("submit",event=>{
+  event.preventDefault();
+  const destination=TEST_CODES[input.value.trim()];
+  if(!destination){feedback.textContent="Codice non riconosciuto. Controlla e riprova.";feedback.className="";input.select();return;}
+  feedback.textContent="Codice valido. Apertura dell'area…";feedback.className="ok";
+  window.location.assign(destination);
+});
+input.focus();
+</script>
+</body></html>
