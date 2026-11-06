@@ -840,20 +840,20 @@
     }
 
     function caricaDati() {
-      const datiSalvati = localStorage.getItem('sevcon_abaco_test_rifornimenti');
-      if (!datiSalvati) return;
       try {
+        const datiSalvati = localStorage.getItem('sevcon_abaco_test_rifornimenti');
+        if (!datiSalvati) return;
         const dati = JSON.parse(datiSalvati);
         if (!Array.isArray(dati)) throw new Error('Archivio non valido');
         const normalizzati = dati.map((r, index) => normalizzaRifornimento(r, index));
         const nonValidi = normalizzati.filter(r => r === null).length;
         rifornimenti = normalizzati.filter(Boolean);
         rifornimenti.sort((a, b) => a.data.localeCompare(b.data));
-        if (nonValidi) mostraAlert('error', nonValidi + ' record non validi sono stati ignorati. Esporta una copia dell’archivio originale prima di modificarlo.');
+        if (nonValidi) mostraAlert('error', nonValidi + ' record non validi sono stati ignorati. Verifica il backup originale prima di proseguire.');
       } catch (e) {
         console.error('Errore nel caricamento dati:', e);
         rifornimenti = [];
-        mostraAlert('error', 'Archivio locale non leggibile: i dati non sono stati caricati.');
+        mostraAlert('error', 'Archivio locale non leggibile: importa un backup JSON per recuperare i dati.');
       }
     }
 
