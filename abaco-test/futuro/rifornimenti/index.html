@@ -465,7 +465,7 @@
   <div class="container">
     <header>
       <h1>🧾 Gestore Rifornimenti</h1>
-      <p class="subtitle">Gestione automatica con ordinamento per data</p>
+      <p class="subtitle">Archivio locale, statistiche e confronto dei rifornimenti</p>
     </header>
 
     <main>
@@ -494,12 +494,12 @@
             <div class="form-group">
               <label for="litri">📊 Litri (opzionale)</label>
               <input type="number" id="litri" name="litri" step="0.1" min="0" placeholder="es: 30.0">
-              <small style="color: rgba(255,255,255,0.6); font-size: 0.85rem;">Utile per calcoli di consumo</small>
+              <small style="color: rgba(255,255,255,0.6); font-size: 0.85rem;">Inserisci i litri riportati dalla pompa, se disponibili</small>
             </div>
             <div class="form-group">
               <label for="prezzoAlLitros">💰 Prezzo al litro (€, opzionale)</label>
-              <input type="number" id="prezzoAlLitros" name="prezzoAlLitros" step="0.001" min="0" placeholder="es: 0.75">
-              <small style="color: rgba(255,255,255,0.6); font-size: 0.85rem;">Se non inserito, viene calcolato</small>
+              <input type="number" id="prezzoAlLitros" name="prezzoAlLitros" step="0.001" min="0" placeholder="es: 0.789">
+              <small style="color: rgba(255,255,255,0.6); font-size: 0.85rem;">Se inserisci i litri, il prezzo al litro viene calcolato</small>
             </div>
           </div>
           <button type="submit" class="btn btn-primary">➕ Aggiungi Rifornimento</button>
@@ -568,7 +568,8 @@
 
         <!-- Statistiche carburante -->
         <div style="margin-top: 30px;">
-          <h3 style="color: #ffd93d; margin-bottom: 20px; font-size: 1.3rem;">🚗 Statistiche Veicolo (Chevy Spark GPL)</h3>
+          <h3 style="color: #ffd93d; margin-bottom: 8px; font-size: 1.3rem;">🚗 Statistiche carburante</h3>
+          <p style="color: rgba(255,255,255,.65); margin-bottom: 18px; font-size: .88rem;">Litri, prezzi medi e confronti vengono calcolati solo dai litri inseriti o ricavati dal prezzo al litro che hai registrato. Nessun prezzo medio viene inventato.</p>
           <div class="stats">
             <div class="stat-card">
               <div class="label">Litri Totali GPL</div>
@@ -579,11 +580,11 @@
               <div class="value" id="litri-totali-benzina">0 L</div>
             </div>
             <div class="stat-card">
-              <div class="label">Equivalenti GPL da 30 L (stima)</div>
+              <div class="label">Equivalenti da 30 L (solo litri registrati)</div>
               <div class="value" id="rifornimenti-gpl-completi">0</div>
             </div>
             <div class="stat-card">
-              <div class="label">Risparmio GPL vs Benzina</div>
+              <div class="label">Differenza teorica su pari litri</div>
               <div class="value" id="risparmio-gpl" style="font-size: 1.2rem;">--</div>
             </div>
           </div>
@@ -597,11 +598,11 @@
               <div class="value" id="costo-medio-benzina">€0.00</div>
             </div>
             <div class="stat-card">
-              <div class="label">Consumo Medio Mensile (Litri)</div>
+              <div class="label">Litri registrati medi al mese</div>
               <div class="value" id="consumo-medio-mensile">0.0 L</div>
             </div>
             <div class="stat-card">
-              <div class="label">Percentuale GPL vs Benzina</div>
+              <div class="label">Ripartizione litri registrati</div>
               <div class="value" id="percentuale-gpl" style="font-size: 1.2rem;">--</div>
             </div>
           </div>
@@ -705,7 +706,7 @@
     // Carica dati da localStorage al caricamento
     document.addEventListener('DOMContentLoaded', function() {
       caricaDati();
-      const today = new Date().toISOString().split('T')[0];
+      const today = getLocalISODate();
       document.getElementById('data').value = today;
       
       // Event listener per ricerca
@@ -756,11 +757,11 @@
       
       // Calcola prezzo al litro se non specificato ma ci sono i litri
       let prezzoAlLitrosCalcolato = prezzoAlLitros;
-      if (!prezzoAlLitrosCalcolato && litri && litri > 0) {
+      if (litri && litri > 0) {
         prezzoAlLitrosCalcolato = costo / litri;
       }
 
-      if (!data || isNaN(costo) || costo <= 0) {
+      if (!data || !Number.isFinite(costo) || costo <= 0 || (litriInput !== '' && (!Number.isFinite(litri) || litri <= 0)) || (prezzoAlLitrosInput !== '' && (!Number.isFinite(prezzoAlLitros) || prezzoAlLitros <= 0))) {
         mostraAlert('error', '❌ Per favore, compila tutti i campi correttamente!');
         return;
       }
@@ -792,7 +793,7 @@
       salvaDati();
       renderizzaRifornimenti();
       document.getElementById('rifornimento-form').reset();
-      const today = new Date().toISOString().split('T')[0];
+      const today = getLocalISODate();
       document.getElementById('data').value = today;
       
       // Ridisegna il grafico quando la finestra viene ridimensionata
@@ -807,27 +808,66 @@
     });
 
     // Funzioni principali
+    function getLocalISODate() {
+      const now = new Date();
+      return now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0') + '-' + String(now.getDate()).padStart(2, '0');
+    }
+
+    function getLitriCalcolabili(r) {
+      if (Number.isFinite(r.litri) && r.litri > 0) return r.litri;
+      if (Number.isFinite(r.prezzoAlLitros) && r.prezzoAlLitros > 0 && Number.isFinite(r.costo) && r.costo > 0) return r.costo / r.prezzoAlLitros;
+      return null;
+    }
+
+    function normalizzaRifornimento(r, index = 0) {
+      if (!r || typeof r !== 'object') return null;
+      const data = String(r.data || '');
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(data)) return null;
+      const parts = data.split('-').map(Number);
+      const parsed = new Date(parts[0], parts[1] - 1, parts[2]);
+      if (parsed.getFullYear() !== parts[0] || parsed.getMonth() !== parts[1] - 1 || parsed.getDate() !== parts[2]) return null;
+      const costo = Number(r.costo);
+      if (!Number.isFinite(costo) || costo <= 0 || typeof r.benzina !== 'boolean') return null;
+      const litri = r.litri === null || r.litri === undefined || r.litri === '' ? null : Number(r.litri);
+      const prezzo = r.prezzoAlLitros === null || r.prezzoAlLitros === undefined || r.prezzoAlLitros === '' ? null : Number(r.prezzoAlLitros);
+      if (litri !== null && (!Number.isFinite(litri) || litri <= 0)) return null;
+      if (prezzo !== null && (!Number.isFinite(prezzo) || prezzo <= 0)) return null;
+      return {
+        id: r.id !== undefined && r.id !== null && String(r.id) !== '' ? String(r.id) : 'rifornimento-' + Date.now() + '-' + index,
+        data: data, costo: costo, benzina: r.benzina, litri: litri,
+        prezzoAlLitros: litri !== null ? costo / litri : prezzo
+      };
+    }
+
     function caricaDati() {
       const datiSalvati = localStorage.getItem('sevcon_abaco_test_rifornimenti');
-      if (datiSalvati) {
-        try {
-          rifornimenti = JSON.parse(datiSalvati);
-          // Riordina sempre per data
-          rifornimenti.sort((a, b) => new Date(a.data) - new Date(b.data));
-        } catch (e) {
-          console.error('Errore nel caricamento dati:', e);
-          rifornimenti = [];
-        }
+      if (!datiSalvati) return;
+      try {
+        const dati = JSON.parse(datiSalvati);
+        if (!Array.isArray(dati)) throw new Error('Archivio non valido');
+        const normalizzati = dati.map((r, index) => normalizzaRifornimento(r, index));
+        const nonValidi = normalizzati.filter(r => r === null).length;
+        rifornimenti = normalizzati.filter(Boolean);
+        rifornimenti.sort((a, b) => a.data.localeCompare(b.data));
+        if (nonValidi) mostraAlert('error', nonValidi + ' record non validi sono stati ignorati. Esporta una copia dell’archivio originale prima di modificarlo.');
+      } catch (e) {
+        console.error('Errore nel caricamento dati:', e);
+        rifornimenti = [];
+        mostraAlert('error', 'Archivio locale non leggibile: i dati non sono stati caricati.');
       }
     }
 
     function salvaDati() {
-      // Riordina sempre per data prima di salvare
-      rifornimenti.sort((a, b) => new Date(a.data) - new Date(b.data));
-      localStorage.setItem('sevcon_abaco_test_rifornimenti', JSON.stringify(rifornimenti));
+      rifornimenti.sort((a, b) => a.data.localeCompare(b.data));
+      try {
+        localStorage.setItem('sevcon_abaco_test_rifornimenti', JSON.stringify(rifornimenti));
+      } catch (error) {
+        console.error('Errore salvataggio archivio:', error);
+        mostraAlert('error', 'Impossibile salvare i dati nel browser. Esporta una copia del tuo archivio.');
+      }
     }
 
-    function renderizzaRifornimenti() {
+        function renderizzaRifornimenti() {
       const tbody = document.getElementById('rifornimenti-body');
       
       // Filtra i rifornimenti
@@ -908,14 +948,16 @@
           : '<span class="badge badge-gpl">🔥 GPL</span>';
         
         let dettagli = '';
-        if (r.litri) {
-          dettagli = `<br><small style="opacity: 0.7;">${r.litri.toFixed(1)}L @ €${(r.costo / r.litri).toFixed(3)}/L</small>`;
-        } else if (r.prezzoAlLitros) {
-          const litriStimati = r.costo / r.prezzoAlLitros;
-          dettagli = `<br><small style="opacity: 0.7;">~${litriStimati.toFixed(1)}L @ €${r.prezzoAlLitros.toFixed(3)}/L</small>`;
+        if (r.litri > 0) {
+          dettagli = '<br><small style="opacity: 0.7;">' + r.litri.toFixed(1) + ' L @ €' + (r.costo / r.litri).toFixed(3) + '/L</small>';
+        } else if (r.prezzoAlLitros > 0) {
+          const litriCalcolati = r.costo / r.prezzoAlLitros;
+          dettagli = '<br><small style="opacity: 0.7;">≈ ' + litriCalcolati.toFixed(1) + ' L calcolati @ €' + r.prezzoAlLitros.toFixed(3) + '/L</small>';
         }
+
         
-        return `
+
+            return `
           <tr>
             <td>${dataFormattata}</td>
             <td>€${r.costo.toFixed(2)}${dettagli}</td>
@@ -983,243 +1025,109 @@
     }
     
     function aggiornaStatisticheVeicolo() {
-      const TANK_GPL_CAPACITA = 30; // riferimento convenzionale per equivalenti, non capacità del serbatoio
-      
-      // Separa rifornimenti GPL e Benzina
-      const rifornimentiGPL = rifornimenti.filter(r => !r.benzina);
-      const rifornimentiBenzina = rifornimenti.filter(r => r.benzina);
-      
-      // Calcola litri totali
-      let litriTotaliGPL = 0;
-      let litriTotaliBenzina = 0;
-      let costoTotaleGPL = 0;
-      let costoTotaleBenzina = 0;
-      
-      rifornimentiGPL.forEach(r => {
-        if (r.litri) {
-          litriTotaliGPL += r.litri;
-        } else if (r.prezzoAlLitros && r.prezzoAlLitros > 0) {
-          // Stima litri dal prezzo al litro
-          litriTotaliGPL += r.costo / r.prezzoAlLitros;
-        } else {
-          // Usa prezzo medio stimato GPL (0.75 €/L)
-          litriTotaliGPL += r.costo / 0.75;
-        }
-        costoTotaleGPL += r.costo;
-      });
-      
-      rifornimentiBenzina.forEach(r => {
-        if (r.litri) {
-          litriTotaliBenzina += r.litri;
-        } else if (r.prezzoAlLitros && r.prezzoAlLitros > 0) {
-          litriTotaliBenzina += r.costo / r.prezzoAlLitros;
-        } else {
-          // Usa prezzo medio stimato benzina (1.70 €/L)
-          litriTotaliBenzina += r.costo / 1.70;
-        }
-        costoTotaleBenzina += r.costo;
-      });
-      
-      // Calcola costo medio al litro
-      const costoMedioGPL = litriTotaliGPL > 0 ? costoTotaleGPL / litriTotaliGPL : 0;
-      const costoMedioBenzina = litriTotaliBenzina > 0 ? costoTotaleBenzina / litriTotaliBenzina : 0;
-      
-      // Calcola rifornimenti completi GPL (30L)
-      const rifornimentiGPLCompleti = Math.floor(litriTotaliGPL / TANK_GPL_CAPACITA);
-      
-      // Calcola risparmio GPL vs Benzina (se avessi usato benzina invece di GPL)
-      // Assumendo che i litri di GPL corrispondano a litri di benzina equivalenti
-      let risparmioGPL = 0;
-      if (litriTotaliGPL > 0 && costoMedioBenzina > 0) {
-        const costoEquivalenteBenzina = litriTotaliGPL * costoMedioBenzina;
-        risparmioGPL = costoEquivalenteBenzina - costoTotaleGPL;
-      }
-      
-      // Calcola consumo medio mensile
-      const rifornimentiPerMese = {};
+      const CAPACITA_EQUIVALENTE_GPL = 30;
+      const gpl = rifornimenti.filter(r => !r.benzina && getLitriCalcolabili(r) !== null);
+      const benzina = rifornimenti.filter(r => r.benzina && getLitriCalcolabili(r) !== null);
+      const litriGPL = gpl.reduce((sum, r) => sum + getLitriCalcolabili(r), 0);
+      const litriBenzina = benzina.reduce((sum, r) => sum + getLitriCalcolabili(r), 0);
+      const costoGPL = gpl.reduce((sum, r) => sum + r.costo, 0);
+      const costoBenzina = benzina.reduce((sum, r) => sum + r.costo, 0);
+      const medioGPL = litriGPL > 0 ? costoGPL / litriGPL : 0;
+      const medioBenzina = litriBenzina > 0 ? costoBenzina / litriBenzina : 0;
+      const litriTotali = litriGPL + litriBenzina;
+
+      document.getElementById('litri-totali-gpl').textContent = litriGPL > 0 ? litriGPL.toFixed(1) + ' L' : '--';
+      document.getElementById('litri-totali-benzina').textContent = litriBenzina > 0 ? litriBenzina.toFixed(1) + ' L' : '--';
+      document.getElementById('rifornimenti-gpl-completi').textContent = litriGPL > 0 ? Math.floor(litriGPL / CAPACITA_EQUIVALENTE_GPL) : '--';
+      document.getElementById('costo-medio-gpl').textContent = medioGPL > 0 ? '€' + medioGPL.toFixed(3) : '--';
+      document.getElementById('costo-medio-benzina').textContent = medioBenzina > 0 ? '€' + medioBenzina.toFixed(3) : '--';
+
+      const differenza = litriGPL > 0 && medioBenzina > 0 ? (litriGPL * medioBenzina) - costoGPL : null;
+      const risparmio = document.getElementById('risparmio-gpl');
+      risparmio.textContent = differenza === null ? '--' : (differenza > 0 ? '+' : '') + '€' + differenza.toFixed(2);
+      risparmio.title = 'Confronto teorico a pari litri usando i prezzi medi registrati. Non considera la diversa resa energetica dei carburanti.';
+
+      const perMese = new Map();
       rifornimenti.forEach(r => {
-        const data = new Date(r.data + 'T00:00:00');
-        const chiaveMese = `${data.getFullYear()}-${String(data.getMonth() + 1).padStart(2, '0')}`;
-        if (!rifornimentiPerMese[chiaveMese]) {
-          rifornimentiPerMese[chiaveMese] = { litri: 0 };
-        }
-        if (r.litri) {
-          rifornimentiPerMese[chiaveMese].litri += r.litri;
-        } else if (r.prezzoAlLitros && r.prezzoAlLitros > 0) {
-          rifornimentiPerMese[chiaveMese].litri += r.costo / r.prezzoAlLitros;
-        } else {
-          const prezzoMedio = r.benzina ? 1.70 : 0.75;
-          rifornimentiPerMese[chiaveMese].litri += r.costo / prezzoMedio;
-        }
+        const litri = getLitriCalcolabili(r);
+        if (litri === null) return;
+        const mese = r.data.slice(0, 7);
+        perMese.set(mese, (perMese.get(mese) || 0) + litri);
       });
-      const numeroMesi = Object.keys(rifornimentiPerMese).length;
-      const consumoMedioMensile = numeroMesi > 0 
-        ? Object.values(rifornimentiPerMese).reduce((sum, m) => sum + m.litri, 0) / numeroMesi 
-        : 0;
-      
-      // Calcola percentuale GPL vs Benzina (per litri)
-      const litriTotali = litriTotaliGPL + litriTotaliBenzina;
-      const percentualeGPL = litriTotali > 0 ? (litriTotaliGPL / litriTotali * 100) : 0;
-      const percentualeBenzina = 100 - percentualeGPL;
-      
-      // Aggiorna UI
-      document.getElementById('litri-totali-gpl').textContent = `${litriTotaliGPL.toFixed(1)} L`;
-      document.getElementById('litri-totali-benzina').textContent = `${litriTotaliBenzina.toFixed(1)} L`;
-      document.getElementById('rifornimenti-gpl-completi').textContent = rifornimentiGPLCompleti;
-      
-      if (risparmioGPL > 0) {
-        const percentualeRisparmio = costoTotaleGPL > 0 ? (risparmioGPL / costoTotaleGPL * 100) : 0;
-        document.getElementById('risparmio-gpl').innerHTML = 
-          `<span style="color: #10b981">€${risparmioGPL.toFixed(2)}<br><small style="font-size: 0.7rem;">(${percentualeRisparmio.toFixed(1)}% risparmio)</small></span>`;
-      } else {
-        document.getElementById('risparmio-gpl').textContent = '--';
-      }
-      
-      document.getElementById('costo-medio-gpl').textContent = costoMedioGPL > 0 ? `€${costoMedioGPL.toFixed(3)}` : '--';
-      document.getElementById('costo-medio-benzina').textContent = costoMedioBenzina > 0 ? `€${costoMedioBenzina.toFixed(3)}` : '--';
-      document.getElementById('consumo-medio-mensile').textContent = `${consumoMedioMensile.toFixed(1)} L`;
-      
-      if (litriTotali > 0) {
-        document.getElementById('percentuale-gpl').innerHTML = 
-          `<span style="color: #10b981">${percentualeGPL.toFixed(1)}% GPL</span><br><small style="font-size: 0.7rem; color: rgba(255,255,255,0.6);">${percentualeBenzina.toFixed(1)}% Benzina</small>`;
-      } else {
-        document.getElementById('percentuale-gpl').textContent = '--';
-      }
-      
-      // Calcola frequenza rifornimenti basata sui km di lavoro
-      calcolaFrequenzaRifornimenti(litriTotaliGPL, litriTotaliBenzina);
+      const valoriMensili = Array.from(perMese.values());
+      const mediaMensile = valoriMensili.length ? valoriMensili.reduce((a, b) => a + b, 0) / valoriMensili.length : null;
+      document.getElementById('consumo-medio-mensile').textContent = mediaMensile === null ? '--' : mediaMensile.toFixed(1) + ' L';
+
+      const quotaGPL = litriTotali > 0 ? litriGPL / litriTotali * 100 : null;
+      document.getElementById('percentuale-gpl').textContent = quotaGPL === null ? '--' : quotaGPL.toFixed(1) + '% GPL · ' + (100 - quotaGPL).toFixed(1) + '% Benzina';
+      calcolaFrequenzaRifornimenti();
     }
-    
-    function calcolaFrequenzaRifornimenti(litriTotaliGPL, litriTotaliBenzina) {
-      // Parametri lavoro
-      // I chilometri non sono stimabili senza registrare il contachilometri.
-      
-      if (rifornimenti.length < 2) {
+
+        function calcolaFrequenzaRifornimenti() {
+      const dateUniche = Array.from(new Set(rifornimenti.map(r => r.data))).sort();
+      if (dateUniche.length < 2) {
         document.getElementById('media-giorni-rifornimenti').textContent = '--';
         document.getElementById('km-tra-rifornimenti').textContent = '--';
         document.getElementById('consumo-km-litro').textContent = '--';
         document.getElementById('frequenza-rifornimenti').textContent = '--';
         return;
       }
-      
-      // Ordina rifornimenti per data
-      const rifornimentiOrdinati = [...rifornimenti].sort((a, b) => new Date(a.data) - new Date(b.data));
-      
-      // Calcola giorni tra rifornimenti consecutivi
-      const giorniTraRifornimenti = [];
-      for (let i = 1; i < rifornimentiOrdinati.length; i++) {
-        const dataPrecedente = new Date(rifornimentiOrdinati[i - 1].data + 'T00:00:00');
-        const dataCorrente = new Date(rifornimentiOrdinati[i].data + 'T00:00:00');
-        const diffTempo = dataCorrente - dataPrecedente;
-        const diffGiorni = diffTempo / (1000 * 60 * 60 * 24);
-        giorniTraRifornimenti.push(diffGiorni);
+      const intervalli = [];
+      for (let i = 1; i < dateUniche.length; i++) {
+        const a = dateUniche[i - 1].split('-').map(Number);
+        const b = dateUniche[i].split('-').map(Number);
+        intervalli.push((Date.UTC(b[0], b[1] - 1, b[2]) - Date.UTC(a[0], a[1] - 1, a[2])) / 86400000);
       }
-      
-      // Media giorni tra rifornimenti
-      const mediaGiorni = giorniTraRifornimenti.reduce((sum, giorni) => sum + giorni, 0) / giorniTraRifornimenti.length;
-      
-      // Chilometri e consumo medio richiedono letture del contachilometri,
-      // che il modulo non registra: non vengono quindi stimati.
-      
-      // Calcola frequenza rifornimenti (ogni quanti giorni)
-      const frequenzaGiorni = mediaGiorni;
-      let frequenzaTesto = '';
-      if (frequenzaGiorni < 7) {
-        frequenzaTesto = `Ogni ${frequenzaGiorni.toFixed(1)} giorni`;
-      } else if (frequenzaGiorni < 14) {
-        frequenzaTesto = `Ogni ${(frequenzaGiorni / 7).toFixed(1)} settimane`;
-      } else {
-        frequenzaTesto = `Ogni ${(frequenzaGiorni / 7).toFixed(1)} settimane`;
-      }
-      
-      // Aggiorna UI
-      document.getElementById('media-giorni-rifornimenti').textContent = `${mediaGiorni.toFixed(1)} giorni`;
+      const media = intervalli.reduce((sum, n) => sum + n, 0) / intervalli.length;
+      const frequenza = media < 7 ? 'Ogni ' + media.toFixed(1) + ' giorni' : 'Ogni ' + (media / 7).toFixed(1) + ' settimane';
+      document.getElementById('media-giorni-rifornimenti').textContent = media.toFixed(1) + ' giorni';
       document.getElementById('km-tra-rifornimenti').textContent = '--';
       document.getElementById('consumo-km-litro').textContent = '--';
-      document.getElementById('frequenza-rifornimenti').innerHTML = 
-        `<span style="color: #ffd93d">${frequenzaTesto}</span><br><small style="font-size: 0.7rem; color: rgba(255,255,255,0.6);">intervallo medio basato sulle date registrate</small>`;
+      document.getElementById('frequenza-rifornimenti').textContent = frequenza;
     }
-    
-    function aggiornaStatisticheMensili() {
+
+        function aggiornaStatisticheMensili() {
       if (rifornimenti.length === 0) {
         document.getElementById('media-costo-mensile').textContent = '€0.00';
         document.getElementById('media-benzina-mensile').textContent = '0.0';
         document.getElementById('media-gpl-mensile').textContent = '0.0';
         document.getElementById('variazione-costo-mensile').textContent = '--';
         const canvas = document.getElementById('graficoCostoMensile');
-        if (canvas) {
-          const ctx = canvas.getContext('2d');
-          ctx.clearRect(0, 0, canvas.width, canvas.height);
-        }
+        if (canvas) canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
         return;
       }
-      
-      // Raggruppa per mese
       const perMese = {};
       rifornimenti.forEach(r => {
-        const data = new Date(r.data + 'T00:00:00');
-        const chiaveMese = `${data.getFullYear()}-${String(data.getMonth() + 1).padStart(2, '0')}`;
-        
-        if (!perMese[chiaveMese]) {
-          perMese[chiaveMese] = {
-            costo: 0,
-            benzina: 0,
-            gpl: 0
-          };
-        }
-        
-        perMese[chiaveMese].costo += r.costo;
-        if (r.benzina) {
-          perMese[chiaveMese].benzina++;
-        } else {
-          perMese[chiaveMese].gpl++;
-        }
+        const mese = r.data.slice(0, 7);
+        if (!perMese[mese]) perMese[mese] = { costo: 0, benzina: 0, gpl: 0 };
+        perMese[mese].costo += r.costo;
+        if (r.benzina) perMese[mese].benzina++;
+        else perMese[mese].gpl++;
       });
-      
       const mesi = Object.keys(perMese).sort();
-      const numeroMesi = mesi.length;
-      
-      if (numeroMesi === 0) {
-        document.getElementById('media-costo-mensile').textContent = '€0.00';
-        document.getElementById('media-benzina-mensile').textContent = '0.0';
-        document.getElementById('media-gpl-mensile').textContent = '0.0';
-        document.getElementById('variazione-costo-mensile').textContent = '--';
-        return;
-      }
-      
-      // Calcola medie
-      const totaleCostoMensile = Object.values(perMese).reduce((sum, m) => sum + m.costo, 0);
-      const totaleBenzinaMensile = Object.values(perMese).reduce((sum, m) => sum + m.benzina, 0);
-      const totaleGPLMensile = Object.values(perMese).reduce((sum, m) => sum + m.gpl, 0);
-      
-      const mediaCostoMensile = totaleCostoMensile / numeroMesi;
-      const mediaBenzinaMensile = totaleBenzinaMensile / numeroMesi;
-      const mediaGPLMensile = totaleGPLMensile / numeroMesi;
-      
-      document.getElementById('media-costo-mensile').textContent = `€${mediaCostoMensile.toFixed(2)}`;
-      document.getElementById('media-benzina-mensile').textContent = mediaBenzinaMensile.toFixed(1);
-      document.getElementById('media-gpl-mensile').textContent = mediaGPLMensile.toFixed(1);
-      
-      // Calcola variazione costo mensile (differenza tra ultimo e primo mese)
-      if (numeroMesi >= 2) {
-        const primoMese = perMese[mesi[0]].costo;
-        const ultimoMese = perMese[mesi[mesi.length - 1]].costo;
-        const variazione = ultimoMese - primoMese;
-        const percentuale = primoMese > 0 ? ((variazione / primoMese) * 100) : 0;
-        
+      const totaleCosto = mesi.reduce((sum, mese) => sum + perMese[mese].costo, 0);
+      const totaleBenzina = mesi.reduce((sum, mese) => sum + perMese[mese].benzina, 0);
+      const totaleGPL = mesi.reduce((sum, mese) => sum + perMese[mese].gpl, 0);
+      document.getElementById('media-costo-mensile').textContent = '€' + (totaleCosto / mesi.length).toFixed(2);
+      document.getElementById('media-benzina-mensile').textContent = (totaleBenzina / mesi.length).toFixed(1);
+      document.getElementById('media-gpl-mensile').textContent = (totaleGPL / mesi.length).toFixed(1);
+      if (mesi.length >= 2) {
+        const primo = perMese[mesi[0]].costo;
+        const ultimo = perMese[mesi[mesi.length - 1]].costo;
+        const variazione = ultimo - primo;
+        const percentuale = primo > 0 ? (variazione / primo) * 100 : null;
         const segno = variazione >= 0 ? '+' : '';
         const colore = variazione >= 0 ? '#ef4444' : '#10b981';
-        document.getElementById('variazione-costo-mensile').innerHTML = 
-          `<span style="color: ${colore}">${segno}€${variazione.toFixed(2)}<br><small style="font-size: 0.7rem;">(${segno}${percentuale.toFixed(1)}%)</small></span>`;
+        document.getElementById('variazione-costo-mensile').innerHTML =
+          '<span style="color: ' + colore + '">' + segno + '€' + variazione.toFixed(2) +
+          '<br><small style="font-size: 0.7rem;">' + (percentuale === null ? 'n.d.' : '(' + segno + percentuale.toFixed(1) + '%)') + '</small></span>';
       } else {
         document.getElementById('variazione-costo-mensile').textContent = '--';
       }
-      
-      // Disegna grafico
       disegnaGraficoCostoMensile(perMese, mesi);
     }
-    
-    function disegnaGraficoCostoMensile(perMese, mesi) {
+
+        function disegnaGraficoCostoMensile(perMese, mesi) {
       const canvas = document.getElementById('graficoCostoMensile');
       if (!canvas) return;
       
@@ -1390,11 +1298,11 @@
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `rifornimenti_${new Date().toISOString().split('T')[0]}.json`;
+      a.download = `rifornimenti_${getLocalISODate()}.json`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
-      URL.revokeObjectURL(url);
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
       mostraAlert('success', '✅ Dati esportati con successo!');
     }
 
@@ -1405,46 +1313,50 @@
     function gestisciImportazione(event) {
       const file = event.target.files[0];
       if (!file) return;
-
       const reader = new FileReader();
       reader.onload = function(e) {
         try {
-          const datiImportati = JSON.parse(e.target.result);
-          if (!Array.isArray(datiImportati)) {
-            throw new Error('Formato file non valido');
-          }
-
-          if (datiImportati.length === 0) {
-            mostraAlert('error', '❌ Il file è vuoto!');
-            return;
-          }
-
-          // Validazione base
-          const validi = datiImportati.every(r => r.data && typeof r.costo === 'number' && typeof r.benzina === 'boolean');
-          if (!validi) {
-            throw new Error('Dati non validi nel file');
-          }
-
+          const raw = JSON.parse(e.target.result);
+          if (!Array.isArray(raw) || raw.length === 0) throw new Error('Il file deve contenere una lista di rifornimenti.');
+          const imported = raw.map((r, index) => normalizzaRifornimento(r, index));
+          if (imported.some(r => r === null)) throw new Error('Uno o più record contengono dati non validi.');
+          let replaceArchive = rifornimenti.length === 0;
           if (rifornimenti.length > 0) {
-            if (!confirm(`Vuoi sovrascrivere i ${rifornimenti.length} rifornimenti esistenti o aggiungere questi ${datiImportati.length} rifornimenti?`)) {
+            replaceArchive = confirm('Archivio attuale: ' + rifornimenti.length + ' rifornimenti. File: ' + imported.length +
+              '.\n\nOK = sostituisci l’archivio.\nAnnulla = scegli se aggiungere i dati.');
+            if (!replaceArchive && !confirm('Vuoi aggiungere i rifornimenti importati a quelli già presenti?')) {
+              mostraAlert('error', 'Importazione annullata.');
               return;
             }
           }
-
-          rifornimenti = datiImportati;
+          if (replaceArchive) {
+            rifornimenti = imported;
+          } else {
+            const ids = new Set(rifornimenti.map(r => String(r.id)));
+            imported.forEach((r, index) => {
+              if (ids.has(String(r.id))) r.id = 'import-' + Date.now() + '-' + index;
+              ids.add(String(r.id));
+              rifornimenti.push(r);
+            });
+          }
           salvaDati();
           renderizzaRifornimenti();
-          mostraAlert('success', `✅ ${datiImportati.length} rifornimenti importati con successo!`);
+          mostraAlert('success', imported.length + ' rifornimenti ' + (replaceArchive ? 'importati' : 'aggiunti') + ' correttamente.');
         } catch (error) {
           console.error('Errore importazione:', error);
-          mostraAlert('error', '❌ Errore nell\'importazione del file! Controlla che sia un file JSON valido.');
+          mostraAlert('error', error.message || 'File JSON non valido. Controlla il formato e riprova.');
+        } finally {
+          event.target.value = '';
         }
       };
+      reader.onerror = function() {
+        mostraAlert('error', 'Impossibile leggere il file selezionato.');
+        event.target.value = '';
+      };
       reader.readAsText(file);
-      event.target.value = ''; // Reset per permettere di importare lo stesso file di nuovo
     }
 
-    function mostraAlert(tipo, messaggio) {
+        function mostraAlert(tipo, messaggio) {
       const alert = document.getElementById('alert');
       alert.className = `alert alert-${tipo} show`;
       alert.textContent = messaggio;
