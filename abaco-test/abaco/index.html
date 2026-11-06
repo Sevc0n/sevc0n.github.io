@@ -2198,7 +2198,8 @@
         qty.value = p.qty > 0 ? p.qty : "";
        qty.placeholder = "0";
        qty.addEventListener("input", () => {
-         products[globalIndex].qty = Math.max(0, parseInt(qty.value, 10) || 0);\n         qty.value = products[globalIndex].qty || '';
+         products[globalIndex].qty = Math.max(0, parseInt(qty.value, 10) || 0);
+         qty.value = products[globalIndex].qty || '';
          updateDistribution();
         salvaDati();
        });

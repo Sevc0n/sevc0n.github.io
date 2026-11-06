@@ -390,6 +390,7 @@
   <script>
     let currentImageFile = null;
     let extractedMaterials = [];
+    let ocrRequestId = 0;
 
     function handleDragOver(event) {
       event.preventDefault();
@@ -443,6 +444,7 @@
     }
 
     async function performOCR(imageDataUrl) {
+      const requestId = ++ocrRequestId;
       const statusDiv = document.getElementById('ocr-status');
       const extractedSection = document.getElementById('extracted-text-section');
       
@@ -453,14 +455,15 @@
       try {
         const { data: { text } } = await Tesseract.recognize(imageDataUrl, 'ita+eng', {
           logger: m => {
-            if (m.status === 'recognizing text') {
+            if (requestId === ocrRequestId && m.status === 'recognizing text') {
               const progress = Math.round(m.progress * 100);
               statusDiv.innerHTML = `<p>⏳ Analisi in corso... ${progress}%</p>`;
             }
           }
         });
         
-        if (requestId !== ocrRequestId) return;\n        statusDiv.className = 'status-box success';
+        if (requestId !== ocrRequestId) return;
+        statusDiv.className = 'status-box success';
         statusDiv.innerHTML = '<p>✅ Testo estratto con successo!</p>';
         document.getElementById('extracted-text').value = text;
         extractedSection.classList.add('visible');
@@ -469,6 +472,7 @@
           statusDiv.style.display = 'none';
         }, 3000);
       } catch (error) {
+        if (requestId !== ocrRequestId) return;
         console.error('Errore OCR:', error);
         statusDiv.className = 'status-box error';
         statusDiv.innerHTML = '<p>❌ Errore durante l\'analisi. Riprova con un\'immagine più chiara.</p>';
