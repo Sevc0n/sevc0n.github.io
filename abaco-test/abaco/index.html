@@ -2225,7 +2225,13 @@
      }
  
      function updateDistribution() {
-       const requestedParticipants = parseInt(participantsInput.value, 10);\n       if (!Number.isInteger(requestedParticipants) || requestedParticipants < 1) {\n         distributionResults.innerHTML = '<div class="empty-state">Inserisci almeno un partecipante per calcolare la distribuzione.</div>';\n         return;\n       }\n       const participants = Math.min(requestedParticipants, 100);\n       if (participants !== requestedParticipants) participantsInput.value = participants;
+       const requestedParticipants = parseInt(participantsInput.value, 10);
+       if (!Number.isInteger(requestedParticipants) || requestedParticipants < 1) {
+         distributionResults.innerHTML = '<div class="empty-state">Inserisci almeno un partecipante per calcolare la distribuzione.</div>';
+         return;
+       }
+       const participants = Math.min(requestedParticipants, 100);
+       if (participants !== requestedParticipants) participantsInput.value = participants;
        const activeItems = products.filter(p => p.qty > 0);
        const unifiedView = document.getElementById('unified-view-toggle').checked;
        
