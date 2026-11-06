@@ -485,7 +485,7 @@
                 <strong>Colore target:</strong> ${hex.toUpperCase()}<br>
                 <strong>Colore risultante:</strong> ${resultHex}<br>
                 <strong>Totale coloranti:</strong> ${totalDyes}<br>
-                <strong>Precisione:</strong> ${(100 - (result.distance / 4.42)).toFixed(1)}%
+                <strong>Differenza percettiva (ΔE):</strong> ${result.distance.toFixed(1)}
             `;
 
             // Mostra lista coloranti
