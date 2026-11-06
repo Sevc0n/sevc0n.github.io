@@ -1,1 +1,211 @@
-const pal=[[249,255,254],[249,128,29],[199,78,189],[58,179,218],[254,216,61],[128,199,31],[243,139,170],[71,79,82],[157,157,151],[22,156,156],[137,50,184],[60,68,170],[131,84,50],[94,124,22],[176,46,38],[29,29,33]];const f=document.getElementById("f"),w=document.getElementById("w"),h=document.getElementById("h"),lock=document.getElementById("lock"),alg=document.getElementById("alg"),go=document.getElementById("go"),dl=document.getElementById("dl"),o=document.getElementById("o"),c=document.getElementById("c"),status=document.getElementById("status"),img=new Image();let ratio=1,loaded=false;function nearest(r,g,b){let best=pal[0],dist=Infinity;for(const p of pal){const d=(r-p[0])**2+(g-p[1])**2+(b-p[2])**2;if(d<dist){dist=d;best=p}}return best}function placeholder(id,show){document.getElementById(id).style.display=show?"block":"none"}function valid(n){return Number.isInteger(+n)&&+n>=1&&+n<=2048}f.addEventListener("change",e=>{const file=e.target.files?.[0];if(!file)return;if(!file.type.startsWith("image/")){status.textContent="Seleziona un file immagine valido.";return}const reader=new FileReader();reader.onload=()=>{img.onload=()=>{loaded=true;ratio=img.width/img.height;w.value=img.width;h.value=img.height;o.width=img.width;o.height=img.height;o.getContext("2d").drawImage(img,0,0);o.style.display="block";placeholder("source-placeholder",false);c.style.display="none";placeholder("output-placeholder",true);document.getElementById("file-name").textContent=file.name;document.getElementById("source-size").textContent=img.width+" × "+img.height;go.disabled=false;dl.classList.add("disabled");dl.removeAttribute("href");status.textContent="Immagine caricata: imposta le dimensioni e converti."};img.onerror=()=>status.textContent="Impossibile leggere l’immagine.";img.src=reader.result};reader.readAsDataURL(file)});w.addEventListener("input",()=>{if(lock.checked&&valid(w.value))h.value=Math.max(1,Math.round(+w.value/ratio))});h.addEventListener("input",()=>{if(lock.checked&&valid(h.value))w.value=Math.max(1,Math.round(+h.value*ratio))});go.addEventListener("click",()=>{const W=+w.value,H=+h.value;if(!loaded){status.textContent="Carica prima un’immagine.";return}if(!valid(W)||!valid(H)||W*H>3000000){status.textContent="Dimensioni non valide: interi tra 1 e 2048, massimo 3 milioni di pixel.";return}go.disabled=true;status.textContent="Conversione in corso…";requestAnimationFrame(()=>{try{c.width=W;c.height=H;const ctx=c.getContext("2d",{willReadFrequently:true});ctx.drawImage(img,0,0,W,H);const id=ctx.getImageData(0,0,W,H),d=id.data;for(let y=0;y<H;y++)for(let x=0;x<W;x++){const i=(y*W+x)*4,old=[d[i],d[i+1],d[i+2]],n=nearest(...old),err=old.map((v,k)=>v-n[k]);d[i]=n[0];d[i+1]=n[1];d[i+2]=n[2];if(alg.value==="dither")[[1,0,7/16],[-1,1,3/16],[0,1,5/16],[1,1,1/16]].forEach(([dx,dy,factor])=>{const nx=x+dx,ny=y+dy;if(nx>=0&&nx<W&&ny>=0&&ny<H){const j=(ny*W+nx)*4;for(let k=0;k<3;k++)d[j+k]=Math.max(0,Math.min(255,d[j+k]+err[k]*factor))}})}ctx.putImageData(id,0,0);c.style.display="block";placeholder("output-placeholder",false);document.getElementById("output-size").textContent=W+" × "+H;dl.href=c.toDataURL("image/png");dl.download="minecraft-palette.png";dl.classList.remove("disabled");status.textContent="Conversione completata. Puoi scaricare il PNG."}catch(err){status.textContent="Errore durante la conversione: "+err.message}finally{go.disabled=false}})});
+const palette = [
+  [249,255,254],[249,128,29],[199,78,189],[58,179,218],
+  [254,216,61],[128,199,31],[243,139,170],[71,79,82],
+  [157,157,151],[22,156,156],[137,50,184],[60,68,170],
+  [131,84,50],[94,124,22],[176,46,38],[29,29,33]
+];
+
+const fileInput = document.getElementById('f');
+const widthInput = document.getElementById('w');
+const heightInput = document.getElementById('h');
+const lockRatio = document.getElementById('lock');
+const algorithm = document.getElementById('alg');
+const convertButton = document.getElementById('go');
+const downloadLink = document.getElementById('dl');
+const originalCanvas = document.getElementById('o');
+const outputCanvas = document.getElementById('c');
+const status = document.getElementById('status');
+const image = new Image();
+
+let aspectRatio = 1;
+let imageLoaded = false;
+let objectUrl = null;
+
+const diffusion = [
+  [1, 0, 7 / 16],
+  [-1, 1, 3 / 16],
+  [0, 1, 5 / 16],
+  [1, 1, 1 / 16]
+];
+
+function isValidDimension(value) {
+  const number = Number(value);
+  return Number.isSafeInteger(number) && number >= 1 && number <= 2048;
+}
+
+function showPlaceholder(id, visible) {
+  document.getElementById(id).style.display = visible ? 'block' : 'none';
+}
+
+function findNearestColorIndex(r, g, b) {
+  let bestIndex = 0;
+  let bestDistance = Infinity;
+
+  for (let i = 0; i < palette.length; i++) {
+    const color = palette[i];
+    const dr = r - color[0];
+    const dg = g - color[1];
+    const db = b - color[2];
+    const distance = dr * dr + dg * dg + db * db;
+
+    if (distance < bestDistance) {
+      bestDistance = distance;
+      bestIndex = i;
+    }
+  }
+
+  return bestIndex;
+}
+
+fileInput.addEventListener('change', event => {
+  const file = event.target.files && event.target.files[0];
+  if (!file) return;
+
+  imageLoaded = false;
+  convertButton.disabled = true;
+  downloadLink.classList.add('disabled');
+  downloadLink.removeAttribute('href');
+  outputCanvas.style.display = 'none';
+  showPlaceholder('output-placeholder', true);
+
+  if (!file.type.startsWith('image/')) {
+    status.textContent = 'Seleziona un file immagine valido.';
+    return;
+  }
+
+  if (objectUrl) URL.revokeObjectURL(objectUrl);
+  objectUrl = URL.createObjectURL(file);
+
+  image.onload = () => {
+    imageLoaded = true;
+    aspectRatio = image.width / image.height;
+
+    widthInput.value = image.width;
+    heightInput.value = image.height;
+
+    // La preview non deve duplicare in memoria immagini sorgente enormi.
+    const previewScale = Math.min(1, 1400 / image.width, 1400 / image.height);
+    originalCanvas.width = Math.max(1, Math.round(image.width * previewScale));
+    originalCanvas.height = Math.max(1, Math.round(image.height * previewScale));
+
+    const previewContext = originalCanvas.getContext('2d');
+    if (!previewContext) {
+      imageLoaded = false;
+      status.textContent = 'Il browser non è riuscito a preparare la preview.';
+      return;
+    }
+
+    previewContext.clearRect(0, 0, originalCanvas.width, originalCanvas.height);
+    previewContext.drawImage(image, 0, 0, originalCanvas.width, originalCanvas.height);
+    originalCanvas.style.display = 'block';
+    showPlaceholder('source-placeholder', false);
+
+    document.getElementById('file-name').textContent = file.name;
+    document.getElementById('source-size').textContent = image.width + ' × ' + image.height;
+    convertButton.disabled = false;
+    status.textContent = 'Immagine caricata: imposta le dimensioni e converti.';
+  };
+
+  image.onerror = () => {
+    imageLoaded = false;
+    convertButton.disabled = true;
+    status.textContent = 'Impossibile leggere l’immagine selezionata.';
+  };
+
+  image.src = objectUrl;
+});
+
+widthInput.addEventListener('input', () => {
+  if (lockRatio.checked && isValidDimension(widthInput.value)) {
+    heightInput.value = Math.max(1, Math.round(Number(widthInput.value) / aspectRatio));
+  }
+});
+
+heightInput.addEventListener('input', () => {
+  if (lockRatio.checked && isValidDimension(heightInput.value)) {
+    widthInput.value = Math.max(1, Math.round(Number(heightInput.value) * aspectRatio));
+  }
+});
+
+convertButton.addEventListener('click', () => {
+  const width = Number(widthInput.value);
+  const height = Number(heightInput.value);
+
+  if (!imageLoaded) {
+    status.textContent = 'Carica prima un’immagine.';
+    return;
+  }
+
+  if (!isValidDimension(width) || !isValidDimension(height) || width * height > 3000000) {
+    status.textContent = 'Dimensioni non valide: usa interi tra 1 e 2048 e massimo 3 milioni di pixel.';
+    return;
+  }
+
+  convertButton.disabled = true;
+  status.textContent = 'Conversione in corso…';
+
+  requestAnimationFrame(() => {
+    try {
+      outputCanvas.width = width;
+      outputCanvas.height = height;
+
+      const context = outputCanvas.getContext('2d', { willReadFrequently: true });
+      if (!context) throw new Error('Canvas non disponibile');
+
+      context.clearRect(0, 0, width, height);
+      context.drawImage(image, 0, 0, width, height);
+
+      const imageData = context.getImageData(0, 0, width, height);
+      const pixels = imageData.data;
+      const useDithering = algorithm.value === 'dither';
+
+      for (let y = 0; y < height; y++) {
+        for (let x = 0; x < width; x++) {
+          const index = (y * width + x) * 4;
+          const red = pixels[index];
+          const green = pixels[index + 1];
+          const blue = pixels[index + 2];
+          const nearest = palette[findNearestColorIndex(red, green, blue)];
+
+          const errorRed = red - nearest[0];
+          const errorGreen = green - nearest[1];
+          const errorBlue = blue - nearest[2];
+
+          pixels[index] = nearest[0];
+          pixels[index + 1] = nearest[1];
+          pixels[index + 2] = nearest[2];
+
+          if (useDithering) {
+            for (let k = 0; k < diffusion.length; k++) {
+              const [dx, dy, factor] = diffusion[k];
+              const nextX = x + dx;
+              const nextY = y + dy;
+              if (nextX < 0 || nextX >= width || nextY >= height) continue;
+
+              const nextIndex = (nextY * width + nextX) * 4;
+              pixels[nextIndex] = pixels[nextIndex] + errorRed * factor;
+              pixels[nextIndex + 1] = pixels[nextIndex + 1] + errorGreen * factor;
+              pixels[nextIndex + 2] = pixels[nextIndex + 2] + errorBlue * factor;
+            }
+          }
+        }
+      }
+
+      context.putImageData(imageData, 0, 0);
+      outputCanvas.style.display = 'block';
+      showPlaceholder('output-placeholder', false);
+
+      document.getElementById('output-size').textContent = width + ' × ' + height;
+      downloadLink.href = outputCanvas.toDataURL('image/png');
+      downloadLink.download = 'minecraft-palette.png';
+      downloadLink.classList.remove('disabled');
+      status.textContent = 'Conversione completata. Puoi scaricare il PNG.';
+    } catch (error) {
+      outputCanvas.style.display = 'none';
+      showPlaceholder('output-placeholder', true);
+      status.textContent = 'Errore durante la conversione: ' + error.message;
+    } finally {
+      convertButton.disabled = false;
+    }
+  });
+});
