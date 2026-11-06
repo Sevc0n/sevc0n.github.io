@@ -351,18 +351,6 @@
       box-shadow: 0 0 0 3px rgba(50, 130, 184, 0.2);
     }
 
-    .profile-manager { margin-top:22px; padding-top:18px; border-top:1px solid rgba(255,255,255,.1); text-align:left; }
-    .profile-manager h3 { color:#63b3ed; margin-bottom:8px; }
-    .profile-help { color:#a0aec0; font-size:.8rem; margin:8px 0; line-height:1.5; }
-    .profile-fields { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
-    .profile-fields input,.profile-fields select { min-width:0; width:100%; padding:10px; border-radius:8px; background:#202b46; color:white; border:1px solid rgba(255,255,255,.2); }
-    .profile-fields input { grid-column:1/-1; }
-    .profile-actions { margin:10px 0; }
-    .profile-entry { display:flex; flex-wrap:wrap; gap:8px; align-items:center; padding:10px 0; border-bottom:1px solid rgba(255,255,255,.1); }
-    .profile-entry .profile-identity { flex:1; min-width:130px; }
-    .profile-entry small { display:block; color:#a0aec0; margin-top:5px; }
-    .profile-entry button { margin:0; }
-    @media(max-width:520px){ .profile-fields { grid-template-columns:1fr; } }
     .participants-section {
       text-align: center;
     }
@@ -1637,20 +1625,7 @@
              <input type="number" id="participants" min="1" max="100" value="4">
                <button class="quantity-btn plus-btn" onclick="increaseParticipants()">+</button>
              </div>
-             <div class="profile-manager">
-               <h3>Profili del gruppo</h3>
-               <p class="profile-help">Crea i membri, assegna ruolo, maestranza e stato. Seleziona chi partecipa alla distribuzione; gli altri restano in archivio.</p>
-               <div class="profile-fields">
-                 <input id="profile-name" maxlength="60" placeholder="Nome del personaggio" aria-label="Nome del personaggio">
-                 <select id="profile-role" aria-label="Ruolo in Abisso"><option>Guerriero</option><option>Mago</option><option>Cacciatore</option><option>Ombra</option><option>Bardo</option><option>Raccoglitore</option></select>
-                 <select id="profile-tier" aria-label="Maestranza"><option>Novizio</option><option>Avanzato</option><option>Esperto</option><option>Custode</option><option>Maestro</option><option>Granmaestro</option></select>
-                 <select id="profile-status" aria-label="Stato"><option>Membro fisso</option><option>Esterno</option><option>In prova</option><option>Inattivo</option><option>Morto</option></select>
-               </div>
-               <div class="profile-actions"><button type="button" class="list-btn" id="profile-save">Salva profilo</button><button type="button" class="list-btn" id="profile-cancel" hidden>Annulla modifica</button></div>
-               <p id="profile-feedback" class="profile-help" role="status"></p>
-               <div id="profile-list"></div>
-               <p class="profile-help">Selezionando uno o più profili, il numero dei partecipanti si aggiorna automaticamente. Per usare solo partecipanti anonimi, deselezionali tutti.</p>
-             </div>
+             <div style="margin-top:18px;text-align:center;"><a href="../profili/" style="color:#63b3ed;text-decoration:none;font-weight:600;">👥 Gestione profili del gruppo ↗</a></div>
              <div class="toggle-container">
                <span class="toggle-label">Visualizzazione separata</span>
                <label class="toggle-switch">
@@ -1736,188 +1711,6 @@
    <script>
     const STORAGE_KEY = 'sevcon_abaco_test_state';
     const PRESETS_KEY = 'sevcon_abaco_presets_v1';
-    const PROFILES_KEY = 'sevcon_abaco_profiles_v1';
-    const PROFILE_ROLES = ['Guerriero','Mago','Cacciatore','Ombra','Bardo','Raccoglitore'];
-    const PROFILE_TIERS = ['Novizio','Avanzato','Esperto','Custode','Maestro','Granmaestro'];
-    const PROFILE_STATUSES = ['Membro fisso','Esterno','In prova','Inattivo','Morto'];
-    let memberProfiles = [];
-    let selectedProfileIds = [];
-    let editingProfileId = null;
-
-    function loadMemberProfiles() {
-      try {
-        const stored = JSON.parse(localStorage.getItem(PROFILES_KEY) || '{}');
-        memberProfiles = Array.isArray(stored.profiles) ? stored.profiles.filter(p => p && typeof p.id === 'string' && typeof p.name === 'string') : [];
-        selectedProfileIds = Array.isArray(stored.selected) ? stored.selected.filter(id => memberProfiles.some(p => p.id === id)) : [];
-      } catch (error) { console.error('Errore nel caricamento profili:', error); memberProfiles = []; selectedProfileIds = []; }
-    }
-    function saveMemberProfiles() {
-      try {
-        localStorage.setItem(PROFILES_KEY, JSON.stringify({profiles:memberProfiles,selected:selectedProfileIds}));
-        document.getElementById('profile-feedback').textContent = 'Profili salvati in questo browser.';
-        return true;
-      } catch (error) {
-        document.getElementById('profile-feedback').textContent = 'Impossibile salvare i profili nel browser.';
-        return false;
-      }
-    }
-    function resetProfileEditor() {
-      editingProfileId = null;
-      document.getElementById('profile-name').value = '';
-      document.getElementById('profile-role').value = 'Guerriero';
-      document.getElementById('profile-tier').value = 'Novizio';
-      document.getElementById('profile-status').value = 'Membro fisso';
-      document.getElementById('profile-save').textContent = 'Salva profilo';
-      document.getElementById('profile-cancel').hidden = true;
-    }
-    function renderMemberProfiles() {
-      const list = document.getElementById('profile-list');
-      list.replaceChildren();
-      memberProfiles.forEach(profile => {
-        const entry = document.createElement('div');
-        entry.className = 'profile-entry';
-        const check = document.createElement('input');
-        check.type = 'checkbox';
-        check.checked = selectedProfileIds.includes(profile.id);
-        check.setAttribute('aria-label', 'Partecipa: ' + profile.name);
-        check.addEventListener('change', () => {
-          selectedProfileIds = check.checked ? [...selectedProfileIds, profile.id] : selectedProfileIds.filter(id => id !== profile.id);
-          if (selectedProfileIds.length) participantsInput.value = selectedProfileIds.length;
-          saveMemberProfiles(); updateDistribution(); salvaDati();
-        });
-        const identity = document.createElement('div');
-        identity.className = 'profile-identity';
-        const name = document.createElement('strong');
-        name.textContent = profile.name;
-        const tier = document.createElement('span');
-        tier.className = 'tier-badge tier-' + profile.tier.toLowerCase().replaceAll(' ', '-');
-        tier.textContent = profile.tier;
-        const details = document.createElement('small');
-        details.textContent = profile.role + ' · ' + profile.status;
-        identity.append(name, tier, details);
-        const edit = document.createElement('button');
-        edit.type='button'; edit.className='list-btn'; edit.textContent='Modifica';
-        edit.addEventListener('click', () => {
-          editingProfileId = profile.id;
-          document.getElementById('profile-name').value=profile.name;
-          document.getElementById('profile-role').value=profile.role;
-          document.getElementById('profile-tier').value=profile.tier;
-          document.getElementById('profile-status').value=profile.status;
-          document.getElementById('profile-save').textContent='Aggiorna profilo';
-          document.getElementById('profile-cancel').hidden=false;
-        });
-        const remove = document.createElement('button');
-        remove.type='button'; remove.className='list-btn'; remove.textContent='Elimina';
-        remove.addEventListener('click', () => {
-          if (!confirm('Eliminare il profilo di ' + profile.name + '?')) return;
-          memberProfiles=memberProfiles.filter(p => p.id !== profile.id);
-          selectedProfileIds=selectedProfileIds.filter(id => id !== profile.id);
-          if (editingProfileId === profile.id) resetProfileEditor();
-          if (selectedProfileIds.length) participantsInput.value=selectedProfileIds.length;
-          saveMemberProfiles(); renderMemberProfiles(); updateDistribution(); salvaDati();
-        });
-        entry.append(check,identity,edit,remove); list.appendChild(entry);
-      });
-    }
-    function saveProfileFromEditor() {
-      const name=document.getElementById('profile-name').value.trim();
-      const role=document.getElementById('profile-role').value;
-      const tier=document.getElementById('profile-tier').value;
-      const status=document.getElementById('profile-status').value;
-      if (!name || !PROFILE_ROLES.includes(role) || !PROFILE_TIERS.includes(tier) || !PROFILE_STATUSES.includes(status)) {
-        document.getElementById('profile-feedback').textContent='Inserisci un nome e seleziona valori validi.'; return;
-      }
-      if (memberProfiles.some(p => p.name.toLocaleLowerCase('it') === name.toLocaleLowerCase('it') && p.id !== editingProfileId)) {
-        document.getElementById('profile-feedback').textContent='Esiste già un profilo con questo nome.'; return;
-      }
-      if (editingProfileId) {
-        const profile=memberProfiles.find(p => p.id === editingProfileId);
-        if (!profile) { resetProfileEditor(); return; }
-        Object.assign(profile,{name,role,tier,status});
-      } else {
-        const id = 'member-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2);
-        memberProfiles.push({id,name,role,tier,status});
-      }
-      saveMemberProfiles(); resetProfileEditor(); renderMemberProfiles(); updateDistribution();
-    }
-
-    let defaultProducts = [];
-     let products = [];
-    let stateCache = null;
-     const distributionResults = document.getElementById("distribution-results");
-     const participantsInput = document.getElementById("participants");
-    const pricesEditorContainer = document.getElementById('prices-editor');
-    const pricesCard = document.getElementById('prices-card');
- 
-    function caricaDati() {
-      const datiSalvati = localStorage.getItem(STORAGE_KEY);
-      if (!datiSalvati) return;
-
-      try {
-        stateCache = JSON.parse(datiSalvati);
-      } catch (e) {
-        console.error('Errore nel caricamento dati abaco:', e);
-        stateCache = null;
-      }
-    }
-
-    function salvaDati() {
-      const quantities = {};
-      const customPrices = {};
-
-      products.forEach(p => {
-        if (p.qty > 0) {
-          quantities[p.name] = p.qty;
-        }
-        if (typeof p.basePrice === 'number' && p.price !== p.basePrice) {
-          customPrices[p.name] = p.price;
-        }
-      });
-
-      const stato = {
-        participants: parseInt(participantsInput.value, 10) || 1,
-        unifiedView: document.getElementById('unified-view-toggle').checked,
-        distributionMode: document.getElementById('distribution-mode').value,
-        quantities,
-        customPrices
-      };
-
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(stato));
-    }
-
-    function applicaStatoSalvatoAiProdotti() {
-      if (!stateCache || !Array.isArray(products)) return;
-
-      const quantities = stateCache.quantities || {};
-      const customPrices = stateCache.customPrices || {};
-
-      products = products.map(product => {
-        const savedQty = quantities[product.name];
-        const savedPrice = customPrices[product.name];
-        const parsedQty = Number.isFinite(savedQty) ? savedQty : parseInt(savedQty, 10);
-        const parsedPrice = Number.isFinite(savedPrice) ? savedPrice : parseFloat(savedPrice);
-
-        return {
-          ...product,
-          qty: Number.isFinite(parsedQty) ? parsedQty : 0,
-          price: Number.isFinite(parsedPrice) ? parsedPrice : product.price
-        };
-      });
-
-      if (Number.isFinite(stateCache.participants) || !Number.isNaN(parseInt(stateCache.participants, 10))) {
-        participantsInput.value = Number.isFinite(stateCache.participants)
-          ? stateCache.participants
-          : parseInt(stateCache.participants, 10);
-      }
-
-      if (typeof stateCache.unifiedView === 'boolean') {
-        document.getElementById('unified-view-toggle').checked = stateCache.unifiedView;
-      }
-      if (stateCache.distributionMode === 'random' || stateCache.distributionMode === 'balanced') {
-        document.getElementById('distribution-mode').value = stateCache.distributionMode;
-      }
-    }
-
     function readAbacoPresets() {
       try {
         const saved = JSON.parse(localStorage.getItem(PRESETS_KEY) || '{}');
@@ -2581,7 +2374,7 @@
            
            const title = document.createElement("div");
            title.className = "participant-title";
-           title.textContent = selectedProfileIds.length === participants ? (memberProfiles.find(p => p.id === selectedProfileIds[i])?.name || `Partecipante ${i + 1}`) : `Partecipante ${i + 1}`;
+           title.textContent = `Partecipante ${i + 1}`;
            participantDiv.appendChild(title);
            
            // Raggruppa tutti gli oggetti (base + esubero) per nome, distinguendo base e esubero
@@ -2840,7 +2633,6 @@
     function increaseParticipants() {
       const currentValue = parseInt(participantsInput.value) || 1;
       participantsInput.value = Math.min(currentValue + 1, 100);
-      if (selectedProfileIds.length) { selectedProfileIds=[]; saveMemberProfiles(); renderMemberProfiles(); }
       updateDistribution();
       salvaDati();
     }
@@ -2849,22 +2641,13 @@
       const currentValue = parseInt(participantsInput.value) || 1;
       if (currentValue > 1) {
         participantsInput.value = currentValue - 1;
-        if (selectedProfileIds.length) { selectedProfileIds=[]; saveMemberProfiles(); renderMemberProfiles(); }
         updateDistribution();
         salvaDati();
       }
     }
 
-    loadMemberProfiles();
-    renderMemberProfiles();
-    document.getElementById('profile-save').addEventListener('click', saveProfileFromEditor);
-    document.getElementById('profile-cancel').addEventListener('click', resetProfileEditor);
-
     // Event listeners
     participantsInput.addEventListener("input", () => {
-      if (selectedProfileIds.length && parseInt(participantsInput.value, 10) !== selectedProfileIds.length) {
-        selectedProfileIds = []; saveMemberProfiles(); renderMemberProfiles();
-      }
       updateDistribution();
       salvaDati();
     });
