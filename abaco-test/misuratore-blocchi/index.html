@@ -1,0 +1,1078 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Misuratore Blocchi - Sevcon Tools</title>
+  <link rel="icon" type="image/png" href="../logo.png">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+      min-height: 100vh;
+      padding: 20px;
+      color: #ffffff;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      background: rgba(26, 26, 46, 0.95);
+      backdrop-filter: blur(15px);
+      border-radius: 25px;
+      box-shadow: 0 25px 50px rgba(0, 0, 0, 0.6);
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+    }
+
+    header {
+      background: linear-gradient(135deg, #1a1a2e, #16213e);
+      color: white;
+      padding: 25px;
+      text-align: center;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    h1 {
+      font-size: 2rem;
+      font-weight: 800;
+      margin-bottom: 10px;
+      background: linear-gradient(45deg, #ff6b6b, #ffd93d);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .content {
+      display: grid;
+      grid-template-columns: 1fr 400px;
+      gap: 20px;
+      padding: 20px;
+    }
+
+    .image-section {
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 15px;
+      padding: 20px;
+      position: relative;
+    }
+
+    .controls {
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      border-radius: 15px;
+      padding: 20px;
+      height: fit-content;
+      max-height: calc(100vh - 200px);
+      overflow-y: auto;
+    }
+
+    .control-group {
+      margin-bottom: 20px;
+    }
+
+    .control-group label {
+      display: block;
+      margin-bottom: 8px;
+      color: #10b981;
+      font-weight: 600;
+    }
+
+    .control-group input[type="file"] {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      border-radius: 8px;
+      background: rgba(0, 0, 0, 0.3);
+      color: white;
+      cursor: pointer;
+    }
+
+    .control-group input[type="number"],
+    .control-group input[type="range"] {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      border-radius: 8px;
+      background: rgba(0, 0, 0, 0.3);
+      color: white;
+      font-size: 1rem;
+    }
+
+    .control-group input[type="range"] {
+      padding: 0;
+    }
+
+    .control-group input[type="checkbox"] {
+      width: 20px;
+      height: 20px;
+      cursor: pointer;
+      margin-right: 10px;
+    }
+
+    .control-group button {
+      width: 100%;
+      padding: 12px;
+      background: rgba(16, 185, 129, 0.2);
+      border: 1px solid rgba(16, 185, 129, 0.5);
+      border-radius: 8px;
+      color: #10b981;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 1rem;
+    }
+
+    .control-group button:hover {
+      background: rgba(16, 185, 129, 0.3);
+      transform: translateY(-2px);
+    }
+
+    .control-group button:active {
+      transform: translateY(0);
+    }
+
+    .control-group button.active {
+      background: rgba(16, 185, 129, 0.4);
+    }
+
+    .canvas-container {
+      position: relative;
+      display: inline-block;
+      border: 2px solid rgba(255, 255, 255, 0.2);
+      border-radius: 10px;
+      overflow: hidden;
+      background: #000;
+      max-width: 100%;
+    }
+
+    #imageCanvas {
+      display: block;
+      max-width: 100%;
+      height: auto;
+      cursor: crosshair;
+    }
+
+    .point-handle {
+      position: absolute;
+      width: 12px;
+      height: 12px;
+      background: #ff6b6b;
+      border: 2px solid white;
+      border-radius: 50%;
+      cursor: move;
+      transform: translate(-50%, -50%);
+      z-index: 10;
+    }
+
+    .point-handle:hover {
+      transform: translate(-50%, -50%) scale(1.5);
+    }
+
+    .measurements {
+      background: rgba(50, 130, 184, 0.1);
+      border: 1px solid rgba(50, 130, 184, 0.3);
+      border-radius: 15px;
+      padding: 20px;
+      margin-top: 20px;
+      max-height: 400px;
+      overflow-y: auto;
+    }
+
+    .measurement-item {
+      background: rgba(0, 0, 0, 0.3);
+      padding: 12px;
+      margin-bottom: 10px;
+      border-radius: 8px;
+      border-left: 3px solid #3282b8;
+    }
+
+    .measurement-item h4 {
+      color: #3282b8;
+      margin-bottom: 5px;
+      font-size: 0.9rem;
+    }
+
+    .measurement-item p {
+      color: #bbe1fa;
+      font-size: 0.85rem;
+      margin: 3px 0;
+    }
+
+    .btn-remove {
+      background: rgba(239, 68, 68, 0.2);
+      border: 1px solid rgba(239, 68, 68, 0.5);
+      color: #ef4444;
+      padding: 5px 10px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 0.8rem;
+      margin-top: 5px;
+    }
+
+    .btn-remove:hover {
+      background: rgba(239, 68, 68, 0.3);
+    }
+
+    .info-box {
+      background: rgba(255, 193, 7, 0.1);
+      border: 1px solid rgba(255, 193, 7, 0.3);
+      border-radius: 10px;
+      padding: 15px;
+      margin-bottom: 20px;
+      color: #ffc107;
+    }
+
+    .info-box h3 {
+      margin-bottom: 10px;
+      font-size: 1rem;
+    }
+
+    .info-box ol {
+      margin-left: 20px;
+      font-size: 0.9rem;
+      line-height: 1.6;
+    }
+
+    .info-box li {
+      margin-bottom: 5px;
+    }
+
+    .checkbox-group {
+      display: flex;
+      align-items: center;
+      margin-top: 10px;
+    }
+
+    .range-value {
+      display: inline-block;
+      margin-left: 10px;
+      color: #10b981;
+      font-weight: 600;
+    }
+
+    @media (max-width: 1024px) {
+      .content {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+<style id="sevcon-redesign">.suite-home{position:fixed;z-index:1001;top:12px;left:14px;padding:9px 13px;border:1px solid var(--line,#ffffff25);border-radius:9px;background:#101a20ef;color:var(--accent,#83c9c0);text-decoration:none;font:700 .82rem system-ui;backdrop-filter:blur(10px)}.suite-home:hover{border-color:var(--accent,#83c9c0)}@media(max-width:600px){.suite-home{top:7px;left:8px;padding:8px 10px}}:root{color-scheme:dark;--line:#83aeca33}body{background:radial-gradient(ellipse at 8% 0,#1e455c66,transparent 38rem),#0d151c;color:#e9f1f6;font-family:Inter,system-ui,sans-serif;padding:60px 18px 28px}.container{max-width:1500px;margin:auto;background:#111c25;border:1px solid var(--line);border-radius:18px;overflow:hidden}header{padding:26px 30px;background:linear-gradient(120deg,#193244,#17242d);border-bottom:1px solid var(--line)}h1{color:#d7eaf5}header p{color:#9eafbb}.content{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(310px,.7fr);gap:18px;padding:20px;align-items:start}.image-section{min-width:0;background:#080e13;border:1px solid var(--line);border-radius:12px;padding:12px;position:sticky;top:16px}.canvas-container{min-height:440px;display:grid;place-items:center;overflow:auto;background:repeating-conic-gradient(#18232c 0 25%,#121b23 0 50%) 50%/24px 24px;border-radius:8px}#imageCanvas{max-width:100%;height:auto}.controls{background:#182631;border:1px solid var(--line);border-radius:12px;padding:18px}.info-box{background:#1d3442;border:1px solid var(--line);border-radius:9px;padding:14px}.info-box h3{color:#a8d1e8}.info-box ol{padding-left:20px;color:#bdcbd3;font-size:.84rem}.control-group{margin:15px 0}.control-group label{color:#c8d9e2;font-size:.87rem}.control-group input[type=number]{padding:10px;background:#0c151c;color:white;border:1px solid #587487;border-radius:7px}.control-group button{width:100%;padding:11px;border-radius:8px;background:#23475a;color:#e5f6ff;border:1px solid #4e8099;font-weight:750}.control-group button:hover,.control-group button.active{background:#2d647e;border-color:#e9a36f}.measurements{margin-top:18px;padding-top:16px;border-top:1px solid var(--line)}.measurements h3{color:#e9a36f!important}.measurement-item{background:#0f1a22;border:1px solid var(--line);border-radius:8px;padding:12px;margin:8px 0}.btn-remove{background:#482a27;color:#ffd0c7;border:1px solid #9c5c4f;border-radius:6px;padding:6px 9px}@media(max-width:900px){.content{grid-template-columns:1fr}.image-section{position:static}.canvas-container{min-height:300px}}@media(max-width:600px){body{padding:54px 0 0}.container{border-radius:0}header{padding:22px 16px}.content{padding:12px;gap:12px}.controls{padding:14px}}</style></head>
+<body><a class="suite-home" href="../">← Sevcon Tools</a>
+  <div class="container">
+    <header>
+      <h1>📏 Misuratore Blocchi</h1>
+      <p>Carica un'immagine e misura gli elementi usando il quadrato arancione come riferimento</p>
+    </header>
+
+    <div class="content">
+      <div class="image-section">
+        <div class="canvas-container" id="canvasContainer">
+          <canvas id="imageCanvas"></canvas>
+        </div>
+      </div>
+
+      <div class="controls">
+        <div class="info-box">
+          <h3>📋 Istruzioni</h3>
+          <ol>
+            <li>Carica l'immagine</li>
+            <li>Imposta la dimensione del quadrato arancione (default: 32x32)</li>
+            <li><strong>Calibra:</strong> Clicca 4 punti sugli angoli del quadrato arancione</li>
+            <li><strong>Misura:</strong> Clicca 4 punti sugli angoli dell'elemento da misurare</li>
+            <li>Attiva la griglia per vedere le linee di riferimento</li>
+          </ol>
+        </div>
+
+        <div class="control-group">
+          <label for="imageInput">📷 Carica Immagine</label>
+          <input type="file" id="imageInput" accept="image/*">
+        </div>
+
+        <div class="control-group">
+          <label for="referenceSize">📐 Dimensione Riferimento (blocchi)</label>
+          <input type="number" id="referenceSize" value="32" min="1">
+        </div>
+
+        <div class="control-group">
+          <button id="calibrateBtn">🎯 Calibra (4 punti sul quadrato arancione)</button>
+        </div>
+
+        <div class="control-group">
+          <button id="measureBtn">📏 Misura (4 punti sull'elemento)</button>
+        </div>
+
+        <div class="control-group">
+          <label>
+            <div class="checkbox-group">
+              <input type="checkbox" id="correctPerspective">
+              <span>Correggi Prospettiva (Griglia Dritta)</span>
+            </div>
+          </label>
+        </div>
+
+        <div class="control-group">
+          <label>
+            <div class="checkbox-group">
+              <input type="checkbox" id="showGrid">
+              <span>Mostra Griglia di Riferimento</span>
+            </div>
+          </label>
+        </div>
+
+        <div class="control-group" id="gridControls" style="display: none;">
+          <label for="gridDensity">Densità Griglia: <span class="range-value" id="gridDensityValue">32</span></label>
+          <input type="range" id="gridDensity" min="1" max="32" value="32">
+        </div>
+
+        <div class="control-group">
+          <button id="clearBtn">🗑️ Cancella Tutto</button>
+        </div>
+
+        <div class="measurements" id="measurements">
+          <h3 style="color: #3282b8; margin-bottom: 15px;">📊 Misure</h3>
+          <div id="measurementsList"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const canvas = document.getElementById('imageCanvas');
+    const ctx = canvas.getContext('2d');
+    const imageInput = document.getElementById('imageInput');
+    const referenceSizeInput = document.getElementById('referenceSize');
+    const calibrateBtn = document.getElementById('calibrateBtn');
+    const measureBtn = document.getElementById('measureBtn');
+    const clearBtn = document.getElementById('clearBtn');
+    const measurementsList = document.getElementById('measurementsList');
+    const showGrid = document.getElementById('showGrid');
+    const gridDensity = document.getElementById('gridDensity');
+    const gridDensityValue = document.getElementById('gridDensityValue');
+    const gridControls = document.getElementById('gridControls');
+    const correctPerspective = document.getElementById('correctPerspective');
+
+    let image = null;
+    let correctedImage = null; // Canvas con immagine corretta prospetticamente
+    let isCalibrating = false;
+    let isMeasuring = false;
+    let currentPoints = [];
+    let referenceQuad = null; // {points: [{x,y}, ...], size: number}
+    let measurements = [];
+    let showGridEnabled = false;
+    let perspectiveCorrected = false;
+
+    // Inizializza il max della griglia con il valore di riferimento iniziale
+    gridDensity.max = parseInt(referenceSizeInput.value) || 32;
+    gridDensity.value = parseInt(referenceSizeInput.value) || 32;
+    gridDensityValue.textContent = referenceSizeInput.value || 32;
+
+    // Aggiorna max della griglia quando cambia la dimensione di riferimento
+    referenceSizeInput.addEventListener('input', (e) => {
+      const size = parseInt(e.target.value) || 32;
+      gridDensity.max = size;
+      if (parseInt(gridDensity.value) > size) {
+        gridDensity.value = size;
+        gridDensityValue.textContent = size;
+      }
+      if (showGridEnabled) {
+        redrawCanvas();
+      }
+    });
+
+    // Carica immagine
+    imageInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          const img = new Image();
+          img.onload = () => {
+            image = img;
+            canvas.width = img.width;
+            canvas.height = img.height;
+            correctedImage = null; // Reset immagine corretta
+            redrawCanvas();
+          };
+          img.src = event.target.result;
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+
+    // Calibrazione
+    calibrateBtn.addEventListener('click', () => {
+      isCalibrating = true;
+      isMeasuring = false;
+      currentPoints = [];
+      calibrateBtn.classList.add('active');
+      measureBtn.classList.remove('active');
+      canvas.style.cursor = 'crosshair';
+    });
+
+    // Misurazione
+    measureBtn.addEventListener('click', () => {
+      if (!referenceQuad) {
+        alert('Prima calibra il quadrato arancione! Clicca su "Calibra" e poi clicca 4 punti sugli angoli del quadrato.');
+        return;
+      }
+      isMeasuring = true;
+      isCalibrating = false;
+      currentPoints = [];
+      measureBtn.classList.add('active');
+      calibrateBtn.classList.remove('active');
+      canvas.style.cursor = 'crosshair';
+    });
+
+    // Correzione prospettica
+    correctPerspective.addEventListener('change', () => {
+      perspectiveCorrected = correctPerspective.checked;
+      if (perspectiveCorrected && referenceQuad) {
+        generateCorrectedImage();
+      }
+      redrawCanvas();
+    });
+
+    // Griglia
+    showGrid.addEventListener('change', () => {
+      showGridEnabled = showGrid.checked;
+      gridControls.style.display = showGridEnabled ? 'block' : 'none';
+      redrawCanvas();
+    });
+
+    gridDensity.addEventListener('input', (e) => {
+      gridDensityValue.textContent = e.target.value;
+      redrawCanvas();
+    });
+
+    // Cancella tutto
+    clearBtn.addEventListener('click', () => {
+      referenceQuad = null;
+      measurements = [];
+      currentPoints = [];
+      measurementsList.innerHTML = '';
+      isCalibrating = false;
+      isMeasuring = false;
+      calibrateBtn.classList.remove('active');
+      measureBtn.classList.remove('active');
+      canvas.style.cursor = 'default';
+      redrawCanvas();
+    });
+
+    // Click sul canvas
+    canvas.addEventListener('click', (e) => {
+      if (!image) return;
+      
+      const rect = canvas.getBoundingClientRect();
+      const scaleX = canvas.width / rect.width;
+      const scaleY = canvas.height / rect.height;
+      
+      const x = (e.clientX - rect.left) * scaleX;
+      const y = (e.clientY - rect.top) * scaleY;
+      
+      if (isCalibrating) {
+        currentPoints.push({x, y});
+        if (currentPoints.length === 4) {
+          const refSize = parseFloat(referenceSizeInput.value);
+          referenceQuad = {
+            points: [...currentPoints],
+            size: refSize
+          };
+          // Imposta la densità griglia alla dimensione di riferimento
+          gridDensity.max = refSize;
+          gridDensity.value = refSize;
+          gridDensityValue.textContent = refSize;
+          isCalibrating = false;
+          calibrateBtn.classList.remove('active');
+          if (perspectiveCorrected) {
+            generateCorrectedImage();
+          }
+          alert('Calibrazione completata! Ora puoi misurare gli elementi.');
+          redrawCanvas();
+        } else {
+          redrawCanvas();
+        }
+      } else if (isMeasuring) {
+        currentPoints.push({x, y});
+        if (currentPoints.length === 4) {
+          const measurement = calculateMeasurement(currentPoints);
+          measurements.push(measurement);
+          addMeasurementToList(measurement);
+          currentPoints = [];
+          isMeasuring = false;
+          measureBtn.classList.remove('active');
+          redrawCanvas();
+        } else {
+          redrawCanvas();
+        }
+      }
+    });
+
+    // Genera immagine corretta prospetticamente
+    function generateCorrectedImage() {
+      if (!image || !referenceQuad) return;
+      
+      // Crea canvas temporaneo per ottenere i dati dell'immagine originale
+      const sourceCanvas = document.createElement('canvas');
+      sourceCanvas.width = image.width;
+      sourceCanvas.height = image.height;
+      const sourceCtx = sourceCanvas.getContext('2d');
+      sourceCtx.drawImage(image, 0, 0);
+      const sourceImageData = sourceCtx.getImageData(0, 0, image.width, image.height);
+      
+      // Calcola le dimensioni del rettangolo corretto basate sulla dimensione di riferimento
+      const refPoints = referenceQuad.points;
+      const avgWidth = (distance(refPoints[0], refPoints[1]) + distance(refPoints[2], refPoints[3])) / 2;
+      const avgHeight = (distance(refPoints[0], refPoints[3]) + distance(refPoints[1], refPoints[2])) / 2;
+      
+      // Crea canvas per immagine corretta
+      const tempCanvas = document.createElement('canvas');
+      tempCanvas.width = avgWidth;
+      tempCanvas.height = avgHeight;
+      const tempCtx = tempCanvas.getContext('2d');
+      
+      // Calcola matrice di trasformazione prospettica (homografia)
+      const H = calculateHomography(refPoints, [
+        {x: 0, y: 0},
+        {x: avgWidth, y: 0},
+        {x: avgWidth, y: avgHeight},
+        {x: 0, y: avgHeight}
+      ]);
+      
+      // Disegna l'immagine trasformata pixel per pixel (usando trasformazione inversa)
+      const correctedData = tempCtx.createImageData(avgWidth, avgHeight);
+      
+      for (let y = 0; y < avgHeight; y++) {
+        for (let x = 0; x < avgWidth; x++) {
+          // Trasformazione inversa: da coordinate corrette a coordinate originali
+          const src = applyHomographyInverse(H, {x, y});
+          
+          const srcX = Math.round(src.x);
+          const srcY = Math.round(src.y);
+          
+          if (srcX >= 0 && srcX < image.width && srcY >= 0 && srcY < image.height) {
+            const srcIdx = (srcY * image.width + srcX) * 4;
+            const dstIdx = (y * avgWidth + x) * 4;
+            
+            correctedData.data[dstIdx] = sourceImageData.data[srcIdx];
+            correctedData.data[dstIdx + 1] = sourceImageData.data[srcIdx + 1];
+            correctedData.data[dstIdx + 2] = sourceImageData.data[srcIdx + 2];
+            correctedData.data[dstIdx + 3] = sourceImageData.data[srcIdx + 3];
+          }
+        }
+      }
+      
+      tempCtx.putImageData(correctedData, 0, 0);
+      correctedImage = tempCanvas;
+    }
+    
+    // Calcola matrice di trasformazione homografica da 4 punti sorgente a 4 punti destinazione
+    function calculateHomography(srcPoints, dstPoints) {
+      // Normalizza i punti
+      const srcNorm = normalizePoints(srcPoints);
+      const dstNorm = normalizePoints(dstPoints);
+      
+      // Costruisce il sistema di equazioni per trovare l'homografia
+      const A = [];
+      const b = [];
+      
+      for (let i = 0; i < 4; i++) {
+        const x = srcNorm[i].x;
+        const y = srcNorm[i].y;
+        const u = dstNorm[i].x;
+        const v = dstNorm[i].y;
+        
+        A.push([x, y, 1, 0, 0, 0, -u*x, -u*y]);
+        A.push([0, 0, 0, x, y, 1, -v*x, -v*y]);
+        b.push(u);
+        b.push(v);
+      }
+      
+      // Risolvi il sistema usando eliminazione di Gauss-Jordan
+      const h = solveLinearSystem(A, b);
+      
+      // Costruisci la matrice 3x3
+      const H = [
+        [h[0], h[1], h[2]],
+        [h[3], h[4], h[5]],
+        [h[6], h[7], 1]
+      ];
+      
+      // Denormalizza
+      const srcInv = invertTransform(srcNorm.transform);
+      const dstT = dstNorm.transform;
+      
+      return multiplyMatrix(multiplyMatrix(dstT, H), srcInv);
+    }
+    
+    function normalizePoints(points) {
+      const centerX = points.reduce((sum, p) => sum + p.x, 0) / points.length;
+      const centerY = points.reduce((sum, p) => sum + p.y, 0) / points.length;
+      
+      let scale = 0;
+      for (const p of points) {
+        scale += Math.sqrt((p.x - centerX) ** 2 + (p.y - centerY) ** 2);
+      }
+      scale = Math.sqrt(2) / (scale / points.length);
+      
+      const transform = [
+        [scale, 0, -scale * centerX],
+        [0, scale, -scale * centerY],
+        [0, 0, 1]
+      ];
+      
+      const normalized = points.map(p => ({
+        x: scale * (p.x - centerX),
+        y: scale * (p.y - centerY)
+      }));
+      
+      return { points: normalized, transform };
+    }
+    
+    function invertTransform(T) {
+      const a = T[0][0], b = T[0][1], c = T[0][2];
+      const d = T[1][0], e = T[1][1], f = T[1][2];
+      const g = T[2][0], h = T[2][1], i = T[2][2];
+      
+      const det = a * (e * i - f * h) - b * (d * i - f * g) + c * (d * h - e * g);
+      if (Math.abs(det) < 1e-10) return [[1,0,0],[0,1,0],[0,0,1]];
+      
+      return [
+        [(e*i - f*h)/det, (c*h - b*i)/det, (b*f - c*e)/det],
+        [(f*g - d*i)/det, (a*i - c*g)/det, (c*d - a*f)/det],
+        [(d*h - e*g)/det, (b*g - a*h)/det, (a*e - b*d)/det]
+      ];
+    }
+    
+    function multiplyMatrix(A, B) {
+      const result = [[0,0,0],[0,0,0],[0,0,0]];
+      for (let i = 0; i < 3; i++) {
+        for (let j = 0; j < 3; j++) {
+          for (let k = 0; k < 3; k++) {
+            result[i][j] += A[i][k] * B[k][j];
+          }
+        }
+      }
+      return result;
+    }
+    
+    function solveLinearSystem(A, b) {
+      // Eliminazione di Gauss-Jordan
+      const n = A.length;
+      const augmented = A.map((row, i) => [...row, b[i]]);
+      
+      for (let i = 0; i < n; i++) {
+        // Pivot
+        let maxRow = i;
+        for (let k = i + 1; k < n; k++) {
+          if (Math.abs(augmented[k][i]) > Math.abs(augmented[maxRow][i])) {
+            maxRow = k;
+          }
+        }
+        [augmented[i], augmented[maxRow]] = [augmented[maxRow], augmented[i]];
+        
+        // Normalizza
+        const pivot = augmented[i][i];
+        if (Math.abs(pivot) < 1e-10) continue;
+        
+        for (let j = i; j <= n; j++) {
+          augmented[i][j] /= pivot;
+        }
+        
+        // Elimina
+        for (let k = 0; k < n; k++) {
+          if (k !== i) {
+            const factor = augmented[k][i];
+            for (let j = i; j <= n; j++) {
+              augmented[k][j] -= factor * augmented[i][j];
+            }
+          }
+        }
+      }
+      
+      return augmented.map(row => row[n]);
+    }
+    
+    function applyHomographyInverse(H, point) {
+      const x = point.x;
+      const y = point.y;
+      const w = H[2][0] * x + H[2][1] * y + H[2][2];
+      
+      return {
+        x: (H[0][0] * x + H[0][1] * y + H[0][2]) / w,
+        y: (H[1][0] * x + H[1][1] * y + H[1][2]) / w
+      };
+    }
+
+    // Disegna tutto
+    function redrawCanvas() {
+      if (!image) return;
+      
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      
+      // Disegna immagine originale o corretta
+      if (perspectiveCorrected && correctedImage && referenceQuad) {
+        // Calcola dimensioni e posizione per centrare l'immagine corretta
+        const refPoints = referenceQuad.points;
+        const avgWidth = (distance(refPoints[0], refPoints[1]) + distance(refPoints[2], refPoints[3])) / 2;
+        const avgHeight = (distance(refPoints[0], refPoints[3]) + distance(refPoints[1], refPoints[2])) / 2;
+        
+        // Centra l'immagine corretta
+        const offsetX = (canvas.width - avgWidth) / 2;
+        const offsetY = (canvas.height - avgHeight) / 2;
+        
+        ctx.drawImage(correctedImage, offsetX, offsetY);
+        
+        // Disegna griglia rettangolare perfetta
+        if (showGridEnabled) {
+          drawRectangularGrid(offsetX, offsetY, avgWidth, avgHeight);
+        }
+      } else {
+        ctx.drawImage(image, 0, 0);
+        
+        // Disegna griglia distorta originale
+        if (showGridEnabled && referenceQuad) {
+          drawGrid();
+        }
+      }
+      
+      // Disegna griglia se abilitata
+      if (showGridEnabled && referenceQuad) {
+        drawGrid();
+      }
+      
+      // Disegna riferimento (solo se non è abilitata la correzione prospettica)
+      if (referenceQuad && !perspectiveCorrected) {
+        drawQuad(referenceQuad.points, '#10b981', 3, true);
+        const center = getQuadCenter(referenceQuad.points);
+        ctx.fillStyle = '#10b981';
+        ctx.font = 'bold 16px Arial';
+        ctx.textAlign = 'center';
+        ctx.fillText(
+          `RIFERIMENTO: ${referenceQuad.size}×${referenceQuad.size} blocchi`,
+          center.x,
+          center.y - 10
+        );
+        ctx.textAlign = 'left';
+      } else if (referenceQuad && perspectiveCorrected) {
+        // Disegna rettangolo di riferimento corretto
+        const refPoints = referenceQuad.points;
+        const avgWidth = (distance(refPoints[0], refPoints[1]) + distance(refPoints[2], refPoints[3])) / 2;
+        const avgHeight = (distance(refPoints[0], refPoints[3]) + distance(refPoints[1], refPoints[2])) / 2;
+        const offsetX = (canvas.width - avgWidth) / 2;
+        const offsetY = (canvas.height - avgHeight) / 2;
+        
+        ctx.strokeStyle = '#10b981';
+        ctx.lineWidth = 3;
+        ctx.setLineDash([5, 5]);
+        ctx.strokeRect(offsetX, offsetY, avgWidth, avgHeight);
+        ctx.setLineDash([]);
+        
+        ctx.fillStyle = '#10b981';
+        ctx.font = 'bold 16px Arial';
+        ctx.textAlign = 'center';
+        ctx.fillText(
+          `RIFERIMENTO: ${referenceQuad.size}×${referenceQuad.size} blocchi`,
+          offsetX + avgWidth / 2,
+          offsetY + avgHeight / 2 - 10
+        );
+        ctx.textAlign = 'left';
+      }
+      
+      // Disegna misure
+      measurements.forEach(m => {
+        drawQuad(m.points, '#3282b8', 2, false);
+        const center = getQuadCenter(m.points);
+        ctx.fillStyle = '#3282b8';
+        ctx.font = '14px Arial';
+        ctx.textAlign = 'center';
+        ctx.fillText(
+          `${m.blocksWidth}×${m.blocksHeight} blocchi`,
+          center.x,
+          center.y
+        );
+        ctx.textAlign = 'left';
+      });
+      
+      // Disegna punti correnti
+      if (isCalibrating || isMeasuring) {
+        currentPoints.forEach((point, index) => {
+          ctx.fillStyle = isCalibrating ? '#10b981' : '#3282b8';
+          ctx.beginPath();
+          ctx.arc(point.x, point.y, 8, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.strokeStyle = 'white';
+          ctx.lineWidth = 2;
+          ctx.stroke();
+          
+          // Numero del punto
+          ctx.fillStyle = 'white';
+          ctx.font = 'bold 12px Arial';
+          ctx.textAlign = 'center';
+          ctx.fillText((index + 1).toString(), point.x, point.y + 4);
+          ctx.textAlign = 'left';
+        });
+        
+        // Disegna linee tra punti
+        if (currentPoints.length > 1) {
+          ctx.strokeStyle = isCalibrating ? '#10b981' : '#3282b8';
+          ctx.lineWidth = 2;
+          ctx.setLineDash([5, 5]);
+          ctx.beginPath();
+          ctx.moveTo(currentPoints[0].x, currentPoints[0].y);
+          for (let i = 1; i < currentPoints.length; i++) {
+            ctx.lineTo(currentPoints[i].x, currentPoints[i].y);
+          }
+          ctx.stroke();
+          ctx.setLineDash([]);
+        }
+      }
+    }
+
+    function drawQuad(points, color, lineWidth, dashed) {
+      if (points.length !== 4) return;
+      
+      ctx.strokeStyle = color;
+      ctx.lineWidth = lineWidth;
+      if (dashed) {
+        ctx.setLineDash([5, 5]);
+      } else {
+        ctx.setLineDash([]);
+      }
+      
+      ctx.beginPath();
+      ctx.moveTo(points[0].x, points[0].y);
+      for (let i = 1; i < 4; i++) {
+        ctx.lineTo(points[i].x, points[i].y);
+      }
+      ctx.closePath();
+      ctx.stroke();
+      ctx.setLineDash([]);
+    }
+
+    function getQuadCenter(points) {
+      const x = points.reduce((sum, p) => sum + p.x, 0) / points.length;
+      const y = points.reduce((sum, p) => sum + p.y, 0) / points.length;
+      return {x, y};
+    }
+
+    function calculateMeasurement(points) {
+      if (!referenceQuad || points.length !== 4) return null;
+      
+      // Calcola l'area del quadrilatero di riferimento
+      const refArea = calculateQuadArea(referenceQuad.points);
+      const refBlocks = referenceQuad.size * referenceQuad.size;
+      const pixelsPerBlock = Math.sqrt(refArea / refBlocks);
+      
+      // Calcola l'area del quadrilatero misurato
+      const measArea = calculateQuadArea(points);
+      const measBlocks = measArea / (pixelsPerBlock * pixelsPerBlock);
+      
+      // Calcola dimensioni approssimate (media delle distanze)
+      const refWidth = getAverageWidth(referenceQuad.points);
+      const refHeight = getAverageHeight(referenceQuad.points);
+      const measWidth = getAverageWidth(points);
+      const measHeight = getAverageHeight(points);
+      
+      const blocksWidth = (measWidth / refWidth) * referenceQuad.size;
+      const blocksHeight = (measHeight / refHeight) * referenceQuad.size;
+      
+      return {
+        id: Date.now(),
+        points: [...points],
+        blocksWidth: blocksWidth.toFixed(2),
+        blocksHeight: blocksHeight.toFixed(2),
+        area: measBlocks.toFixed(2)
+      };
+    }
+
+    function calculateQuadArea(points) {
+      // Formula di Shoelace per l'area di un poligono
+      let area = 0;
+      for (let i = 0; i < points.length; i++) {
+        const j = (i + 1) % points.length;
+        area += points[i].x * points[j].y;
+        area -= points[j].x * points[i].y;
+      }
+      return Math.abs(area) / 2;
+    }
+
+    function getAverageWidth(points) {
+      const dist1 = distance(points[0], points[1]);
+      const dist2 = distance(points[2], points[3]);
+      return (dist1 + dist2) / 2;
+    }
+
+    function getAverageHeight(points) {
+      const dist1 = distance(points[0], points[3]);
+      const dist2 = distance(points[1], points[2]);
+      return (dist1 + dist2) / 2;
+    }
+
+    function distance(p1, p2) {
+      return Math.sqrt((p2.x - p1.x) ** 2 + (p2.y - p1.y) ** 2);
+    }
+
+    function drawGrid() {
+      if (!referenceQuad) return;
+      
+      const density = parseInt(gridDensity.value);
+      const blocksPerLine = referenceQuad.size / density;
+      
+      // Calcola le trasformazioni per mappare il riferimento distorto
+      const refPoints = referenceQuad.points;
+      
+      ctx.strokeStyle = 'rgba(255, 193, 7, 0.3)';
+      ctx.lineWidth = 1;
+      ctx.setLineDash([2, 2]);
+      
+      // Disegna linee orizzontali
+      for (let i = 1; i < density; i++) {
+        const t = i / density;
+        drawGridLine(
+          interpolatePoint(refPoints[0], refPoints[3], t),
+          interpolatePoint(refPoints[1], refPoints[2], t)
+        );
+      }
+      
+      // Disegna linee verticali
+      for (let i = 1; i < density; i++) {
+        const t = i / density;
+        drawGridLine(
+          interpolatePoint(refPoints[0], refPoints[1], t),
+          interpolatePoint(refPoints[3], refPoints[2], t)
+        );
+      }
+      
+      ctx.setLineDash([]);
+      
+      // Disegna etichette sui bordi
+      ctx.fillStyle = 'rgba(255, 193, 7, 0.8)';
+      ctx.font = '10px Arial';
+      ctx.textAlign = 'center';
+      
+      // Etichette orizzontali (sinistra)
+      for (let i = 0; i <= density; i++) {
+        const t = i / density;
+        const point = interpolatePoint(refPoints[0], refPoints[3], t);
+        ctx.fillText((i * blocksPerLine).toString(), point.x - 15, point.y);
+      }
+      
+      // Etichette verticali (alto)
+      for (let i = 0; i <= density; i++) {
+        const t = i / density;
+        const point = interpolatePoint(refPoints[0], refPoints[1], t);
+        ctx.fillText((i * blocksPerLine).toString(), point.x, point.y - 5);
+      }
+      
+      ctx.textAlign = 'left';
+    }
+    
+    function drawRectangularGrid(offsetX, offsetY, width, height) {
+      if (!referenceQuad) return;
+      
+      const density = parseInt(gridDensity.value);
+      const blocksPerLine = referenceQuad.size / density;
+      
+      ctx.strokeStyle = 'rgba(255, 193, 7, 0.3)';
+      ctx.lineWidth = 1;
+      ctx.setLineDash([2, 2]);
+      
+      // Disegna linee orizzontali perfettamente dritte
+      for (let i = 1; i < density; i++) {
+        const y = offsetY + (height * i / density);
+        ctx.beginPath();
+        ctx.moveTo(offsetX, y);
+        ctx.lineTo(offsetX + width, y);
+        ctx.stroke();
+      }
+      
+      // Disegna linee verticali perfettamente dritte
+      for (let i = 1; i < density; i++) {
+        const x = offsetX + (width * i / density);
+        ctx.beginPath();
+        ctx.moveTo(x, offsetY);
+        ctx.lineTo(x, offsetY + height);
+        ctx.stroke();
+      }
+      
+      ctx.setLineDash([]);
+      
+      // Disegna etichette sui bordi
+      ctx.fillStyle = 'rgba(255, 193, 7, 0.8)';
+      ctx.font = '10px Arial';
+      ctx.textAlign = 'center';
+      
+      // Etichette orizzontali (sinistra)
+      for (let i = 0; i <= density; i++) {
+        const y = offsetY + (height * i / density);
+        ctx.fillText((i * blocksPerLine).toString(), offsetX - 15, y);
+      }
+      
+      // Etichette verticali (alto)
+      for (let i = 0; i <= density; i++) {
+        const x = offsetX + (width * i / density);
+        ctx.fillText((i * blocksPerLine).toString(), x, offsetY - 5);
+      }
+      
+      ctx.textAlign = 'left';
+    }
+
+    function drawGridLine(p1, p2) {
+      ctx.beginPath();
+      ctx.moveTo(p1.x, p1.y);
+      ctx.lineTo(p2.x, p2.y);
+      ctx.stroke();
+    }
+
+    function interpolatePoint(p1, p2, t) {
+      return {
+        x: p1.x + (p2.x - p1.x) * t,
+        y: p1.y + (p2.y - p1.y) * t
+      };
+    }
+
+    function addMeasurementToList(measurement) {
+      const item = document.createElement('div');
+      item.className = 'measurement-item';
+      item.innerHTML = `
+        <h4>Misura #${measurements.length}</h4>
+        <p><strong>Larghezza:</strong> ${measurement.blocksWidth} blocchi</p>
+        <p><strong>Altezza:</strong> ${measurement.blocksHeight} blocchi</p>
+        <p><strong>Area:</strong> ${measurement.area} blocchi²</p>
+        <button class="btn-remove" onclick="removeMeasurement(${measurement.id})">Rimuovi</button>
+      `;
+      measurementsList.appendChild(item);
+    }
+
+    function removeMeasurement(id) {
+      measurements = measurements.filter(m => m.id !== id);
+      redrawCanvas();
+      
+      // Aggiorna lista
+      measurementsList.innerHTML = '';
+      measurements.forEach((m, index) => {
+        const item = document.createElement('div');
+        item.className = 'measurement-item';
+        item.innerHTML = `
+          <h4>Misura #${index + 1}</h4>
+          <p><strong>Larghezza:</strong> ${m.blocksWidth} blocchi</p>
+          <p><strong>Altezza:</strong> ${m.blocksHeight} blocchi</p>
+          <p><strong>Area:</strong> ${m.area} blocchi²</p>
+          <button class="btn-remove" onclick="removeMeasurement(${m.id})">Rimuovi</button>
+        `;
+        measurementsList.appendChild(item);
+      });
+    }
+
+    // Esponi funzione globalmente
+    window.removeMeasurement = removeMeasurement;
+  </script>
+</body>
+</html>

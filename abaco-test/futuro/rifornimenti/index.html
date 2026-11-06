@@ -1,0 +1,1476 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gestore Rifornimenti</title>
+  <link rel="icon" type="image/png" href="../../logo.png">
+  <link rel="shortcut icon" type="image/png" href="../../logo.png">
+  <link rel="apple-touch-icon" href="../../logo.png">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      overflow-x: hidden;
+      max-width: 100vw;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+      min-height: 100vh;
+      padding: 20px;
+      color: #ffffff;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+      background: rgba(26, 26, 46, 0.95);
+      backdrop-filter: blur(15px);
+      border-radius: 25px;
+      box-shadow: 0 25px 50px rgba(0, 0, 0, 0.6);
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+    }
+
+    header {
+      background: linear-gradient(135deg, #1a1a2e, #16213e);
+      color: white;
+      padding: 35px;
+      text-align: center;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      font-weight: 800;
+      margin-bottom: 10px;
+      background: linear-gradient(45deg, #ff6b6b, #ffd93d);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .subtitle {
+      font-size: 1.2rem;
+      opacity: 0.9;
+      font-weight: 300;
+    }
+
+    main {
+      padding: 40px;
+    }
+
+    .form-section {
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      border-radius: 20px;
+      padding: 35px;
+      margin-bottom: 35px;
+    }
+
+    .form-section h2 {
+      font-size: 1.8rem;
+      margin-bottom: 25px;
+      color: #10b981;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr auto;
+      gap: 20px;
+      align-items: end;
+      margin-bottom: 20px;
+    }
+
+    @media (max-width: 768px) {
+      .form-grid {
+        grid-template-columns: 1fr;
+        gap: 15px;
+      }
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .form-group label {
+      font-size: 0.95rem;
+      margin-bottom: 8px;
+      color: rgba(255, 255, 255, 0.9);
+      font-weight: 500;
+    }
+
+    .form-group input[type="date"],
+    .form-group input[type="number"] {
+      padding: 12px 15px;
+      border: 2px solid rgba(255, 255, 255, 0.2);
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.1);
+      color: white;
+      font-size: 1rem;
+      transition: border-color 0.3s, background 0.3s;
+    }
+
+    .form-group input[type="date"]:focus,
+    .form-group input[type="number"]:focus {
+      outline: none;
+      border-color: #10b981;
+      background: rgba(255, 255, 255, 0.15);
+    }
+
+    .form-group input[type="number"] {
+      -moz-appearance: textfield;
+    }
+
+    .form-group input[type="number"]::-webkit-outer-spin-button,
+    .form-group input[type="number"]::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+
+    .checkbox-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 15px;
+      border: 2px solid rgba(255, 255, 255, 0.2);
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.1);
+      cursor: pointer;
+      transition: border-color 0.3s, background 0.3s;
+    }
+
+    .checkbox-group:hover {
+      border-color: rgba(255, 255, 255, 0.3);
+      background: rgba(255, 255, 255, 0.15);
+    }
+
+    .checkbox-group input[type="checkbox"] {
+      width: 20px;
+      height: 20px;
+      cursor: pointer;
+      accent-color: #ffd93d;
+    }
+
+    .checkbox-group label {
+      margin: 0;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .btn {
+      padding: 12px 30px;
+      border: none;
+      border-radius: 10px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+      white-space: nowrap;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #10b981, #059669);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(16, 185, 129, 0.4);
+    }
+
+    .btn-primary:active {
+      transform: translateY(0);
+    }
+
+    .btn-danger {
+      background: linear-gradient(135deg, #ef4444, #dc2626);
+      color: white;
+      padding: 8px 20px;
+      font-size: 0.9rem;
+    }
+
+    .btn-danger:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(239, 68, 68, 0.4);
+    }
+
+    .btn-edit {
+      background: linear-gradient(135deg, #3b82f6, #2563eb);
+      color: white;
+      padding: 8px 20px;
+      font-size: 0.9rem;
+      margin-right: 10px;
+    }
+
+    .btn-edit:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(59, 130, 246, 0.4);
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.1);
+      color: white;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    .results-section {
+      background: rgba(59, 130, 246, 0.1);
+      border: 1px solid rgba(59, 130, 246, 0.3);
+      border-radius: 20px;
+      padding: 35px;
+    }
+
+    .results-section h2 {
+      font-size: 1.8rem;
+      margin-bottom: 25px;
+      color: #3b82f6;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+
+    .stat-card {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 15px;
+      padding: 20px;
+      text-align: center;
+    }
+
+    .stat-card .label {
+      font-size: 0.9rem;
+      opacity: 0.8;
+      margin-bottom: 8px;
+    }
+
+    .stat-card .value {
+      font-size: 1.8rem;
+      font-weight: bold;
+      color: #ffd93d;
+    }
+
+    .table-container {
+      overflow-x: auto;
+      border-radius: 15px;
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 600px;
+    }
+
+    thead {
+      background: rgba(255, 217, 61, 0.2);
+    }
+
+    th {
+      padding: 15px;
+      text-align: left;
+      font-weight: 600;
+      color: #ffd93d;
+      border-bottom: 2px solid rgba(255, 217, 61, 0.3);
+    }
+
+    td {
+      padding: 15px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    tbody tr:hover {
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    tbody tr:last-child td {
+      border-bottom: none;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 5px 12px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+
+    .badge-benzina {
+      background: rgba(239, 68, 68, 0.2);
+      color: #fca5a5;
+      border: 1px solid rgba(239, 68, 68, 0.3);
+    }
+
+    .badge-gpl {
+      background: rgba(16, 185, 129, 0.2);
+      color: #6ee7b7;
+      border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: rgba(255, 255, 255, 0.6);
+    }
+
+    .empty-state-icon {
+      font-size: 4rem;
+      margin-bottom: 20px;
+      opacity: 0.5;
+    }
+
+    .empty-state p {
+      font-size: 1.1rem;
+    }
+
+    .form-group input[type="text"]:focus,
+    .form-group input[type="number"]:focus,
+    .form-group select:focus {
+      outline: none;
+      border-color: #3b82f6;
+      background: rgba(255, 255, 255, 0.15);
+    }
+
+    .form-group select option {
+      background: #1a1a2e;
+      color: white;
+    }
+
+    .alert {
+      padding: 15px 20px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      display: none;
+    }
+
+    .alert.show {
+      display: block;
+      animation: slideIn 0.3s ease-out;
+    }
+
+    .alert-success {
+      background: rgba(16, 185, 129, 0.2);
+      border: 1px solid rgba(16, 185, 129, 0.5);
+      color: #6ee7b7;
+    }
+
+    .alert-error {
+      background: rgba(239, 68, 68, 0.2);
+      border: 1px solid rgba(239, 68, 68, 0.5);
+      color: #fca5a5;
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .back-link {
+      display: inline-block;
+      margin-top: 30px;
+      padding: 12px 25px;
+      background: linear-gradient(135deg, #ff6b6b, #ff5252);
+      color: white;
+      text-decoration: none;
+      border-radius: 25px;
+      transition: transform 0.2s, box-shadow 0.2s;
+      font-weight: 600;
+    }
+
+    .back-link:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(255, 107, 107, 0.4);
+    }
+
+    .action-buttons {
+      display: flex;
+      gap: 10px;
+    }
+
+    @media (max-width: 768px) {
+      main {
+        padding: 20px;
+      }
+
+      h1 {
+        font-size: 2rem;
+      }
+
+      .form-section,
+      .results-section {
+        padding: 20px;
+      }
+
+      table {
+        font-size: 0.9rem;
+      }
+
+      th, td {
+        padding: 10px;
+      }
+
+      .action-buttons {
+        flex-direction: column;
+      }
+
+      .btn-edit,
+      .btn-danger {
+        width: 100%;
+        margin-right: 0;
+        margin-bottom: 5px;
+      }
+      
+      /* Barra di ricerca responsive */
+      .results-section > div[style*="grid-template-columns: 2fr 1fr 1fr auto"] {
+        grid-template-columns: 1fr !important;
+      }
+      
+      .results-section button[onclick="resetFiltri()"] {
+        width: 100%;
+      }
+    }
+    
+    @media (max-width: 1024px) {
+      .results-section > div[style*="grid-template-columns: 2fr 1fr 1fr auto"] {
+        grid-template-columns: 1fr 1fr !important;
+      }
+    }
+  </style>
+<style id="sevcon-redesign">.suite-home{position:fixed;z-index:1001;top:12px;left:14px;padding:9px 13px;border:1px solid var(--line,#ffffff25);border-radius:9px;background:#101a20ef;color:var(--accent,#83c9c0);text-decoration:none;font:700 .82rem system-ui;backdrop-filter:blur(10px)}.suite-home:hover{border-color:var(--accent,#83c9c0)}@media(max-width:600px){.suite-home{top:7px;left:8px;padding:8px 10px}}:root{color-scheme:dark;--line:#e3bd7230}body{background:radial-gradient(ellipse at 90% 0,#4b422266,transparent 38rem),#111613;color:#f0eee6;font-family:Inter,system-ui,sans-serif;padding:60px 18px 28px}.container{max-width:1320px;margin:auto;background:#171e19;border:1px solid var(--line);border-radius:18px;overflow:hidden}header{padding:28px 32px;background:linear-gradient(120deg,#293b2c,#1c2b21);border-bottom:1px solid var(--line)}h1{color:#f1dfb5}.subtitle{color:#b7b7a8}main{padding:24px}.form-section,.results-section{background:#1d2921;border:1px solid var(--line);border-radius:13px;padding:22px;margin-bottom:20px}.form-section h2,.results-section h2{color:#e7c77f}.form-group label{color:#d4d4c7}.form-group input,.form-group select{background:#111914!important;color:#f2f0e8!important;border:1px solid #5a654f!important;border-radius:8px!important;padding:11px 12px!important}.checkbox-group{background:#27372a;border:1px solid #526747;border-radius:8px;padding:10px 13px}.btn-primary{background:#98743a;border:1px solid #c69d54;color:#fff7e5;border-radius:8px;padding:11px 15px;font-weight:800}.btn-secondary{background:#26352a;color:#e3d5b5;border:1px solid #647456}.stats{gap:12px}.stat-card{background:linear-gradient(145deg,#29392d,#202c23);border:1px solid var(--line);border-radius:11px;padding:16px}.stat-card .label{color:#b7b7a8}.stat-card .value{color:#f0d28d;font-size:1.55rem;font-weight:800}.table-container{overflow-x:auto;border:1px solid var(--line);border-radius:10px}table{width:100%;border-collapse:collapse;min-width:650px}thead{background:#2c3c2d}th{color:#eddaa8;font-size:.8rem;text-transform:uppercase}td,th{padding:12px 13px;border-bottom:1px solid #ffffff10}tbody tr:hover{background:#ffffff08}.badge-benzina{background:#5b4824;color:#f6d58c}.badge-gpl{background:#234d4b;color:#9ce1d5}.alert-success{background:#183b2a;color:#a6e4b8}.alert-error{background:#47242a;color:#ffc2c8}@media(max-width:700px){body{padding:54px 0 0}header{padding:22px 18px}main{padding:12px}.form-section,.results-section{padding:15px}.form-grid{grid-template-columns:1fr!important}.stats{grid-template-columns:repeat(2,minmax(0,1fr))!important}}</style></head>
+<body><a class="suite-home" href="../../">← Sevcon Tools</a>
+  <div class="container">
+    <header>
+      <h1>🧾 Gestore Rifornimenti</h1>
+      <p class="subtitle">Gestione automatica con ordinamento per data</p>
+    </header>
+
+    <main>
+      <!-- Alert Messages -->
+      <div id="alert" class="alert"></div>
+
+      <!-- Form Inserimento -->
+      <div class="form-section">
+        <h2>✍️ Nuovo Rifornimento</h2>
+        <form id="rifornimento-form">
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="data">📅 Data del rifornimento</label>
+              <input type="date" id="data" name="data" required>
+            </div>
+            <div class="form-group">
+              <label for="costo">💶 Costo (€)</label>
+              <input type="number" id="costo" name="costo" step="0.01" min="0" placeholder="45.50" required>
+            </div>
+            <div class="checkbox-group">
+              <input type="checkbox" id="benzina" name="benzina">
+              <label for="benzina">⛽ Benzina</label>
+            </div>
+          </div>
+          <div class="form-grid" style="margin-top: 15px; grid-template-columns: 1fr 1fr;">
+            <div class="form-group">
+              <label for="litri">📊 Litri (opzionale)</label>
+              <input type="number" id="litri" name="litri" step="0.1" min="0" placeholder="es: 30.0">
+              <small style="color: rgba(255,255,255,0.6); font-size: 0.85rem;">Utile per calcoli di consumo</small>
+            </div>
+            <div class="form-group">
+              <label for="prezzoAlLitros">💰 Prezzo al litro (€, opzionale)</label>
+              <input type="number" id="prezzoAlLitros" name="prezzoAlLitros" step="0.001" min="0" placeholder="es: 0.75">
+              <small style="color: rgba(255,255,255,0.6); font-size: 0.85rem;">Se non inserito, viene calcolato</small>
+            </div>
+          </div>
+          <button type="submit" class="btn btn-primary">➕ Aggiungi Rifornimento</button>
+          <p style="margin-top: 15px; opacity: 0.8; font-size: 0.9rem;">
+            💡 <strong>Non importa l'ordine!</strong> I rifornimenti verranno ordinati automaticamente per data.
+          </p>
+        </form>
+      </div>
+
+      <!-- Lista Rifornimenti -->
+      <div class="results-section">
+        <h2>
+          📊 Rifornimenti
+          <span id="totale-rifornimenti" style="font-size: 1rem; opacity: 0.8;">0 rifornimenti</span>
+        </h2>
+
+        <!-- Barra di Ricerca -->
+        <div style="background: rgba(255, 255, 255, 0.05); border-radius: 15px; padding: 20px; margin-bottom: 25px; border: 1px solid rgba(255, 255, 255, 0.1);">
+          <div style="display: grid; grid-template-columns: 2fr 1fr 1fr auto; gap: 15px; align-items: end;">
+            <div class="form-group" style="margin-bottom: 0;">
+              <label for="searchInput" style="margin-bottom: 8px; color: rgba(255, 255, 255, 0.9); font-weight: 500;">🔍 Cerca</label>
+              <input type="text" id="searchInput" placeholder="Cerca per data (es: 2025, 01/2025, 15/01/2025)..." 
+                     style="padding: 10px 15px; border: 2px solid rgba(255, 255, 255, 0.2); border-radius: 8px; background: rgba(255, 255, 255, 0.1); color: white; font-size: 0.95rem; width: 100%;">
+            </div>
+            <div class="form-group" style="margin-bottom: 0;">
+              <label for="filterCarburante" style="margin-bottom: 8px; color: rgba(255, 255, 255, 0.9); font-weight: 500;">⛽ Tipo</label>
+              <select id="filterCarburante" style="padding: 10px 15px; border: 2px solid rgba(255, 255, 255, 0.2); border-radius: 8px; background: rgba(255, 255, 255, 0.1); color: white; font-size: 0.95rem; width: 100%; cursor: pointer;">
+                <option value="all">Tutti</option>
+                <option value="benzina">Benzina</option>
+                <option value="gpl">GPL</option>
+              </select>
+            </div>
+            <div class="form-group" style="margin-bottom: 0;">
+              <label for="filterCosto" style="margin-bottom: 8px; color: rgba(255, 255, 255, 0.9); font-weight: 500;">💶 Costo Max</label>
+              <input type="number" id="filterCosto" placeholder="Nessun limite" step="0.01" min="0"
+                     style="padding: 10px 15px; border: 2px solid rgba(255, 255, 255, 0.2); border-radius: 8px; background: rgba(255, 255, 255, 0.1); color: white; font-size: 0.95rem; width: 100%;">
+            </div>
+            <button type="button" onclick="resetFiltri()" class="btn btn-secondary" style="padding: 10px 20px; white-space: nowrap;">
+              🔄 Reset
+            </button>
+          </div>
+          <div id="search-results-count" style="margin-top: 12px; font-size: 0.9rem; color: rgba(255, 255, 255, 0.7); display: none;">
+            <span id="search-count-text"></span>
+          </div>
+        </div>
+
+        <!-- Statistiche -->
+        <div class="stats">
+          <div class="stat-card">
+            <div class="label">Totale Speso</div>
+            <div class="value" id="totale-speso">€0.00</div>
+          </div>
+          <div class="stat-card">
+            <div class="label">Media per Rifornimento</div>
+            <div class="value" id="media-spesa">€0.00</div>
+          </div>
+          <div class="stat-card">
+            <div class="label">Benzina</div>
+            <div class="value" id="totale-benzina">0</div>
+          </div>
+          <div class="stat-card">
+            <div class="label">GPL</div>
+            <div class="value" id="totale-gpl">0</div>
+          </div>
+        </div>
+
+        <!-- Statistiche Veicolo (Chevy Spark GPL) -->
+        <div style="margin-top: 30px;">
+          <h3 style="color: #ffd93d; margin-bottom: 20px; font-size: 1.3rem;">🚗 Statistiche Veicolo (Chevy Spark GPL)</h3>
+          <div class="stats">
+            <div class="stat-card">
+              <div class="label">Litri Totali GPL</div>
+              <div class="value" id="litri-totali-gpl">0 L</div>
+            </div>
+            <div class="stat-card">
+              <div class="label">Litri Totali Benzina</div>
+              <div class="value" id="litri-totali-benzina">0 L</div>
+            </div>
+            <div class="stat-card">
+              <div class="label">Rifornimenti GPL Completi (30L)</div>
+              <div class="value" id="rifornimenti-gpl-completi">0</div>
+            </div>
+            <div class="stat-card">
+              <div class="label">Risparmio GPL vs Benzina</div>
+              <div class="value" id="risparmio-gpl" style="font-size: 1.2rem;">--</div>
+            </div>
+          </div>
+          <div class="stats" style="margin-top: 20px;">
+            <div class="stat-card">
+              <div class="label">Costo Medio GPL/Litro</div>
+              <div class="value" id="costo-medio-gpl">€0.00</div>
+            </div>
+            <div class="stat-card">
+              <div class="label">Costo Medio Benzina/Litro</div>
+              <div class="value" id="costo-medio-benzina">€0.00</div>
+            </div>
+            <div class="stat-card">
+              <div class="label">Consumo Medio Mensile (Litri)</div>
+              <div class="value" id="consumo-medio-mensile">0.0 L</div>
+            </div>
+            <div class="stat-card">
+              <div class="label">Percentuale GPL vs Benzina</div>
+              <div class="value" id="percentuale-gpl" style="font-size: 1.2rem;">--</div>
+            </div>
+          </div>
+          <div class="stats" style="margin-top: 20px;">
+            <div class="stat-card">
+              <div class="label">Media Giorni tra Rifornimenti</div>
+              <div class="value" id="media-giorni-rifornimenti">--</div>
+            </div>
+            <div class="stat-card">
+              <div class="label">KM Percorsi tra Rifornimenti</div>
+              <div class="value" id="km-tra-rifornimenti">--</div>
+            </div>
+            <div class="stat-card">
+              <div class="label">Consumo Medio (KM/Litro)</div>
+              <div class="value" id="consumo-km-litro">--</div>
+            </div>
+            <div class="stat-card">
+              <div class="label">Frequenza Rifornimenti</div>
+              <div class="value" id="frequenza-rifornimenti" style="font-size: 1.1rem;">--</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Statistiche Mensili -->
+        <div style="margin-top: 30px;">
+          <h3 style="color: #3b82f6; margin-bottom: 20px; font-size: 1.3rem;">📈 Statistiche Mensili</h3>
+          <div class="stats">
+            <div class="stat-card">
+              <div class="label">Media Costo Mensile</div>
+              <div class="value" id="media-costo-mensile">€0.00</div>
+            </div>
+            <div class="stat-card">
+              <div class="label">Media Rifornimenti Benzina/Mese</div>
+              <div class="value" id="media-benzina-mensile">0.0</div>
+            </div>
+            <div class="stat-card">
+              <div class="label">Media Rifornimenti GPL/Mese</div>
+              <div class="value" id="media-gpl-mensile">0.0</div>
+            </div>
+            <div class="stat-card">
+              <div class="label">Variazione Costo Mensile</div>
+              <div class="value" id="variazione-costo-mensile" style="font-size: 1.2rem;">--</div>
+            </div>
+          </div>
+          
+          <!-- Grafico Andamento Costo Mensile -->
+          <div style="background: rgba(255, 255, 255, 0.05); border-radius: 15px; padding: 25px; margin-top: 25px; border: 1px solid rgba(255, 255, 255, 0.1);">
+            <h4 style="color: #3b82f6; margin-bottom: 15px; font-size: 1.1rem;">📊 Andamento Costo Mensile nel Tempo</h4>
+            <div style="position: relative; width: 100%; height: 300px;">
+              <canvas id="graficoCostoMensile" style="width: 100%; height: 100%; display: block;"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tabella -->
+        <div class="table-container">
+          <table id="rifornimenti-table">
+            <thead>
+              <tr>
+                <th>📅 Data</th>
+                <th>💶 Costo</th>
+                <th>⛽ Carburante</th>
+                <th>🔧 Azioni</th>
+              </tr>
+            </thead>
+            <tbody id="rifornimenti-body">
+              <tr>
+                <td colspan="4">
+                  <div class="empty-state">
+                    <div class="empty-state-icon">🚗</div>
+                    <p>Nessun rifornimento inserito.<br>Inizia aggiungendo il tuo primo rifornimento!</p>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div style="margin-top: 30px; text-align: center;">
+          <button onclick="esportaDati()" class="btn btn-secondary" style="margin-right: 10px;">📥 Esporta Dati</button>
+          <button onclick="importaDati()" class="btn btn-secondary" style="margin-right: 10px;">📤 Importa Dati</button>
+          <button onclick="eliminaTutti()" class="btn btn-danger">🗑️ Elimina Tutti</button>
+        </div>
+      </div>
+
+      <a href="../index.html" class="back-link">← Torna alla Homepage</a>
+    </main>
+  </div>
+
+  <!-- Input nascosto per importazione -->
+  <input type="file" id="file-input" accept=".json" style="display: none;" onchange="gestisciImportazione(event)">
+
+  <script>
+    // Stato applicazione
+    let rifornimenti = [];
+    let editingId = null;
+    let filtroRicerca = '';
+    let filtroCarburante = 'all';
+    let filtroCostoMax = null;
+
+    // Carica dati da localStorage al caricamento
+    document.addEventListener('DOMContentLoaded', function() {
+      caricaDati();
+      const today = new Date().toISOString().split('T')[0];
+      document.getElementById('data').value = today;
+      
+      // Event listener per ricerca
+      document.getElementById('searchInput').addEventListener('input', function(e) {
+        filtroRicerca = e.target.value.trim();
+        renderizzaRifornimenti();
+      });
+      
+      // Event listener per filtro carburante
+      document.getElementById('filterCarburante').addEventListener('change', function(e) {
+        filtroCarburante = e.target.value;
+        renderizzaRifornimenti();
+      });
+      
+      // Event listener per filtro costo
+      document.getElementById('filterCosto').addEventListener('input', function(e) {
+        const valore = e.target.value.trim();
+        filtroCostoMax = valore === '' ? null : parseFloat(valore);
+        renderizzaRifornimenti();
+      });
+      
+      renderizzaRifornimenti();
+      
+      // Ridisegna grafico al resize della finestra
+      let resizeTimeout;
+      window.addEventListener('resize', () => {
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(() => {
+          if (rifornimenti.length > 0) {
+            aggiornaStatisticheMensili();
+          }
+        }, 250);
+      });
+    });
+
+    // Gestione form
+    document.getElementById('rifornimento-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      const data = document.getElementById('data').value;
+      const costo = parseFloat(document.getElementById('costo').value);
+      const benzina = document.getElementById('benzina').checked;
+      const litriInput = document.getElementById('litri').value.trim();
+      const prezzoAlLitrosInput = document.getElementById('prezzoAlLitros').value.trim();
+      
+      const litri = litriInput ? parseFloat(litriInput) : null;
+      const prezzoAlLitros = prezzoAlLitrosInput ? parseFloat(prezzoAlLitrosInput) : null;
+      
+      // Calcola prezzo al litro se non specificato ma ci sono i litri
+      let prezzoAlLitrosCalcolato = prezzoAlLitros;
+      if (!prezzoAlLitrosCalcolato && litri && litri > 0) {
+        prezzoAlLitrosCalcolato = costo / litri;
+      }
+
+      if (!data || isNaN(costo) || costo <= 0) {
+        mostraAlert('error', '❌ Per favore, compila tutti i campi correttamente!');
+        return;
+      }
+
+      const rifornimento = {
+        id: editingId || Date.now().toString(),
+        data: data,
+        costo: costo,
+        benzina: benzina,
+        litri: litri,
+        prezzoAlLitros: prezzoAlLitrosCalcolato
+      };
+
+      if (editingId) {
+        // Modifica esistente
+        const index = rifornimenti.findIndex(r => r.id === editingId);
+        if (index !== -1) {
+          rifornimenti[index] = rifornimento;
+          mostraAlert('success', '✅ Rifornimento modificato con successo!');
+        }
+        editingId = null;
+        document.querySelector('.btn-primary').textContent = '➕ Aggiungi Rifornimento';
+      } else {
+        // Nuovo rifornimento
+        rifornimenti.push(rifornimento);
+        mostraAlert('success', '✅ Rifornimento aggiunto con successo!');
+      }
+
+      salvaDati();
+      renderizzaRifornimenti();
+      document.getElementById('rifornimento-form').reset();
+      const today = new Date().toISOString().split('T')[0];
+      document.getElementById('data').value = today;
+      
+      // Ridisegna il grafico quando la finestra viene ridimensionata
+      setTimeout(() => aggiornaStatisticheMensili(), 100);
+    });
+    
+    // Ridisegna grafico al resize
+    window.addEventListener('resize', () => {
+      if (rifornimenti.length > 0) {
+        setTimeout(() => aggiornaStatisticheMensili(), 100);
+      }
+    });
+
+    // Funzioni principali
+    function caricaDati() {
+      const datiSalvati = localStorage.getItem('sevcon_abaco_test_rifornimenti');
+      if (datiSalvati) {
+        try {
+          rifornimenti = JSON.parse(datiSalvati);
+          // Riordina sempre per data
+          rifornimenti.sort((a, b) => new Date(a.data) - new Date(b.data));
+        } catch (e) {
+          console.error('Errore nel caricamento dati:', e);
+          rifornimenti = [];
+        }
+      }
+    }
+
+    function salvaDati() {
+      // Riordina sempre per data prima di salvare
+      rifornimenti.sort((a, b) => new Date(a.data) - new Date(b.data));
+      localStorage.setItem('sevcon_abaco_test_rifornimenti', JSON.stringify(rifornimenti));
+    }
+
+    function renderizzaRifornimenti() {
+      const tbody = document.getElementById('rifornimenti-body');
+      
+      // Filtra i rifornimenti
+      let rifornimentiFiltrati = rifornimenti.filter(r => {
+        // Filtro per ricerca (data)
+        if (filtroRicerca) {
+          const dataFormattata = formattaData(r.data);
+          const dataISO = r.data;
+          
+          // Cerca nella data formattata (DD/MM/YYYY, MM/YYYY, YYYY)
+          if (!dataFormattata.toLowerCase().includes(filtroRicerca.toLowerCase()) &&
+              !dataISO.includes(filtroRicerca)) {
+            return false;
+          }
+        }
+        
+        // Filtro per tipo carburante
+        if (filtroCarburante !== 'all') {
+          if (filtroCarburante === 'benzina' && !r.benzina) return false;
+          if (filtroCarburante === 'gpl' && r.benzina) return false;
+        }
+        
+        // Filtro per costo massimo
+        if (filtroCostoMax !== null && r.costo > filtroCostoMax) {
+          return false;
+        }
+        
+        return true;
+      });
+      
+      // Mostra conteggio risultati ricerca
+      const searchResultsDiv = document.getElementById('search-results-count');
+      const searchCountText = document.getElementById('search-count-text');
+      const haFiltriAttivi = filtroRicerca || filtroCarburante !== 'all' || filtroCostoMax !== null;
+      
+      if (haFiltriAttivi) {
+        searchResultsDiv.style.display = 'block';
+        searchCountText.textContent = `${rifornimentiFiltrati.length} di ${rifornimenti.length} rifornimenti`;
+      } else {
+        searchResultsDiv.style.display = 'none';
+      }
+      
+      if (rifornimenti.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="4">
+              <div class="empty-state">
+                <div class="empty-state-icon">🚗</div>
+                <p>Nessun rifornimento inserito.<br>Inizia aggiungendo il tuo primo rifornimento!</p>
+              </div>
+            </td>
+          </tr>
+        `;
+        aggiornaStatistiche();
+        return;
+      }
+      
+      if (rifornimentiFiltrati.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="4">
+              <div class="empty-state">
+                <div class="empty-state-icon">🔍</div>
+                <p>Nessun rifornimento trovato con i filtri selezionati.<br>Prova a modificare i criteri di ricerca.</p>
+              </div>
+            </td>
+          </tr>
+        `;
+        aggiornaStatistiche(rifornimentiFiltrati);
+        return;
+      }
+
+      // Formatta la data in formato italiano
+      tbody.innerHTML = rifornimentiFiltrati.map(r => {
+        const dataFormattata = formattaData(r.data);
+        const badge = r.benzina 
+          ? '<span class="badge badge-benzina">⛽ Benzina</span>'
+          : '<span class="badge badge-gpl">🔥 GPL</span>';
+        
+        let dettagli = '';
+        if (r.litri) {
+          dettagli = `<br><small style="opacity: 0.7;">${r.litri.toFixed(1)}L @ €${(r.costo / r.litri).toFixed(3)}/L</small>`;
+        } else if (r.prezzoAlLitros) {
+          const litriStimati = r.costo / r.prezzoAlLitros;
+          dettagli = `<br><small style="opacity: 0.7;">~${litriStimati.toFixed(1)}L @ €${r.prezzoAlLitros.toFixed(3)}/L</small>`;
+        }
+        
+        return `
+          <tr>
+            <td>${dataFormattata}</td>
+            <td>€${r.costo.toFixed(2)}${dettagli}</td>
+            <td>${badge}</td>
+            <td>
+              <div class="action-buttons">
+                <button class="btn btn-edit" onclick="modificaRifornimento('${r.id}')">✏️ Modifica</button>
+                <button class="btn btn-danger" onclick="eliminaRifornimento('${r.id}')">🗑️ Elimina</button>
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('');
+
+      aggiornaStatistiche(rifornimentiFiltrati);
+    }
+    
+    function resetFiltri() {
+      filtroRicerca = '';
+      filtroCarburante = 'all';
+      filtroCostoMax = null;
+      document.getElementById('searchInput').value = '';
+      document.getElementById('filterCarburante').value = 'all';
+      document.getElementById('filterCosto').value = '';
+      renderizzaRifornimenti();
+    }
+
+    function formattaData(dataString) {
+      const data = new Date(dataString + 'T00:00:00');
+      const giorno = String(data.getDate()).padStart(2, '0');
+      const mese = String(data.getMonth() + 1).padStart(2, '0');
+      const anno = data.getFullYear();
+      return `${giorno}/${mese}/${anno}`;
+    }
+
+    function aggiornaStatistiche(rifornimentiDaUsare = null) {
+      const rifornimentiPerStatistiche = rifornimentiDaUsare !== null ? rifornimentiDaUsare : rifornimenti;
+      const totale = rifornimentiPerStatistiche.length;
+      const totaleSpeso = rifornimentiPerStatistiche.reduce((sum, r) => sum + r.costo, 0);
+      const media = totale > 0 ? totaleSpeso / totale : 0;
+      const totaleBenzina = rifornimentiPerStatistiche.filter(r => r.benzina).length;
+      const totaleGPL = rifornimentiPerStatistiche.filter(r => !r.benzina).length;
+
+      // Mostra sempre il totale completo, non quello filtrato
+      const totaleCompleto = rifornimenti.length;
+      document.getElementById('totale-rifornimenti').textContent = `${totaleCompleto} ${totaleCompleto === 1 ? 'rifornimento' : 'rifornimenti'}`;
+      
+      // Le altre statistiche possono essere filtrate se necessario
+      // Per ora mostriamo quelle del totale completo per coerenza
+      const totaleSpesoCompleto = rifornimenti.reduce((sum, r) => sum + r.costo, 0);
+      const mediaCompleta = totaleCompleto > 0 ? totaleSpesoCompleto / totaleCompleto : 0;
+      const totaleBenzinaCompleto = rifornimenti.filter(r => r.benzina).length;
+      const totaleGPLCompleto = rifornimenti.filter(r => !r.benzina).length;
+      
+      document.getElementById('totale-speso').textContent = `€${totaleSpesoCompleto.toFixed(2)}`;
+      document.getElementById('media-spesa').textContent = `€${mediaCompleta.toFixed(2)}`;
+      document.getElementById('totale-benzina').textContent = totaleBenzinaCompleto;
+      document.getElementById('totale-gpl').textContent = totaleGPLCompleto;
+      
+      // Aggiorna statistiche mensili
+      aggiornaStatisticheMensili();
+      
+      // Aggiorna statistiche veicolo
+      aggiornaStatisticheVeicolo();
+    }
+    
+    function aggiornaStatisticheVeicolo() {
+      const TANK_GPL_CAPACITA = 30; // litri
+      
+      // Separa rifornimenti GPL e Benzina
+      const rifornimentiGPL = rifornimenti.filter(r => !r.benzina);
+      const rifornimentiBenzina = rifornimenti.filter(r => r.benzina);
+      
+      // Calcola litri totali
+      let litriTotaliGPL = 0;
+      let litriTotaliBenzina = 0;
+      let costoTotaleGPL = 0;
+      let costoTotaleBenzina = 0;
+      
+      rifornimentiGPL.forEach(r => {
+        if (r.litri) {
+          litriTotaliGPL += r.litri;
+        } else if (r.prezzoAlLitros && r.prezzoAlLitros > 0) {
+          // Stima litri dal prezzo al litro
+          litriTotaliGPL += r.costo / r.prezzoAlLitros;
+        } else {
+          // Usa prezzo medio stimato GPL (0.75 €/L)
+          litriTotaliGPL += r.costo / 0.75;
+        }
+        costoTotaleGPL += r.costo;
+      });
+      
+      rifornimentiBenzina.forEach(r => {
+        if (r.litri) {
+          litriTotaliBenzina += r.litri;
+        } else if (r.prezzoAlLitros && r.prezzoAlLitros > 0) {
+          litriTotaliBenzina += r.costo / r.prezzoAlLitros;
+        } else {
+          // Usa prezzo medio stimato benzina (1.70 €/L)
+          litriTotaliBenzina += r.costo / 1.70;
+        }
+        costoTotaleBenzina += r.costo;
+      });
+      
+      // Calcola costo medio al litro
+      const costoMedioGPL = litriTotaliGPL > 0 ? costoTotaleGPL / litriTotaliGPL : 0;
+      const costoMedioBenzina = litriTotaliBenzina > 0 ? costoTotaleBenzina / litriTotaliBenzina : 0;
+      
+      // Calcola rifornimenti completi GPL (30L)
+      const rifornimentiGPLCompleti = Math.floor(litriTotaliGPL / TANK_GPL_CAPACITA);
+      
+      // Calcola risparmio GPL vs Benzina (se avessi usato benzina invece di GPL)
+      // Assumendo che i litri di GPL corrispondano a litri di benzina equivalenti
+      let risparmioGPL = 0;
+      if (litriTotaliGPL > 0 && costoMedioBenzina > 0) {
+        const costoEquivalenteBenzina = litriTotaliGPL * costoMedioBenzina;
+        risparmioGPL = costoEquivalenteBenzina - costoTotaleGPL;
+      }
+      
+      // Calcola consumo medio mensile
+      const rifornimentiPerMese = {};
+      rifornimenti.forEach(r => {
+        const data = new Date(r.data + 'T00:00:00');
+        const chiaveMese = `${data.getFullYear()}-${String(data.getMonth() + 1).padStart(2, '0')}`;
+        if (!rifornimentiPerMese[chiaveMese]) {
+          rifornimentiPerMese[chiaveMese] = { litri: 0 };
+        }
+        if (r.litri) {
+          rifornimentiPerMese[chiaveMese].litri += r.litri;
+        } else if (r.prezzoAlLitros && r.prezzoAlLitros > 0) {
+          rifornimentiPerMese[chiaveMese].litri += r.costo / r.prezzoAlLitros;
+        } else {
+          const prezzoMedio = r.benzina ? 1.70 : 0.75;
+          rifornimentiPerMese[chiaveMese].litri += r.costo / prezzoMedio;
+        }
+      });
+      const numeroMesi = Object.keys(rifornimentiPerMese).length;
+      const consumoMedioMensile = numeroMesi > 0 
+        ? Object.values(rifornimentiPerMese).reduce((sum, m) => sum + m.litri, 0) / numeroMesi 
+        : 0;
+      
+      // Calcola percentuale GPL vs Benzina (per litri)
+      const litriTotali = litriTotaliGPL + litriTotaliBenzina;
+      const percentualeGPL = litriTotali > 0 ? (litriTotaliGPL / litriTotali * 100) : 0;
+      const percentualeBenzina = 100 - percentualeGPL;
+      
+      // Aggiorna UI
+      document.getElementById('litri-totali-gpl').textContent = `${litriTotaliGPL.toFixed(1)} L`;
+      document.getElementById('litri-totali-benzina').textContent = `${litriTotaliBenzina.toFixed(1)} L`;
+      document.getElementById('rifornimenti-gpl-completi').textContent = rifornimentiGPLCompleti;
+      
+      if (risparmioGPL > 0) {
+        const percentualeRisparmio = costoTotaleGPL > 0 ? (risparmioGPL / costoTotaleGPL * 100) : 0;
+        document.getElementById('risparmio-gpl').innerHTML = 
+          `<span style="color: #10b981">€${risparmioGPL.toFixed(2)}<br><small style="font-size: 0.7rem;">(${percentualeRisparmio.toFixed(1)}% risparmio)</small></span>`;
+      } else {
+        document.getElementById('risparmio-gpl').textContent = '--';
+      }
+      
+      document.getElementById('costo-medio-gpl').textContent = costoMedioGPL > 0 ? `€${costoMedioGPL.toFixed(3)}` : '--';
+      document.getElementById('costo-medio-benzina').textContent = costoMedioBenzina > 0 ? `€${costoMedioBenzina.toFixed(3)}` : '--';
+      document.getElementById('consumo-medio-mensile').textContent = `${consumoMedioMensile.toFixed(1)} L`;
+      
+      if (litriTotali > 0) {
+        document.getElementById('percentuale-gpl').innerHTML = 
+          `<span style="color: #10b981">${percentualeGPL.toFixed(1)}% GPL</span><br><small style="font-size: 0.7rem; color: rgba(255,255,255,0.6);">${percentualeBenzina.toFixed(1)}% Benzina</small>`;
+      } else {
+        document.getElementById('percentuale-gpl').textContent = '--';
+      }
+      
+      // Calcola frequenza rifornimenti basata sui km di lavoro
+      calcolaFrequenzaRifornimenti(litriTotaliGPL, litriTotaliBenzina);
+    }
+    
+    function calcolaFrequenzaRifornimenti(litriTotaliGPL, litriTotaliBenzina) {
+      // Parametri lavoro
+      const KM_ANDATA = 45;
+      const KM_RITORNO = 45;
+      const KM_GIORNO = KM_ANDATA + KM_RITORNO; // 90km
+      const GIORNI_LAVORO_SETTIMANA = 5; // Martedì-Sabato
+      const KM_SETTIMANA = KM_GIORNO * GIORNI_LAVORO_SETTIMANA; // 450km
+      
+      if (rifornimenti.length < 2) {
+        document.getElementById('media-giorni-rifornimenti').textContent = '--';
+        document.getElementById('km-tra-rifornimenti').textContent = '--';
+        document.getElementById('consumo-km-litro').textContent = '--';
+        document.getElementById('frequenza-rifornimenti').textContent = '--';
+        return;
+      }
+      
+      // Ordina rifornimenti per data
+      const rifornimentiOrdinati = [...rifornimenti].sort((a, b) => new Date(a.data) - new Date(b.data));
+      
+      // Calcola giorni tra rifornimenti consecutivi
+      const giorniTraRifornimenti = [];
+      for (let i = 1; i < rifornimentiOrdinati.length; i++) {
+        const dataPrecedente = new Date(rifornimentiOrdinati[i - 1].data + 'T00:00:00');
+        const dataCorrente = new Date(rifornimentiOrdinati[i].data + 'T00:00:00');
+        const diffTempo = dataCorrente - dataPrecedente;
+        const diffGiorni = diffTempo / (1000 * 60 * 60 * 24);
+        giorniTraRifornimenti.push(diffGiorni);
+      }
+      
+      // Media giorni tra rifornimenti
+      const mediaGiorni = giorniTraRifornimenti.reduce((sum, giorni) => sum + giorni, 0) / giorniTraRifornimenti.length;
+      
+      // Stima KM percorsi tra rifornimenti
+      // Assumendo che i giorni siano principalmente giorni lavorativi
+      // Calcola quanti giorni lavorativi ci sono in media tra i rifornimenti
+      const mediaGiorniLavorativi = mediaGiorni * (GIORNI_LAVORO_SETTIMANA / 7); // Proporzione giorni lavorativi
+      const kmPercorsi = mediaGiorniLavorativi * KM_GIORNO;
+      
+      // Calcola consumo medio (km/litro)
+      const litriTotali = litriTotaliGPL + litriTotaliBenzina;
+      let consumoMedio = 0;
+      if (litriTotali > 0 && rifornimenti.length > 0) {
+        // Stima km totali percorsi
+        const giorniTotali = (new Date(rifornimentiOrdinati[rifornimentiOrdinati.length - 1].data) - 
+                              new Date(rifornimentiOrdinati[0].data)) / (1000 * 60 * 60 * 24);
+        const settimaneTotali = giorniTotali / 7;
+        const kmTotaliStimati = settimaneTotali * KM_SETTIMANA;
+        consumoMedio = kmTotaliStimati / litriTotali;
+      }
+      
+      // Calcola frequenza rifornimenti (ogni quanti giorni)
+      const frequenzaGiorni = mediaGiorni;
+      let frequenzaTesto = '';
+      if (frequenzaGiorni < 7) {
+        frequenzaTesto = `Ogni ${frequenzaGiorni.toFixed(1)} giorni`;
+      } else if (frequenzaGiorni < 14) {
+        frequenzaTesto = `Ogni ${(frequenzaGiorni / 7).toFixed(1)} settimane`;
+      } else {
+        frequenzaTesto = `Ogni ${(frequenzaGiorni / 7).toFixed(1)} settimane`;
+      }
+      
+      // Aggiorna UI
+      document.getElementById('media-giorni-rifornimenti').textContent = `${mediaGiorni.toFixed(1)} giorni`;
+      document.getElementById('km-tra-rifornimenti').textContent = `${kmPercorsi.toFixed(0)} km`;
+      document.getElementById('consumo-km-litro').textContent = consumoMedio > 0 ? `${consumoMedio.toFixed(1)} km/L` : '--';
+      document.getElementById('frequenza-rifornimenti').innerHTML = 
+        `<span style="color: #ffd93d">${frequenzaTesto}</span><br><small style="font-size: 0.7rem; color: rgba(255,255,255,0.6);">~${kmPercorsi.toFixed(0)} km tra rifornimenti</small>`;
+    }
+    
+    function aggiornaStatisticheMensili() {
+      if (rifornimenti.length === 0) {
+        document.getElementById('media-costo-mensile').textContent = '€0.00';
+        document.getElementById('media-benzina-mensile').textContent = '0.0';
+        document.getElementById('media-gpl-mensile').textContent = '0.0';
+        document.getElementById('variazione-costo-mensile').textContent = '--';
+        const canvas = document.getElementById('graficoCostoMensile');
+        if (canvas) {
+          const ctx = canvas.getContext('2d');
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+        return;
+      }
+      
+      // Raggruppa per mese
+      const perMese = {};
+      rifornimenti.forEach(r => {
+        const data = new Date(r.data + 'T00:00:00');
+        const chiaveMese = `${data.getFullYear()}-${String(data.getMonth() + 1).padStart(2, '0')}`;
+        
+        if (!perMese[chiaveMese]) {
+          perMese[chiaveMese] = {
+            costo: 0,
+            benzina: 0,
+            gpl: 0
+          };
+        }
+        
+        perMese[chiaveMese].costo += r.costo;
+        if (r.benzina) {
+          perMese[chiaveMese].benzina++;
+        } else {
+          perMese[chiaveMese].gpl++;
+        }
+      });
+      
+      const mesi = Object.keys(perMese).sort();
+      const numeroMesi = mesi.length;
+      
+      if (numeroMesi === 0) {
+        document.getElementById('media-costo-mensile').textContent = '€0.00';
+        document.getElementById('media-benzina-mensile').textContent = '0.0';
+        document.getElementById('media-gpl-mensile').textContent = '0.0';
+        document.getElementById('variazione-costo-mensile').textContent = '--';
+        return;
+      }
+      
+      // Calcola medie
+      const totaleCostoMensile = Object.values(perMese).reduce((sum, m) => sum + m.costo, 0);
+      const totaleBenzinaMensile = Object.values(perMese).reduce((sum, m) => sum + m.benzina, 0);
+      const totaleGPLMensile = Object.values(perMese).reduce((sum, m) => sum + m.gpl, 0);
+      
+      const mediaCostoMensile = totaleCostoMensile / numeroMesi;
+      const mediaBenzinaMensile = totaleBenzinaMensile / numeroMesi;
+      const mediaGPLMensile = totaleGPLMensile / numeroMesi;
+      
+      document.getElementById('media-costo-mensile').textContent = `€${mediaCostoMensile.toFixed(2)}`;
+      document.getElementById('media-benzina-mensile').textContent = mediaBenzinaMensile.toFixed(1);
+      document.getElementById('media-gpl-mensile').textContent = mediaGPLMensile.toFixed(1);
+      
+      // Calcola variazione costo mensile (differenza tra ultimo e primo mese)
+      if (numeroMesi >= 2) {
+        const primoMese = perMese[mesi[0]].costo;
+        const ultimoMese = perMese[mesi[mesi.length - 1]].costo;
+        const variazione = ultimoMese - primoMese;
+        const percentuale = primoMese > 0 ? ((variazione / primoMese) * 100) : 0;
+        
+        const segno = variazione >= 0 ? '+' : '';
+        const colore = variazione >= 0 ? '#ef4444' : '#10b981';
+        document.getElementById('variazione-costo-mensile').innerHTML = 
+          `<span style="color: ${colore}">${segno}€${variazione.toFixed(2)}<br><small style="font-size: 0.7rem;">(${segno}${percentuale.toFixed(1)}%)</small></span>`;
+      } else {
+        document.getElementById('variazione-costo-mensile').textContent = '--';
+      }
+      
+      // Disegna grafico
+      disegnaGraficoCostoMensile(perMese, mesi);
+    }
+    
+    function disegnaGraficoCostoMensile(perMese, mesi) {
+      const canvas = document.getElementById('graficoCostoMensile');
+      if (!canvas) return;
+      
+      const ctx = canvas.getContext('2d');
+      const container = canvas.parentElement;
+      if (!container) return;
+      
+      const rect = container.getBoundingClientRect();
+      const dpr = window.devicePixelRatio || 1;
+      const width = rect.width;
+      const height = 300;
+      
+      canvas.width = width * dpr;
+      canvas.height = height * dpr;
+      canvas.style.width = width + 'px';
+      canvas.style.height = height + 'px';
+      
+      ctx.scale(dpr, dpr);
+      
+      const padding = 50;
+      const graphWidth = width - padding * 2;
+      const graphHeight = height - padding * 2;
+      
+      // Pulisci canvas
+      ctx.clearRect(0, 0, width, height);
+      
+      if (mesi.length === 0) {
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
+        ctx.font = '16px Arial';
+        ctx.textAlign = 'center';
+        ctx.fillText('Nessun dato disponibile', width / 2, height / 2);
+        return;
+      }
+      
+      // Trova min e max per scala
+      const valori = mesi.map(m => perMese[m].costo);
+      const minCosto = Math.min(...valori);
+      const maxCosto = Math.max(...valori);
+      const range = maxCosto - minCosto || 1;
+      
+      // Disegna assi
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
+      ctx.lineWidth = 1;
+      
+      // Asse Y (verticale)
+      ctx.beginPath();
+      ctx.moveTo(padding, padding);
+      ctx.lineTo(padding, height - padding);
+      ctx.stroke();
+      
+      // Asse X (orizzontale)
+      ctx.beginPath();
+      ctx.moveTo(padding, height - padding);
+      ctx.lineTo(width - padding, height - padding);
+      ctx.stroke();
+      
+      // Disegna griglia
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
+      ctx.setLineDash([5, 5]);
+      
+      // Linee orizzontali (costo)
+      for (let i = 0; i <= 5; i++) {
+        const y = padding + (graphHeight * i / 5);
+        ctx.beginPath();
+        ctx.moveTo(padding, y);
+        ctx.lineTo(width - padding, y);
+        ctx.stroke();
+        
+        // Etichette Y
+        const valore = maxCosto - (range * i / 5);
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+        ctx.font = '10px Arial';
+        ctx.textAlign = 'right';
+        ctx.fillText(`€${valore.toFixed(0)}`, padding - 10, y + 4);
+      }
+      
+      ctx.setLineDash([]);
+      
+      // Disegna linee del grafico
+      const punti = mesi.map((mese, index) => {
+        const x = padding + (graphWidth * index / (mesi.length - 1 || 1));
+        const costo = perMese[mese].costo;
+        const y = padding + graphHeight - ((costo - minCosto) / range * graphHeight);
+        return { x, y, costo, mese };
+      });
+      
+      // Linea del grafico
+      ctx.strokeStyle = '#3b82f6';
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.moveTo(punti[0].x, punti[0].y);
+      for (let i = 1; i < punti.length; i++) {
+        ctx.lineTo(punti[i].x, punti[i].y);
+      }
+      ctx.stroke();
+      
+      // Punti del grafico
+      ctx.fillStyle = '#3b82f6';
+      punti.forEach(punto => {
+        ctx.beginPath();
+        ctx.arc(punto.x, punto.y, 5, 0, Math.PI * 2);
+        ctx.fill();
+      });
+      
+      // Etichette X (mesi)
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+      ctx.font = '10px Arial';
+      ctx.textAlign = 'center';
+      punti.forEach(punto => {
+        const data = new Date(punto.mese + '-01');
+        const etichetta = `${String(data.getMonth() + 1).padStart(2, '0')}/${String(data.getFullYear()).slice(2)}`;
+        ctx.fillText(etichetta, punto.x, height - padding + 20);
+      });
+    }
+
+    function modificaRifornimento(id) {
+      const rifornimento = rifornimenti.find(r => r.id === id);
+      if (!rifornimento) return;
+
+      editingId = id;
+      document.getElementById('data').value = rifornimento.data;
+      document.getElementById('costo').value = rifornimento.costo;
+      document.getElementById('benzina').checked = rifornimento.benzina;
+      document.getElementById('litri').value = rifornimento.litri || '';
+      document.getElementById('prezzoAlLitros').value = rifornimento.prezzoAlLitros ? rifornimento.prezzoAlLitros.toFixed(3) : '';
+      document.querySelector('.btn-primary').textContent = '💾 Salva Modifiche';
+
+      // Scrolla al form
+      document.querySelector('.form-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      document.getElementById('data').focus();
+    }
+
+    function eliminaRifornimento(id) {
+      if (!confirm('Sei sicuro di voler eliminare questo rifornimento?')) {
+        return;
+      }
+
+      rifornimenti = rifornimenti.filter(r => r.id !== id);
+      salvaDati();
+      renderizzaRifornimenti();
+      mostraAlert('success', '✅ Rifornimento eliminato con successo!');
+    }
+
+    function eliminaTutti() {
+      if (rifornimenti.length === 0) {
+        mostraAlert('error', '❌ Nessun rifornimento da eliminare!');
+        return;
+      }
+
+      if (!confirm(`Sei sicuro di voler eliminare TUTTI i ${rifornimenti.length} rifornimenti? Questa azione non può essere annullata!`)) {
+        return;
+      }
+
+      rifornimenti = [];
+      salvaDati();
+      renderizzaRifornimenti();
+      mostraAlert('success', '✅ Tutti i rifornimenti sono stati eliminati!');
+    }
+
+    function esportaDati() {
+      if (rifornimenti.length === 0) {
+        mostraAlert('error', '❌ Nessun dato da esportare!');
+        return;
+      }
+
+      const dati = JSON.stringify(rifornimenti, null, 2);
+      const blob = new Blob([dati], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `rifornimenti_${new Date().toISOString().split('T')[0]}.json`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      mostraAlert('success', '✅ Dati esportati con successo!');
+    }
+
+    function importaDati() {
+      document.getElementById('file-input').click();
+    }
+
+    function gestisciImportazione(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        try {
+          const datiImportati = JSON.parse(e.target.result);
+          if (!Array.isArray(datiImportati)) {
+            throw new Error('Formato file non valido');
+          }
+
+          if (datiImportati.length === 0) {
+            mostraAlert('error', '❌ Il file è vuoto!');
+            return;
+          }
+
+          // Validazione base
+          const validi = datiImportati.every(r => r.data && typeof r.costo === 'number' && typeof r.benzina === 'boolean');
+          if (!validi) {
+            throw new Error('Dati non validi nel file');
+          }
+
+          if (rifornimenti.length > 0) {
+            if (!confirm(`Vuoi sovrascrivere i ${rifornimenti.length} rifornimenti esistenti o aggiungere questi ${datiImportati.length} rifornimenti?`)) {
+              return;
+            }
+          }
+
+          rifornimenti = datiImportati;
+          salvaDati();
+          renderizzaRifornimenti();
+          mostraAlert('success', `✅ ${datiImportati.length} rifornimenti importati con successo!`);
+        } catch (error) {
+          console.error('Errore importazione:', error);
+          mostraAlert('error', '❌ Errore nell\'importazione del file! Controlla che sia un file JSON valido.');
+        }
+      };
+      reader.readAsText(file);
+      event.target.value = ''; // Reset per permettere di importare lo stesso file di nuovo
+    }
+
+    function mostraAlert(tipo, messaggio) {
+      const alert = document.getElementById('alert');
+      alert.className = `alert alert-${tipo} show`;
+      alert.textContent = messaggio;
+      setTimeout(() => {
+        alert.classList.remove('show');
+      }, 5000);
+    }
+  </script>
+</body>
+</html>

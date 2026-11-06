@@ -1,0 +1,26 @@
+[
+  {
+    "name": "Cura 1",
+    "price": 2
+  },
+  {
+    "name": "Cura 2",
+    "price": 4
+  },
+  {
+    "name": "Antidoto",
+    "price": 2.5
+  },
+  {
+    "name": "Revivify",
+    "price": 3
+  },
+  {
+    "name": "Extinguish",
+    "price": 3
+  },
+  {
+    "name": "Recall",
+    "price": 5
+  }
+]
