@@ -423,6 +423,19 @@
     }
 
     function processImageFile(file) {
+      const statusDiv = document.getElementById('ocr-status');
+      if (!file || !file.type.startsWith('image/')) {
+        statusDiv.style.display = 'block';
+        statusDiv.className = 'status-box error';
+        statusDiv.textContent = 'Seleziona un file immagine valido.';
+        return;
+      }
+      if (file.size > 20 * 1024 * 1024) {
+        statusDiv.style.display = 'block';
+        statusDiv.className = 'status-box error';
+        statusDiv.textContent = 'Immagine troppo grande: il limite è 20 MB.';
+        return;
+      }
       currentImageFile = file;
       
       // Mostra preview
@@ -469,7 +482,7 @@
         extractedSection.classList.add('visible');
         
         setTimeout(() => {
-          statusDiv.style.display = 'none';
+          if (requestId === ocrRequestId) statusDiv.style.display = 'none';
         }, 3000);
       } catch (error) {
         if (requestId !== ocrRequestId) return;
