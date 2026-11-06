@@ -498,10 +498,10 @@
       const lines = text.split(/\r?\n/).filter(line => line.trim());
       const materialsMap = new Map();
       const patterns = [
-        /^(\d+)\s*x\s*(.+?)$/i,
-        /^(.+?)\s*:\s*x\s*(\d+)$/i,
-        /^(.+?)\s+x\s*(\d+)$/i,
-        /^x\s*(\d+)\s+(.+?)$/i
+        /^(\d+)\s*x\s*([^|]+?)(?:\s*\|\s*[^|]+)?$/i,
+        /^(.+?)\s*:\s*x\s*(\d+)(?:\s*\|\s*[^|]+)?$/i,
+        /^(.+?)\s+x\s*(\d+)(?:\s*\|\s*[^|]+)?$/i,
+        /^x\s*(\d+)\s+([^|]+?)(?:\s*\|\s*[^|]+)?$/i
       ];
 
       lines.forEach(line => {
@@ -534,7 +534,7 @@
             }
           }
         }
-        name = name.replace(/[|:]/g, '').trim().replace(/\s+/g, ' ');
+        name = name.split('|')[0].replace(/[|:]/g, '').trim().replace(/\s+/g, ' ');
         if (!name || !Number.isSafeInteger(qty) || qty <= 0) return;
         const key = name.toLocaleLowerCase('it');
         const existing = materialsMap.get(key);
